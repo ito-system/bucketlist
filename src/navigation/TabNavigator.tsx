@@ -1,12 +1,10 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { ListTodo, PlusCircle, User } from "lucide-react-native";
-import { BucketListScreen } from "@/features/bucket/screens/BucketListScreen";
-import { AddBucketScreen } from "@/features/bucket/screens/AddBucketScreen";
-import { ProfileScreen } from "@/features/profile/screens/ProfileScreen";
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { ListTodo, User } from 'lucide-react-native';
+import { HomeScreen } from '@/features/list/screens/HomeScreen';
+import { ProfileScreen } from '@/features/profile/screens/ProfileScreen';
 
 export type TabParamList = {
-  BucketList: undefined;
-  Add: undefined;
+  Home: undefined;
   Profile: undefined;
 };
 
@@ -16,28 +14,23 @@ export function TabNavigator() {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: "#6366F1",
-        tabBarInactiveTintColor: "#9CA3AF",
+        tabBarActiveTintColor: '#6366F1',
+        tabBarInactiveTintColor: '#9CA3AF',
         headerShown: false,
+        tabBarStyle: {
+          borderTopColor: '#F3F4F6',
+          elevation: 0,
+          shadowOpacity: 0,
+        },
       }}
     >
       <Tab.Screen
-        name="BucketList"
-        component={BucketListScreen}
+        name="Home"
+        component={HomeScreen}
         options={{
-          title: "リスト",
+          title: 'リスト',
           tabBarIcon: ({ color, size }) => (
             <ListTodo color={color} size={size} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Add"
-        component={AddBucketScreen}
-        options={{
-          title: "追加",
-          tabBarIcon: ({ color, size }) => (
-            <PlusCircle color={color} size={size} />
           ),
         }}
       />
@@ -45,7 +38,7 @@ export function TabNavigator() {
         name="Profile"
         component={ProfileScreen}
         options={{
-          title: "プロフィール",
+          title: 'プロフィール',
           tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
         }}
       />

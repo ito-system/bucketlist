@@ -1,0 +1,149 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── ヘルパー関数 ──────────────────────────────────────────────────────────
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isCurrentUser(uid) {
+      return request.auth.uid == uid;
+    }
+
+    function getUserData(uid) {
+      return get(/databases/$(database)/documents/users/$(uid)).data;
+    }
+
+    function isPremium(uid) {
+      return getUserData(uid).planType == 'premium';
+    }
+
+    /**
+     * オーナーのプランに応じたリスト上限を返す。
+     * ※ リスト数の上限チェックはルール側では実装が難しいため、
+     *    Cloud Functions (onCreate トリガー) で件数カウント + ロールバックを推奨。
+     *    ルールはあくまで最終防衛線として機能する。
+     */
+    function maxMembersFor(ownerId) {
+      return isPremium(ownerId) ? 10 : 2;
+    }
+
+    function getListData(listId) {
+      return get(/databases/$(database)/documents/lists/$(listId)).data;
+    }
+
+    function isListMember(listId) {
+      return request.auth.uid in getListData(listId).memberIds;
+    }
+
+    function isListOwner(listId) {
+      return request.auth.uid == getListData(listId).ownerId;
+    }
+
+    // ─── /users/{uid} ────────────────────────────────────────────────────────
+
+    match /users/{uid} {
+      // 本人のみ自分のドキュメントを読める
+      allow read: if isAuthenticated() && isCurrentUser(uid);
+
+      // 新規登録: planType は必ず 'free' で始まる
+      allow create: if isAuthenticated()
+        && isCurrentUser(uid)
+        && request.resource.data.uid == uid
+        && request.resource.data.planType == 'free';
+
+      // 更新: uid と planType は変更不可（planType は Cloud Functions のみ変更可）
+      allow update: if isAuthenticated()
+        && isCurrentUser(uid)
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.planType == resource.data.planType;
+
+      // 削除は Cloud Functions 経由（退会処理）のみ
+      allow delete: if false;
+    }
+
+    // ─── /lists/{listId} ─────────────────────────────────────────────────────
+
+    match /lists/{listId} {
+      // メンバーのみ読み取り可
+      allow read: if isAuthenticated()
+        && request.auth.uid in resource.data.memberIds;
+
+      // リスト作成ルール
+      // ・ownerId は作成者本人であること
+      // ・作成者は memberIds に含まれていること（自分を含まないリストは作れない）
+      // ・メンバー数はプランの上限以内であること
+      // ・リスト数の上限（フリー: 3件）は Cloud Functions 側で管理を推奨
+      allow create: if isAuthenticated()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.auth.uid in request.resource.data.memberIds
+        && request.resource.data.memberIds.size() >= 1
+        && request.resource.data.memberIds.size() <= maxMembersFor(request.auth.uid);
+
+      // リスト更新ルール（オーナーのみ）
+      // ・ownerId は変更不可
+      // ・メンバー数の上限はオーナーの現在のプランに従う
+      allow update: if isAuthenticated()
+        && resource.data.ownerId == request.auth.uid
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.auth.uid in request.resource.data.memberIds
+        && request.resource.data.memberIds.size() >= 1
+        && request.resource.data.memberIds.size() <= maxMembersFor(resource.data.ownerId);
+
+      // リスト削除はオーナーのみ
+      allow delete: if isAuthenticated()
+        && resource.data.ownerId == request.auth.uid;
+
+      // ─── /lists/{listId}/items/{itemId} ──────────────────────────────────
+
+      match /items/{itemId} {
+        // リストのメンバーであれば読み取り可
+        allow read: if isAuthenticated() && isListMember(listId);
+
+        // アイテム作成ルール
+        // ・リストメンバーであること
+        // ・createdBy は作成者本人であること
+        // ・listId フィールドはパスの listId と一致すること（改ざん防止）
+        allow create: if isAuthenticated()
+          && isListMember(listId)
+          && request.resource.data.createdBy == request.auth.uid
+          && request.resource.data.listId == listId;
+
+        // アイテム更新ルール
+        // ・リストメンバーであれば誰でも更新可（共同編集を想定）
+        // ・listId / createdBy は変更不可
+        allow update: if isAuthenticated()
+          && isListMember(listId)
+          && request.resource.data.listId == resource.data.listId
+          && request.resource.data.createdBy == resource.data.createdBy;
+
+        // アイテム削除: 作成者 または リストオーナーのみ
+        allow delete: if isAuthenticated()
+          && (resource.data.createdBy == request.auth.uid || isListOwner(listId));
+      }
+    }
+
+    // ─── /invites/{code} ─────────────────────────────────────────────────────
+
+    match /invites/{code} {
+      // コードを知っている認証済みユーザーなら読める（ブルートフォース対策は Rate Limit で）
+      allow read: if isAuthenticated();
+
+      // 作成: リストのメンバーのみ招待コードを発行できる
+      allow create: if isAuthenticated()
+        && request.resource.data.createdBy == request.auth.uid
+        && isListMember(request.resource.data.listId);
+
+      // 更新: usedBy への追加のみ許可（listId / createdBy / expiresAt は変更不可）
+      allow update: if isAuthenticated()
+        && resource.data.listId == request.resource.data.listId
+        && resource.data.createdBy == request.resource.data.createdBy
+        && resource.data.expiresAt == request.resource.data.expiresAt;
+
+      allow delete: if false;
+    }
+  }
+}
