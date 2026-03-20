@@ -124,7 +124,8 @@ export const useAuthStore = create<AuthState>((set) => {
 
       const userRef = doc(db, 'users', fbUser.uid);
       let userSnap = await getDoc(userRef);
-      if (!userSnap.exists()) {
+      const isFirstSignIn = !userSnap.exists();
+      if (isFirstSignIn) {
         await setDoc(userRef, {
           uid: fbUser.uid,
           email: fbUser.email ?? '',
@@ -137,7 +138,7 @@ export const useAuthStore = create<AuthState>((set) => {
         userSnap = await getDoc(userRef);
       }
       if (userSnap.exists()) {
-        set({ user: userSnap.data() as User });
+        set({ user: userSnap.data() as User, isNewUser: isFirstSignIn });
       }
     },
 
