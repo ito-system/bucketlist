@@ -67,7 +67,9 @@ export const useAuthStore = create<AuthState>((set) => {
         password,
       );
       await updateProfile(fbUser, { displayName });
-      await setDoc(doc(db, 'users', fbUser.uid), {
+
+      const userRef = doc(db, 'users', fbUser.uid);
+      await setDoc(userRef, {
         uid: fbUser.uid,
         email,
         displayName,
@@ -76,6 +78,14 @@ export const useAuthStore = create<AuthState>((set) => {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
+
+      // onAuthStateChanged は createUserWithEmailAndPassword 直後に発火するため、
+      // Firestore への書き込みと競合して user: null になる場合がある。
+      // setDoc 完了後に改めて取得してセットすることで競合を解消する。
+      const snap = await getDoc(userRef);
+      if (snap.exists()) {
+        set({ user: snap.data() as User });
+      }
     },
 
     signInWithGoogle: async (idToken, accessToken) => {
@@ -83,7 +93,7 @@ export const useAuthStore = create<AuthState>((set) => {
       const { user: fbUser } = await signInWithCredential(auth, credential);
 
       const userRef = doc(db, 'users', fbUser.uid);
-      const userSnap = await getDoc(userRef);
+      let userSnap = await getDoc(userRef);
       if (!userSnap.exists()) {
         await setDoc(userRef, {
           uid: fbUser.uid,
@@ -94,6 +104,10 @@ export const useAuthStore = create<AuthState>((set) => {
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         });
+        userSnap = await getDoc(userRef);
+      }
+      if (userSnap.exists()) {
+        set({ user: userSnap.data() as User });
       }
     },
 
