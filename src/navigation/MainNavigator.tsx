@@ -4,6 +4,7 @@ import { ListDetailScreen } from '@/features/list/screens/ListDetailScreen';
 import { ProfileEditScreen } from '@/features/profile/screens/ProfileEditScreen';
 import { PasswordChangeScreen } from '@/features/profile/screens/PasswordChangeScreen';
 import { TagManageScreen } from '@/features/tag/screens/TagManageScreen';
+import { UpgradeScreen } from '@/features/upgrade/screens/UpgradeScreen';
 
 export type MainStackParamList = {
   Tabs: undefined;
@@ -11,6 +12,7 @@ export type MainStackParamList = {
   ProfileEdit: undefined;
   PasswordChange: undefined;
   TagManage: undefined;
+  Upgrade: undefined;
 };
 
 const Stack = createStackNavigator<MainStackParamList>();
@@ -23,6 +25,7 @@ export function MainNavigator() {
       <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} />
       <Stack.Screen name="PasswordChange" component={PasswordChangeScreen} />
       <Stack.Screen name="TagManage" component={TagManageScreen} />
+      <Stack.Screen name="Upgrade" component={UpgradeScreen} />
     </Stack.Navigator>
   );
 }

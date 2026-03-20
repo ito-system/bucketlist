@@ -85,7 +85,10 @@ export function ProfileScreen() {
             </Text>
           </View>
           {!isPremium && (
-            <TouchableOpacity className="bg-secondary-500 rounded-lg px-3 py-1.5">
+            <TouchableOpacity
+              className="bg-secondary-500 rounded-lg px-3 py-1.5"
+              onPress={() => navigation.navigate('Upgrade')}
+            >
               <Text className="text-white text-xs font-semibold">
                 アップグレード
               </Text>

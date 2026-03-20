@@ -185,4 +185,81 @@ npm run android
 
 - `.env` ファイルには機密情報が含まれるため、`.gitignore` に追加し、リポジトリにコミットしないでください。
 - タグはリストオーナーのものが全メンバーに共有されます。メンバーはオーナーのタグをアイテムに付与できますが、タグの作成・削除はオーナー本人のみ行えます。
-- プランの変更は Cloud Functions 経由を想定しており、クライアントからの直接変更はセキュリティルールで禁止されています。
+- RevenueCat の API Key が未設定（`XXXX` のまま）の場合、購入・復元機能はスキップされます。開発中はエラーなしで動作します。
+
+---
+
+## 本番リリース前の対応チェックリスト
+
+### 1. RevenueCat（課金）
+
+- [ ] [app.revenuecat.com](https://app.revenuecat.com) でアカウント・プロジェクトを作成
+- [ ] App Store Connect / Google Play にアプリを登録し、以下の商品を作成
+  - 月額サブスクリプション（例: `com.ito-dev.bucketlist.premium.monthly`）
+  - 買い切りプラン（例: `com.ito-dev.bucketlist.premium.lifetime`）
+- [ ] RevenueCat でエンタイトルメント `premium`、オファリング `default` を作成し商品を紐付け
+- [ ] `src/features/upgrade/services/purchaseService.ts` の API Key を差し替え
+
+```ts
+// Before（開発用プレースホルダー）
+ios: 'appl_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+android: 'goog_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+
+// After（RevenueCat ダッシュボード → Project Settings → API Keys）
+ios: 'appl_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+android: 'goog_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+```
+
+---
+
+### 2. AdMob（広告）
+
+- [ ] [admob.google.com](https://admob.google.com) でアプリを登録し、バナー広告ユニットを作成
+- [ ] `app.json` の AdMob App ID を差し替え
+
+```json
+// Before（Google テスト用 App ID）
+"androidAppId": "ca-app-pub-3940256099942544~3347511713",
+"iosAppId": "ca-app-pub-3940256099942544~1458002511"
+
+// After（AdMob コンソール → アプリ → アプリの設定）
+"androidAppId": "ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX",
+"iosAppId": "ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX"
+```
+
+- [ ] `ios/bucketlist/Info.plist` の `GADApplicationIdentifier` を同じ iOS 本番 App ID に差し替え
+- [ ] `.env` にバナー広告ユニット ID を追加（App ID とは別。AdMob コンソール → 広告ユニット）
+
+```env
+EXPO_PUBLIC_ADMOB_IOS_BANNER_ID=ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
+EXPO_PUBLIC_ADMOB_ANDROID_BANNER_ID=ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
+```
+
+> **App ID と広告ユニット ID の違い**
+> - App ID: `~` 区切り（`ca-app-pub-XXXX~XXXX`）→ `app.json` と `Info.plist` に設定
+> - 広告ユニット ID: `/` 区切り（`ca-app-pub-XXXX/XXXX`）→ `.env` に設定
+
+---
+
+### 3. Firebase
+
+- [ ] Firestore セキュリティルールを再デプロイ（`planType` の更新ルールを追加済み）
+
+```bash
+firebase deploy --only firestore:rules --project <your_project_id>
+```
+
+---
+
+### 4. ストア申請
+
+- [ ] App Store Connect でアプリ情報・スクリーンショット・プライバシーポリシー URL を登録
+- [ ] iOS 14+ 向けに ATT（App Tracking Transparency）の対応が必要な場合は `Info.plist` に追加
+
+```xml
+<key>NSUserTrackingUsageDescription</key>
+<string>より関連性の高い広告を表示するために使用します</string>
+```
+
+- [ ] AdMob が要求する `SKAdNetworkItems` を `Info.plist` に追加（AdMob コンソールから取得）
+- [ ] サンドボックスアカウントで購入フローの動作確認

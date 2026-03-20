@@ -49,6 +49,8 @@ type AuthState = {
     currentPassword: string,
     newPassword: string,
   ) => Promise<void>;
+  /** RevenueCat 購入後に planType を premium に更新してストアを再フェッチする（purchaseStore から呼ぶ） */
+  refreshUser: () => Promise<void>;
 };
 
 export const useAuthStore = create<AuthState>((set) => {
@@ -63,6 +65,10 @@ export const useAuthStore = create<AuthState>((set) => {
     const userSnap = await getDoc(doc(db, 'users', firebaseUser.uid));
     if (userSnap.exists()) {
       set({ user: userSnap.data() as User, isLoading: false });
+      // RevenueCat をユーザー UID で初期化（ネイティブビルド時のみ有効）
+      import('@/features/upgrade/services/purchaseService')
+        .then(({ purchaseService }) => purchaseService.initialize(firebaseUser.uid))
+        .catch(() => {/* Expo Go では react-native-purchases が利用不可 */});
     } else {
       // Firestore ドキュメントが存在しない（初回 Google ログイン直後など）は
       // signInWithGoogle 側でドキュメント作成後に onAuthStateChanged が再発火する
@@ -193,6 +199,15 @@ export const useAuthStore = create<AuthState>((set) => {
       const credential = EmailAuthProvider.credential(fbUser.email, currentPassword);
       await reauthenticateWithCredential(fbUser, credential);
       await updatePassword(fbUser, newPassword);
+    },
+
+    refreshUser: async () => {
+      const fbUser = auth.currentUser;
+      if (!fbUser) return;
+      const snap = await getDoc(doc(db, 'users', fbUser.uid));
+      if (snap.exists()) {
+        set({ user: snap.data() as User });
+      }
     },
   };
 });

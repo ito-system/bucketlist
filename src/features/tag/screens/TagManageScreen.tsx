@@ -48,11 +48,7 @@ export function TagManageScreen({ navigation }: Props) {
 
   const handleOpenModal = () => {
     if (!canCreate) {
-      const limit = PLAN_LIMITS[user.planType].maxTags;
-      Alert.alert(
-        'タグ上限',
-        `フリープランではタグを${limit}つまで作成できます。プレミアムにアップグレードすると無制限に作成できます。`,
-      );
+      navigation.navigate('Upgrade');
       return;
     }
     setTagName('');

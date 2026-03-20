@@ -21,6 +21,7 @@ import { inviteService } from '@/features/invite/services/inviteService';
 import { ItemCard } from '@/features/list/components/ItemCard';
 import { ItemFormModal } from '@/features/list/components/ItemFormModal';
 import type { Item } from '@/types';
+import { PLAN_LIMITS } from '@/types';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -138,6 +139,15 @@ export function ListDetailScreen({ route, navigation }: Props) {
 
   const handleInvite = async () => {
     if (!user) return;
+
+    // メンバー上限チェック（オーナーのプランに基づく）
+    if (isOwner && list) {
+      const memberLimit = PLAN_LIMITS[user.planType].maxMembers;
+      if (list.memberIds.length >= memberLimit) {
+        navigation.navigate('Upgrade');
+        return;
+      }
+    }
 
     setIsGeneratingCode(true);
     try {

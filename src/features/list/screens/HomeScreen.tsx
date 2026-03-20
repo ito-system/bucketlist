@@ -21,6 +21,7 @@ import { useListStore } from '@/store/listStore';
 import { inviteService } from '@/features/invite/services/inviteService';
 import { ListCard } from '@/features/list/components/ListCard';
 import { CreateListModal } from '@/features/list/components/CreateListModal';
+import { AdBanner } from '@/components/AdBanner';
 import { PLAN_LIMITS } from '@/types';
 
 type HomeNavProp = StackNavigationProp<MainStackParamList, 'Tabs'>;
@@ -45,11 +46,8 @@ export function HomeScreen() {
     if (!user) return;
 
     const limit = PLAN_LIMITS[user.planType].maxLists;
-    if (lists.length >= limit) {
-      Alert.alert(
-        'リスト上限に達しました',
-        `${user.planType === 'free' ? 'フリー' : ''}プランでは最大 ${limit} 件まで作成できます`,
-      );
+    if (limit !== Infinity && lists.length >= limit) {
+      navigation.navigate('Upgrade');
       return;
     }
     await createList(title, user.uid);
@@ -153,6 +151,9 @@ export function HomeScreen() {
           )}
         />
       )}
+
+      {/* バナー広告（フリープランのみ） */}
+      <AdBanner />
 
       {/* リスト作成モーダル */}
       <CreateListModal

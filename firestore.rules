@@ -55,11 +55,14 @@ service cloud.firestore {
         && request.resource.data.uid == uid
         && request.resource.data.planType == 'free';
 
-      // 更新: uid と planType は変更不可（planType は Cloud Functions のみ変更可）
+      // 更新: uid は変更不可。planType は 'free' → 'premium' への変更のみ許可（RevenueCat 購入フロー用）
       allow update: if isAuthenticated()
         && isCurrentUser(uid)
         && request.resource.data.uid == resource.data.uid
-        && request.resource.data.planType == resource.data.planType;
+        && (
+          request.resource.data.planType == resource.data.planType
+          || (resource.data.planType == 'free' && request.resource.data.planType == 'premium')
+        );
 
       // 削除は Cloud Functions 経由（退会処理）のみ
       allow delete: if false;
