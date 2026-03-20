@@ -16,6 +16,7 @@ import type { MainStackParamList } from '@/navigation/MainNavigator';
 import { useAuthStore } from '@/store/authStore';
 import { useTagStore } from '@/store/tagStore';
 import { PLAN_LIMITS } from '@/types';
+import { AdBanner } from '@/components/AdBanner';
 
 type Props = StackScreenProps<MainStackParamList, 'TagManage'>;
 
@@ -248,6 +249,7 @@ export function TagManageScreen({ navigation }: Props) {
           </TouchableOpacity>
         </View>
       </Modal>
+      <AdBanner />
     </SafeAreaView>
   );
 }

@@ -18,6 +18,7 @@ import type { Item, ItemStatus } from '@/types';
 import { useAuthStore } from '@/store/authStore';
 import { useTagStore } from '@/store/tagStore';
 import { PLAN_LIMITS } from '@/types';
+import { AdBanner } from '@/components/AdBanner';
 
 type Props = {
   visible: boolean;
@@ -338,6 +339,7 @@ export function ItemFormModal({
             )}
           </TouchableOpacity>
         </View>
+        <AdBanner />
       </KeyboardAvoidingView>
     </Modal>
   );

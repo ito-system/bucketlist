@@ -20,6 +20,9 @@ import type { User } from '@/types';
 type AuthState = {
   user: User | null;
   isLoading: boolean;
+  /** 新規登録直後のみ true。プラン選択画面を表示したら false にする */
+  isNewUser: boolean;
+  clearNewUser: () => void;
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signUpWithEmail: (
     email: string,
@@ -79,6 +82,8 @@ export const useAuthStore = create<AuthState>((set) => {
   return {
     user: null,
     isLoading: true,
+    isNewUser: false,
+    clearNewUser: () => set({ isNewUser: false }),
 
     signInWithEmail: async (email, password) => {
       await signInWithEmailAndPassword(auth, email, password);
@@ -109,7 +114,7 @@ export const useAuthStore = create<AuthState>((set) => {
       // setDoc 完了後に改めて取得してセットすることで競合を解消する。
       const snap = await getDoc(userRef);
       if (snap.exists()) {
-        set({ user: snap.data() as User });
+        set({ user: snap.data() as User, isNewUser: true });
       }
     },
 

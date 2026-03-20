@@ -22,6 +22,7 @@ import { ItemCard } from '@/features/list/components/ItemCard';
 import { ItemFormModal } from '@/features/list/components/ItemFormModal';
 import type { Item } from '@/types';
 import { PLAN_LIMITS } from '@/types';
+import { AdBanner } from '@/components/AdBanner';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -254,44 +255,46 @@ export function ListDetailScreen({ route, navigation }: Props) {
         </ScrollView>
 
         {/* アイテム一覧 */}
-        {isLoading ? (
-          <View className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color="#6366F1" />
-          </View>
-        ) : items.length === 0 ? (
-          <View className="flex-1 items-center justify-center px-8">
-            <PlusCircle size={64} color="#D1D5DB" className="mb-4" />
-            <Text className="text-lg font-semibold text-gray-700 mb-2">
-              やりたいことを追加しよう
-            </Text>
-            <Text className="text-sm text-gray-400 text-center mb-6">
-              「+」ボタンからアイテムを追加できます
-            </Text>
-            <TouchableOpacity
-              className="bg-primary rounded-xl px-6 py-3"
-              onPress={handleAddItem}
-            >
-              <Text className="text-white font-semibold">追加する</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <DraggableFlatList
-            data={sortedItems}
-            keyExtractor={(item) => item.itemId}
-            contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}
-            onDragEnd={handleDragEnd}
-            renderItem={({ item, drag, isActive }) => (
-              <ScaleDecorator>
-                <ItemCard
-                  item={item}
-                  onPress={() => handleEditItem(item)}
-                  drag={sortMode === 'manual' ? drag : undefined}
-                  isActive={isActive}
-                />
-              </ScaleDecorator>
-            )}
-          />
-        )}
+        <View style={{ flex: 1 }}>
+          {isLoading ? (
+            <View className="flex-1 items-center justify-center">
+              <ActivityIndicator size="large" color="#6366F1" />
+            </View>
+          ) : items.length === 0 ? (
+            <View className="flex-1 items-center justify-center px-8">
+              <PlusCircle size={64} color="#D1D5DB" className="mb-4" />
+              <Text className="text-lg font-semibold text-gray-700 mb-2">
+                やりたいことを追加しよう
+              </Text>
+              <Text className="text-sm text-gray-400 text-center mb-6">
+                「+」ボタンからアイテムを追加できます
+              </Text>
+              <TouchableOpacity
+                className="bg-primary rounded-xl px-6 py-3"
+                onPress={handleAddItem}
+              >
+                <Text className="text-white font-semibold">追加する</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <DraggableFlatList
+              data={sortedItems}
+              keyExtractor={(item) => item.itemId}
+              contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }}
+              onDragEnd={handleDragEnd}
+              renderItem={({ item, drag, isActive }) => (
+                <ScaleDecorator>
+                  <ItemCard
+                    item={item}
+                    onPress={() => handleEditItem(item)}
+                    drag={sortMode === 'manual' ? drag : undefined}
+                    isActive={isActive}
+                  />
+                </ScaleDecorator>
+              )}
+            />
+          )}
+        </View>
 
         {/* アイテム追加・編集モーダル */}
         <ItemFormModal
@@ -302,6 +305,7 @@ export function ListDetailScreen({ route, navigation }: Props) {
           onDelete={editingItem ? handleDelete : undefined}
           isOwner={isOwner}
         />
+        <AdBanner />
       </SafeAreaView>
     </GestureHandlerRootView>
   );

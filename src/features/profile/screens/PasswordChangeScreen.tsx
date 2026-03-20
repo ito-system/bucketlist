@@ -14,6 +14,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { ArrowLeft, CheckCircle2, Circle, Eye, EyeOff } from 'lucide-react-native';
 import { useAuthStore } from '@/store/authStore';
+import { AdBanner } from '@/components/AdBanner';
 import { validatePassword, PASSWORD_RULES } from '@/lib/passwordValidation';
 
 export function PasswordChangeScreen() {
@@ -223,6 +224,7 @@ export function PasswordChangeScreen() {
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
+      <AdBanner />
     </SafeAreaView>
   );
 }

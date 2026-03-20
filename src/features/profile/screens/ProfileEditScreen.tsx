@@ -16,6 +16,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import { ArrowLeft, Camera, Eye, EyeOff } from 'lucide-react-native';
 import { useAuthStore } from '@/store/authStore';
+import { AdBanner } from '@/components/AdBanner';
 
 export function ProfileEditScreen() {
   const navigation = useNavigation();
@@ -188,6 +189,7 @@ export function ProfileEditScreen() {
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
+      <AdBanner />
     </SafeAreaView>
   );
 }

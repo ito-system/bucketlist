@@ -5,6 +5,8 @@ import { ProfileEditScreen } from '@/features/profile/screens/ProfileEditScreen'
 import { PasswordChangeScreen } from '@/features/profile/screens/PasswordChangeScreen';
 import { TagManageScreen } from '@/features/tag/screens/TagManageScreen';
 import { UpgradeScreen } from '@/features/upgrade/screens/UpgradeScreen';
+import { PlanSelectScreen } from '@/features/auth/screens/PlanSelectScreen';
+import { useAuthStore } from '@/store/authStore';
 
 export type MainStackParamList = {
   Tabs: undefined;
@@ -13,14 +15,21 @@ export type MainStackParamList = {
   PasswordChange: undefined;
   TagManage: undefined;
   Upgrade: undefined;
+  PlanSelect: undefined;
 };
 
 const Stack = createStackNavigator<MainStackParamList>();
 
 export function MainNavigator() {
+  const { isNewUser } = useAuthStore();
+
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      screenOptions={{ headerShown: false }}
+      initialRouteName={isNewUser ? 'PlanSelect' : 'Tabs'}
+    >
       <Stack.Screen name="Tabs" component={TabNavigator} />
+      <Stack.Screen name="PlanSelect" component={PlanSelectScreen} />
       <Stack.Screen name="ListDetail" component={ListDetailScreen} />
       <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} />
       <Stack.Screen name="PasswordChange" component={PasswordChangeScreen} />

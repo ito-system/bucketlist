@@ -1,0 +1,217 @@
+import { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Check, Crown, Zap } from 'lucide-react-native';
+import type { StackScreenProps } from '@react-navigation/stack';
+import type { MainStackParamList } from '@/navigation/MainNavigator';
+import { useAuthStore } from '@/store/authStore';
+import { usePurchaseStore } from '@/store/purchaseStore';
+import { PLAN_LIMITS } from '@/types';
+import type { PurchasesPackage } from 'react-native-purchases';
+
+type Props = StackScreenProps<MainStackParamList, 'PlanSelect'>;
+
+const PLAN_ROWS: { label: string; free: string; premium: string }[] = [
+  {
+    label: '作成できるリスト数',
+    free: `${PLAN_LIMITS.free.maxLists}件`,
+    premium: '無制限',
+  },
+  {
+    label: 'リストあたりのメンバー数',
+    free: `最大${PLAN_LIMITS.free.maxMembers}人`,
+    premium: `最大${PLAN_LIMITS.premium.maxMembers}人`,
+  },
+  {
+    label: '作成できるタグ数',
+    free: `${PLAN_LIMITS.free.maxTags}個`,
+    premium: '無制限',
+  },
+  {
+    label: 'バナー広告',
+    free: 'あり',
+    premium: 'なし',
+  },
+];
+
+export function PlanSelectScreen({ navigation }: Props) {
+  const { clearNewUser } = useAuthStore();
+  const { purchasePackage, isLoading } = usePurchaseStore();
+
+  const [monthlyPkg, setMonthlyPkg] = useState<PurchasesPackage | null>(null);
+  const [lifetimePkg, setLifetimePkg] = useState<PurchasesPackage | null>(null);
+  const [isLoadingOfferings, setIsLoadingOfferings] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { purchaseService } = await import(
+          '@/features/upgrade/services/purchaseService'
+        );
+        const offering = await purchaseService.getOfferings();
+        if (offering) {
+          setMonthlyPkg(offering.monthly ?? null);
+          setLifetimePkg(offering.lifetime ?? null);
+        }
+      } catch {
+        // RevenueCat 未設定時は無視
+      } finally {
+        setIsLoadingOfferings(false);
+      }
+    })();
+  }, []);
+
+  const goToHome = () => {
+    clearNewUser();
+    navigation.replace('Tabs');
+  };
+
+  const handlePurchase = async (pkg: PurchasesPackage) => {
+    try {
+      await purchasePackage(pkg);
+      clearNewUser();
+      navigation.replace('Tabs');
+    } catch (e: any) {
+      if (e?.userCancelled) return;
+      Alert.alert('購入エラー', e.message ?? '購入に失敗しました。');
+    }
+  };
+
+  return (
+    <SafeAreaView className="flex-1 bg-gray-50">
+      <ScrollView
+        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* ヘッダー */}
+        <View className="items-center pt-10 pb-8">
+          <Text className="text-2xl font-bold text-gray-900 mb-2">
+            プランを選択してください
+          </Text>
+          <Text className="text-sm text-gray-500 text-center">
+            あとからプロフィール画面でいつでも変更できます
+          </Text>
+        </View>
+
+        {/* プラン比較テーブル */}
+        <View className="bg-white rounded-2xl overflow-hidden mb-6">
+          {/* ヘッダー行 */}
+          <View className="flex-row bg-gray-50 border-b border-gray-100">
+            <View className="flex-1 p-3" />
+            <View className="w-28 items-center p-3 border-l border-gray-100">
+              <Text className="text-sm font-semibold text-gray-500">フリー</Text>
+            </View>
+            <View className="w-28 items-center p-3 border-l border-primary bg-primary/5">
+              <View className="flex-row items-center gap-x-1">
+                <Crown size={12} color="#6366F1" />
+                <Text className="text-sm font-semibold text-primary">プレミアム</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* 各行 */}
+          {PLAN_ROWS.map((row, i) => (
+            <View
+              key={row.label}
+              className={`flex-row ${i < PLAN_ROWS.length - 1 ? 'border-b border-gray-100' : ''}`}
+            >
+              <View className="flex-1 p-3 justify-center">
+                <Text className="text-sm text-gray-700">{row.label}</Text>
+              </View>
+              <View className="w-28 items-center p-3 border-l border-gray-100 justify-center">
+                <Text className="text-sm text-gray-500">{row.free}</Text>
+              </View>
+              <View className="w-28 items-center p-3 border-l border-primary bg-primary/5 justify-center">
+                <Text className="text-sm font-medium text-primary">{row.premium}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+
+        {/* プレミアム購入ボタン */}
+        <View className="gap-y-3 mb-4">
+          {isLoadingOfferings ? (
+            <ActivityIndicator color="#6366F1" />
+          ) : (
+            <>
+              {monthlyPkg && (
+                <TouchableOpacity
+                  className="bg-primary rounded-2xl p-5 flex-row items-center justify-between"
+                  onPress={() => handlePurchase(monthlyPkg)}
+                  disabled={isLoading}
+                  activeOpacity={0.8}
+                >
+                  <View className="flex-row items-center gap-x-3">
+                    <View className="w-9 h-9 rounded-full bg-white/20 items-center justify-center">
+                      <Crown size={18} color="#fff" />
+                    </View>
+                    <View>
+                      <Text className="text-white font-bold text-base">月額プラン</Text>
+                      <Text className="text-indigo-200 text-xs">いつでもキャンセル可</Text>
+                    </View>
+                  </View>
+                  <View className="items-end">
+                    <Text className="text-white font-bold text-lg">
+                      {monthlyPkg.product.priceString}
+                    </Text>
+                    <Text className="text-indigo-200 text-xs">/ 月</Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+              {lifetimePkg && (
+                <TouchableOpacity
+                  className="bg-white border border-gray-200 rounded-2xl p-5 flex-row items-center justify-between"
+                  onPress={() => handlePurchase(lifetimePkg)}
+                  disabled={isLoading}
+                  activeOpacity={0.8}
+                >
+                  <View className="flex-row items-center gap-x-3">
+                    <View className="w-9 h-9 rounded-full bg-amber-100 items-center justify-center">
+                      <Zap size={18} color="#F59E0B" />
+                    </View>
+                    <View>
+                      <Text className="text-gray-900 font-bold text-base">買い切りプラン</Text>
+                      <Text className="text-gray-400 text-xs">一度の購入で永久利用</Text>
+                    </View>
+                  </View>
+                  <Text className="text-gray-900 font-bold text-lg">
+                    {lifetimePkg.product.priceString}
+                  </Text>
+                </TouchableOpacity>
+              )}
+              {isLoading && (
+                <View className="items-center py-2">
+                  <ActivityIndicator color="#6366F1" />
+                </View>
+              )}
+            </>
+          )}
+        </View>
+
+        {/* フリープランで始める */}
+        <TouchableOpacity
+          className="items-center py-4"
+          onPress={goToHome}
+          disabled={isLoading}
+        >
+          <View className="flex-row items-center gap-x-2">
+            <Check size={15} color="#6B7280" />
+            <Text className="text-gray-500 font-medium">
+              フリープランで始める
+            </Text>
+          </View>
+          <Text className="text-xs text-gray-400 mt-1">
+            あとからアップグレードできます
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}

@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { LogOut, Crown, ChevronRight, Pencil, Lock, Tag } from 'lucide-react-native';
+import { AdBanner } from '@/components/AdBanner';
 import { useAuthStore } from '@/store/authStore';
 import { useListStore } from '@/store/listStore';
 import { useTagStore } from '@/store/tagStore';
@@ -134,6 +135,9 @@ export function ProfileScreen() {
         <LogOut size={20} color="#EF4444" />
         <Text className="text-base font-medium text-red-500">ログアウト</Text>
       </TouchableOpacity>
+
+      <View className="flex-1" />
+      <AdBanner />
     </SafeAreaView>
   );
 }

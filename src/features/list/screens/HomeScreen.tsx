@@ -44,13 +44,17 @@ export function HomeScreen() {
 
   const handleCreateList = async (title: string) => {
     if (!user) return;
+    await createList(title, user.uid);
+  };
 
+  const handlePressCreate = () => {
+    if (!user) return;
     const limit = PLAN_LIMITS[user.planType].maxLists;
     if (limit !== Infinity && lists.length >= limit) {
       navigation.navigate('Upgrade');
       return;
     }
-    await createList(title, user.uid);
+    setShowCreateModal(true);
   };
 
   const handleDeleteList = (listId: string, title: string) => {
@@ -99,7 +103,7 @@ export function HomeScreen() {
           </TouchableOpacity>
           <TouchableOpacity
             className="w-9 h-9 bg-primary rounded-full items-center justify-center"
-            onPress={() => setShowCreateModal(true)}
+            onPress={handlePressCreate}
           >
             <Plus size={20} color="#fff" />
           </TouchableOpacity>
@@ -122,7 +126,7 @@ export function HomeScreen() {
           </Text>
           <TouchableOpacity
             className="bg-primary rounded-xl px-6 py-3"
-            onPress={() => setShowCreateModal(true)}
+            onPress={handlePressCreate}
           >
             <Text className="text-white font-semibold">リストを作成する</Text>
           </TouchableOpacity>
