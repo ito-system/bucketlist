@@ -12,12 +12,14 @@ export const PLAN_LIMITS = {
   free: {
     maxLists: 3,
     maxMembers: 2,
+    maxTags: 5,
   },
   premium: {
     maxLists: Infinity,
     maxMembers: 10,
+    maxTags: Infinity,
   },
-} as const satisfies Record<PlanType, { maxLists: number; maxMembers: number }>;
+} as const satisfies Record<PlanType, { maxLists: number; maxMembers: number; maxTags: number }>;
 
 // ─── User ────────────────────────────────────────────────────────────────────
 
@@ -58,6 +60,22 @@ export type List = {
   updatedAt: Timestamp;
 };
 
+// ─── Tag ─────────────────────────────────────────────────────────────────────
+
+/**
+ * Firestore: /users/{uid}/tags/{tagId}
+ *
+ * ユーザーごとに管理し、全リスト共通で使用できる。
+ */
+export type Tag = {
+  tagId: string;
+  name: string;
+  /** 16進カラーコード (例: "#6366F1") */
+  color: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+};
+
 // ─── Item ────────────────────────────────────────────────────────────────────
 
 export type ItemStatus = 'todo' | 'doing' | 'done';
@@ -93,4 +111,8 @@ export type Item = {
   completedAt: Timestamp | null;
   createdAt: Timestamp;
   updatedAt: Timestamp;
+  /** 手動並び替え用の順序。小さいほど先に表示。未設定は 0 扱い */
+  order?: number;
+  /** 付与されたタグの ID 配列 */
+  tagIds?: string[];
 };

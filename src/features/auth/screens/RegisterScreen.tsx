@@ -2,7 +2,6 @@ import { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -10,9 +9,12 @@ import {
   Alert,
   ScrollView,
 } from 'react-native';
+import { TextInput } from '@/components/TextInput';
+import { CheckCircle2, Circle, Eye, EyeOff } from 'lucide-react-native';
 import type { StackScreenProps } from '@react-navigation/stack';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator';
 import { useAuthStore } from '@/store/authStore';
+import { validatePassword, PASSWORD_RULES } from '@/lib/passwordValidation';
 
 type Props = StackScreenProps<AuthStackParamList, 'Register'>;
 
@@ -20,8 +22,12 @@ export function RegisterScreen({ navigation }: Props) {
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { signUpWithEmail } = useAuthStore();
+
+  const validation = validatePassword(password);
+  const showValidation = password.length > 0;
 
   const handleRegister = async () => {
     if (!displayName.trim()) {
@@ -32,8 +38,8 @@ export function RegisterScreen({ navigation }: Props) {
       Alert.alert('入力エラー', 'メールアドレスを入力してください');
       return;
     }
-    if (password.length < 6) {
-      Alert.alert('入力エラー', 'パスワードは6文字以上で入力してください');
+    if (!validation.isValid) {
+      Alert.alert('入力エラー', 'パスワードの要件を満たしていません');
       return;
     }
 
@@ -66,6 +72,7 @@ export function RegisterScreen({ navigation }: Props) {
         <View className="w-full gap-y-3">
           <TextInput
             className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-gray-50"
+            style={{ lineHeight: 17 }}
             placeholder="名前（表示名）"
             placeholderTextColor="#9CA3AF"
             value={displayName}
@@ -74,6 +81,7 @@ export function RegisterScreen({ navigation }: Props) {
           />
           <TextInput
             className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-gray-50"
+            style={{ lineHeight: 17 }}
             placeholder="メールアドレス"
             placeholderTextColor="#9CA3AF"
             value={email}
@@ -82,34 +90,75 @@ export function RegisterScreen({ navigation }: Props) {
             autoCapitalize="none"
             autoCorrect={false}
           />
-          <TextInput
-            className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-gray-50"
-            placeholder="パスワード（6文字以上）"
-            placeholderTextColor="#9CA3AF"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
+
+          {/* パスワード（表示トグル付き） */}
+          <View className="w-full flex-row items-center border border-gray-200 rounded-xl px-4 bg-gray-50">
+            <TextInput
+              className="flex-1 py-3.5 text-base text-gray-900"
+
+              placeholder="パスワード"
+              placeholderTextColor="#9CA3AF"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+            />
+            <TouchableOpacity
+              onPress={() => setShowPassword((v) => !v)}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              {showPassword ? (
+                <EyeOff size={18} color="#9CA3AF" />
+              ) : (
+                <Eye size={18} color="#9CA3AF" />
+              )}
+            </TouchableOpacity>
+          </View>
+
+          {/* 入力中にリアルタイムで表示するバリデーションリスト */}
+          {showValidation && (
+            <View className="bg-gray-50 rounded-xl px-4 py-3 gap-y-2">
+              {PASSWORD_RULES.map((rule) => {
+                const met = validation[rule.key];
+                return (
+                  <View key={rule.key} className="flex-row items-center gap-x-2">
+                    {met ? (
+                      <CheckCircle2 size={15} color="#10B981" />
+                    ) : (
+                      <Circle size={15} color="#EF4444" />
+                    )}
+                    <Text
+                      className={`text-sm ${met ? 'text-emerald-600' : 'text-red-500'}`}
+                    >
+                      {rule.label}
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+          )}
 
           <TouchableOpacity
-            className="w-full bg-primary rounded-xl py-3.5 items-center mt-2"
+            className={`w-full rounded-xl py-3.5 items-center mt-1 ${
+              validation.isValid ? 'bg-primary' : 'bg-gray-200'
+            }`}
             onPress={handleRegister}
             disabled={isSubmitting}
           >
             {isSubmitting ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text className="text-white font-semibold text-base">
+              <Text
+                className={`font-semibold text-base ${
+                  validation.isValid ? 'text-white' : 'text-gray-400'
+                }`}
+              >
                 登録する
               </Text>
             )}
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity
-          className="mt-8"
-          onPress={() => navigation.goBack()}
-        >
+        <TouchableOpacity className="mt-8" onPress={() => navigation.goBack()}>
           <Text className="text-gray-500">
             すでにアカウントをお持ちの方は{' '}
             <Text className="text-primary font-semibold">ログイン</Text>
@@ -127,7 +176,7 @@ function getErrorMessage(code: string): string {
     case 'auth/invalid-email':
       return 'メールアドレスの形式が正しくありません';
     case 'auth/weak-password':
-      return 'パスワードが弱すぎます。6文字以上で設定してください';
+      return 'パスワードが弱すぎます';
     case 'auth/network-request-failed':
       return 'ネットワークエラーが発生しました';
     default:

@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Alert,
 } from 'react-native';
+import { TextInput } from '@/components/TextInput';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import type { StackScreenProps } from '@react-navigation/stack';
@@ -77,6 +77,7 @@ export function LoginScreen({ navigation }: Props) {
         <View className="w-full gap-y-3">
           <TextInput
             className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-gray-50"
+
             placeholder="メールアドレス"
             placeholderTextColor="#9CA3AF"
             value={email}
@@ -87,6 +88,7 @@ export function LoginScreen({ navigation }: Props) {
           />
           <TextInput
             className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-gray-50"
+
             placeholder="パスワード（6文字以上）"
             placeholderTextColor="#9CA3AF"
             value={password}

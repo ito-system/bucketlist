@@ -24,6 +24,7 @@ type ItemState = {
     itemId: string,
     imageURL: string | null,
   ) => Promise<void>;
+  reorderItems: (listId: string, items: Item[]) => Promise<void>;
 };
 
 export const useItemStore = create<ItemState>((set, get) => ({
@@ -47,7 +48,8 @@ export const useItemStore = create<ItemState>((set, get) => ({
   },
 
   createItem: async (listId, input) => {
-    await itemService.createItem(listId, input);
+    const currentCount = get().items.length;
+    await itemService.createItem(listId, input, currentCount);
   },
 
   updateItem: async (listId, itemId, input, currentStatus) => {
@@ -56,5 +58,11 @@ export const useItemStore = create<ItemState>((set, get) => ({
 
   deleteItem: async (listId, itemId, imageURL) => {
     await itemService.deleteItem(listId, itemId, imageURL);
+  },
+
+  reorderItems: async (listId, items) => {
+    // 楽観的更新：先にローカル状態を更新してからFirestoreに保存
+    set({ items });
+    await itemService.reorderItems(listId, items);
   },
 }));

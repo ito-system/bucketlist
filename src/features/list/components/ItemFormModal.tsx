@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   Modal,
   ActivityIndicator,
@@ -12,9 +11,13 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { TextInput } from '@/components/TextInput';
 import * as ImagePicker from 'expo-image-picker';
 import { X, ImagePlus, Trash2 } from 'lucide-react-native';
 import type { Item, ItemStatus } from '@/types';
+import { useAuthStore } from '@/store/authStore';
+import { useTagStore } from '@/store/tagStore';
+import { PLAN_LIMITS } from '@/types';
 
 type Props = {
   visible: boolean;
@@ -27,8 +30,11 @@ type Props = {
     url: string | null;
     imageUri?: string;
     status: ItemStatus;
+    tagIds: string[];
   }) => Promise<void>;
   onDelete?: () => Promise<void>;
+  /** 現在のユーザーがリストのオーナーかどうか。false のときタグ数制限なし */
+  isOwner?: boolean;
 };
 
 const STATUS_OPTIONS: { value: ItemStatus; label: string }[] = [
@@ -43,13 +49,18 @@ export function ItemFormModal({
   onClose,
   onSubmit,
   onDelete,
+  isOwner = true,
 }: Props) {
+  const { user } = useAuthStore();
+  const { tags } = useTagStore();
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [url, setUrl] = useState('');
   const [status, setStatus] = useState<ItemStatus>('todo');
   const [imageUri, setImageUri] = useState<string | undefined>(undefined);
   const [existingImageURL, setExistingImageURL] = useState<string | null>(null);
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isEdit = item !== null;
@@ -63,6 +74,7 @@ export function ItemFormModal({
       setStatus(item.status);
       setExistingImageURL(item.imageURL);
       setImageUri(undefined);
+      setSelectedTagIds(item.tagIds ?? []);
     } else {
       setTitle('');
       setDescription('');
@@ -70,8 +82,27 @@ export function ItemFormModal({
       setStatus('todo');
       setImageUri(undefined);
       setExistingImageURL(null);
+      setSelectedTagIds([]);
     }
   }, [item, visible]);
+
+  const maxTags = isOwner && user ? PLAN_LIMITS[user.planType].maxTags : Infinity;
+
+  const toggleTag = (tagId: string) => {
+    setSelectedTagIds((prev) => {
+      if (prev.includes(tagId)) {
+        return prev.filter((id) => id !== tagId);
+      }
+      if (maxTags !== Infinity && prev.length >= maxTags) {
+        Alert.alert(
+          'タグ上限',
+          `1つのアイテムに付与できるタグは${maxTags}つまでです`,
+        );
+        return prev;
+      }
+      return [...prev, tagId];
+    });
+  };
 
   const pickImage = async () => {
     const { status: permStatus } =
@@ -81,7 +112,7 @@ export function ItemFormModal({
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [4, 3],
       quality: 0.8,
@@ -103,6 +134,7 @@ export function ItemFormModal({
         url: url.trim() || null,
         imageUri,
         status,
+        tagIds: selectedTagIds,
       });
       onClose();
     } catch {
@@ -223,7 +255,7 @@ export function ItemFormModal({
           <Text className="text-sm font-medium text-gray-700 mb-2">
             ステータス
           </Text>
-          <View className="flex-row gap-x-2 mb-8">
+          <View className="flex-row gap-x-2 mb-4">
             {STATUS_OPTIONS.map((opt) => (
               <TouchableOpacity
                 key={opt.value}
@@ -244,6 +276,44 @@ export function ItemFormModal({
               </TouchableOpacity>
             ))}
           </View>
+
+          {/* タグ */}
+          <Text className="text-sm font-medium text-gray-700 mb-2">
+            タグ
+          </Text>
+          {tags.length > 0 ? (
+            <View className="flex-row flex-wrap gap-2 mb-8">
+              {tags.map((tag) => {
+                const selected = selectedTagIds.includes(tag.tagId);
+                return (
+                  <TouchableOpacity
+                    key={tag.tagId}
+                    onPress={() => toggleTag(tag.tagId)}
+                    className="flex-row items-center gap-x-1.5 px-3 py-1.5 rounded-full border"
+                    style={{
+                      backgroundColor: selected ? tag.color + '22' : '#F9FAFB',
+                      borderColor: selected ? tag.color : '#E5E7EB',
+                    }}
+                  >
+                    <View
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: tag.color }}
+                    />
+                    <Text
+                      className="text-xs font-medium"
+                      style={{ color: selected ? tag.color : '#6B7280' }}
+                    >
+                      {tag.name}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          ) : (
+            <Text className="text-xs text-gray-400 mb-8">
+              タグがありません。プロフィールの「タグ管理」から作成できます。
+            </Text>
+          )}
         </ScrollView>
 
         {/* 保存ボタン */}

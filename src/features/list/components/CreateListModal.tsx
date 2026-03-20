@@ -2,13 +2,13 @@ import { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   Modal,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { TextInput } from '@/components/TextInput';
 import { X } from 'lucide-react-native';
 
 type Props = {
@@ -68,6 +68,7 @@ export function CreateListModal({ visible, onClose, onSubmit }: Props) {
 
           <TextInput
             className="border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-gray-50 mb-4"
+
             placeholder="リストのタイトル（例: カップルでやりたいこと）"
             placeholderTextColor="#9CA3AF"
             value={title}

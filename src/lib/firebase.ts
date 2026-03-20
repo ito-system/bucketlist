@@ -1,7 +1,8 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { initializeAuth, getAuth, type Persistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 // ─── 環境変数バリデーション ────────────────────────────────────────────────────
 
@@ -45,10 +46,22 @@ const firebaseConfig = {
   appId: EXPO_PUBLIC_FIREBASE_APP_ID!,
 };
 
-// Expo の Fast Refresh / HMR で重複初期化されないよう既存インスタンスを再利用する
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+// getReactNativePersistence は @firebase/auth の React Native ビルドにのみ存在する。
+// Metro は package.json の "react-native" フィールドで RN ビルドを解決するため
+// 実行時は正常に動作するが、TypeScript はブラウザ型を参照するため require で回避する。
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { getReactNativePersistence } = require('@firebase/auth') as {
+  getReactNativePersistence: (storage: typeof ReactNativeAsyncStorage) => Persistence;
+};
 
-export const auth = getAuth(app);
+// Expo の Fast Refresh / HMR で重複初期化されないよう既存インスタンスを再利用する。
+// Auth は初回のみ initializeAuth で永続化設定し、HMR 時は getAuth で既存インスタンスを返す。
+const isFirstInit = getApps().length === 0;
+const app = isFirstInit ? initializeApp(firebaseConfig) : getApp();
+
+export const auth = isFirstInit
+  ? initializeAuth(app, { persistence: getReactNativePersistence(ReactNativeAsyncStorage) })
+  : getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 

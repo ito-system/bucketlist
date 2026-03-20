@@ -63,6 +63,22 @@ service cloud.firestore {
 
       // 削除は Cloud Functions 経由（退会処理）のみ
       allow delete: if false;
+
+      // ─── /users/{uid}/tags/{tagId} ──────────────────────────────────────
+      //
+      // タグはリスト共有時にオーナー以外のメンバーも参照する必要があるため、
+      // read は認証済みユーザー全員に許可する（タグはカラー・名称のみで機密性なし）。
+      // write 系は本人のみ許可。プランごとの個数上限はクライアント側で管理。
+
+      match /tags/{tagId} {
+        allow read: if isAuthenticated();
+
+        allow create: if isAuthenticated() && isCurrentUser(uid);
+
+        allow update: if isAuthenticated() && isCurrentUser(uid);
+
+        allow delete: if isAuthenticated() && isCurrentUser(uid);
+      }
     }
 
     // ─── /lists/{listId} ─────────────────────────────────────────────────────

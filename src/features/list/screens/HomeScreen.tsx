@@ -5,16 +5,16 @@ import {
   FlatList,
   TouchableOpacity,
   Alert,
-  TextInput,
   Modal,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { TextInput } from '@/components/TextInput';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { Plus, UserPlus } from 'lucide-react-native';
+import { Plus, UserPlus, ClipboardList } from 'lucide-react-native';
 import type { MainStackParamList } from '@/navigation/MainNavigator';
 import { useAuthStore } from '@/store/authStore';
 import { useListStore } from '@/store/listStore';
@@ -115,7 +115,7 @@ export function HomeScreen() {
         </View>
       ) : lists.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8">
-          <Text className="text-5xl mb-4">🪣</Text>
+          <ClipboardList size={64} color="#D1D5DB" className="mb-4" />
           <Text className="text-lg font-semibold text-gray-700 mb-2">
             リストがありません
           </Text>
@@ -186,6 +186,7 @@ export function HomeScreen() {
             </Text>
             <TextInput
               className="border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-gray-50 mb-4 tracking-widest text-center"
+
               placeholder="XXXXXX"
               placeholderTextColor="#9CA3AF"
               value={inviteCode}

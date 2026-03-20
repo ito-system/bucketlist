@@ -8,6 +8,7 @@ import {
   onSnapshot,
   orderBy,
   query,
+  writeBatch,
   Timestamp,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
@@ -21,6 +22,7 @@ export type CreateItemInput = {
   /** expo-image-picker が返すローカル URI */
   imageUri?: string;
   createdBy: string;
+  tagIds?: string[];
 };
 
 export type UpdateItemInput = {
@@ -29,12 +31,13 @@ export type UpdateItemInput = {
   url?: string | null;
   imageUri?: string;
   status?: ItemStatus;
+  tagIds?: string[];
 };
 
 export const itemService = {
   /**
    * リストのアイテムをリアルタイム購読する。
-   * createdAt 降順（新着順）で返す。
+   * Firestore は createdAt 昇順で取得し、クライアント側で order フィールドでソートする。
    */
   subscribeToListItems(
     listId: string,
@@ -42,24 +45,26 @@ export const itemService = {
   ): () => void {
     const q = query(
       collection(db, 'lists', listId, 'items'),
-      orderBy('createdAt', 'desc'),
+      orderBy('createdAt', 'asc'),
     );
     return onSnapshot(q, (snapshot) => {
       const items = snapshot.docs.map((d) => ({
         ...d.data(),
         itemId: d.id,
       })) as Item[];
+      // order フィールド昇順でソート（未設定のアイテムは末尾）
+      items.sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
       onUpdate(items);
     });
   },
 
-  async createItem(listId: string, input: CreateItemInput): Promise<string> {
+  async createItem(listId: string, input: CreateItemInput, currentItemCount: number): Promise<string> {
     let imageURL: string | null = null;
     if (input.imageUri) {
       imageURL = await itemService.uploadImage(listId, input.imageUri);
     }
 
-    const ref = await addDoc(collection(db, 'lists', listId, 'items'), {
+    const docRef = await addDoc(collection(db, 'lists', listId, 'items'), {
       listId,
       title: input.title,
       description: input.description ?? null,
@@ -69,10 +74,12 @@ export const itemService = {
       location: null,
       createdBy: input.createdBy,
       completedAt: null,
+      tagIds: input.tagIds ?? [],
+      order: currentItemCount,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
-    return ref.id;
+    return docRef.id;
   },
 
   async updateItem(
@@ -86,6 +93,7 @@ export const itemService = {
     if (input.title !== undefined) data.title = input.title;
     if (input.description !== undefined) data.description = input.description;
     if (input.url !== undefined) data.url = input.url;
+    if (input.tagIds !== undefined) data.tagIds = input.tagIds;
 
     if (input.imageUri) {
       data.imageURL = await itemService.uploadImage(listId, input.imageUri);
@@ -102,6 +110,18 @@ export const itemService = {
     }
 
     await updateDoc(doc(db, 'lists', listId, 'items', itemId), data);
+  },
+
+  /** ドラッグ後の新しい順序を Firestore に一括保存する */
+  async reorderItems(listId: string, items: Item[]): Promise<void> {
+    const batch = writeBatch(db);
+    items.forEach((item, index) => {
+      batch.update(doc(db, 'lists', listId, 'items', item.itemId), {
+        order: index,
+        updatedAt: serverTimestamp(),
+      });
+    });
+    await batch.commit();
   },
 
   async deleteItem(
