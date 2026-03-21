@@ -189,16 +189,61 @@ npm run android
 
 ---
 
-## 本番リリース前の対応チェックリスト
+## 本番リリース前チェックリスト
 
-### 1. RevenueCat（課金）
+> 上から順に対応することを推奨。依存関係があるため順番が重要。
+
+---
+
+### ステップ 1｜Firebase — Firestore Rules のデプロイ
+
+- [ ] Firestore Rules をデプロイ
+
+```bash
+firebase deploy --only firestore:rules --project <PROJECT_ID>
+```
+
+- [ ] Firebase Console → Firestore → ルール タブで内容が最新版になっているか確認
+
+---
+
+### ステップ 2｜Cloud Functions のデプロイ
+
+```bash
+# functions ディレクトリで依存関係をインストール・ビルド
+cd functions && npm install && npm run build && cd ..
+
+# RevenueCat のシークレットキーと Webhook 認証ヘッダーを設定
+firebase functions:config:set \
+  revenuecat.api_key="YOUR_REVENUECAT_SECRET_API_KEY" \
+  revenuecat.webhook_auth="YOUR_WEBHOOK_AUTHORIZATION_HEADER"
+
+# デプロイ
+firebase deploy --only functions
+```
+
+- [ ] Firebase Console → Functions で以下の 4 関数が表示されること
+  - `syncPremiumStatus` — 購入後のクライアントから planType を更新
+  - `revenuecatWebhook` — RevenueCat からの自動通知（サブスク更新・失効など）
+  - `enforceListLimit` — フリープランのリスト数上限を Firestore トリガーで強制
+  - `enforceTagLimit` — フリープランのタグ数上限を Firestore トリガーで強制
+
+---
+
+### ステップ 3｜RevenueCat（課金）
 
 - [ ] [app.revenuecat.com](https://app.revenuecat.com) でアカウント・プロジェクトを作成
-- [ ] App Store Connect / Google Play にアプリを登録し、以下の商品を作成
-  - 月額サブスクリプション（例: `com.ito-dev.bucketlist.premium.monthly`）
-  - 買い切りプラン（例: `com.ito-dev.bucketlist.premium.lifetime`）
-- [ ] RevenueCat でエンタイトルメント `premium`、オファリング `default` を作成し商品を紐付け
-- [ ] `src/features/upgrade/services/purchaseService.ts` の API Key を差し替え
+- [ ] iOS / Android アプリを RevenueCat に登録
+- [ ] **Entitlement** を作成（ID は必ず `premium`）
+- [ ] App Store Connect / Google Play で商品を先に作成し、RevenueCat に登録
+  - 月額プラン ¥300（例: `com.ito-dev.bucketlist.premium.monthly`）
+  - 年間プラン ¥2,400（例: `com.ito-dev.bucketlist.premium.annual`）
+  - 買い切りプラン ¥4,800（例: `com.ito-dev.bucketlist.premium.lifetime`）
+- [ ] **Offering** を作成し、3 つの商品をパッケージとして設定
+  - `monthly` パッケージ → 月額商品
+  - `annual` パッケージ → 年間商品
+  - `lifetime` パッケージ → 買い切り商品
+- [ ] **Public API キー**を取得して `src/features/upgrade/services/purchaseService.ts` を差し替え
 
 ```ts
 // Before（開発用プレースホルダー）
@@ -206,29 +251,33 @@ ios: 'appl_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
 android: 'goog_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
 
 // After（RevenueCat ダッシュボード → Project Settings → API Keys）
-ios: 'appl_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-android: 'goog_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+ios: 'appl_実際のキー',
+android: 'goog_実際のキー',
 ```
+
+- [ ] **Webhook** を設定（RevenueCat → Integrations → Webhooks）
+  - URL: `https://<REGION>-<PROJECT_ID>.cloudfunctions.net/revenuecatWebhook`
+  - Authorization Header: Cloud Functions config の `revenuecat.webhook_auth` に設定した値と同じ
 
 ---
 
-### 2. AdMob（広告）
+### ステップ 4｜Google AdMob（広告）
 
 - [ ] [admob.google.com](https://admob.google.com) でアプリを登録し、バナー広告ユニットを作成
-- [ ] `app.json` の AdMob App ID を差し替え
+- [ ] `app.json` の AdMob App ID を本番用に差し替え
 
 ```json
 // Before（Google テスト用 App ID）
 "androidAppId": "ca-app-pub-3940256099942544~3347511713",
-"iosAppId": "ca-app-pub-3940256099942544~1458002511"
+"iosAppId":     "ca-app-pub-3940256099942544~1458002511"
 
 // After（AdMob コンソール → アプリ → アプリの設定）
 "androidAppId": "ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX",
-"iosAppId": "ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX"
+"iosAppId":     "ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX"
 ```
 
-- [ ] `ios/bucketlist/Info.plist` の `GADApplicationIdentifier` を同じ iOS 本番 App ID に差し替え
-- [ ] `.env` にバナー広告ユニット ID を追加（App ID とは別。AdMob コンソール → 広告ユニット）
+- [ ] `ios/bucketlist/Info.plist` の `GADApplicationIdentifier` を本番 App ID に差し替え
+- [ ] `.env` にバナー広告ユニット ID を設定（App ID とは別）
 
 ```env
 EXPO_PUBLIC_ADMOB_IOS_BANNER_ID=ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
@@ -236,25 +285,84 @@ EXPO_PUBLIC_ADMOB_ANDROID_BANNER_ID=ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
 ```
 
 > **App ID と広告ユニット ID の違い**
-> - App ID: `~` 区切り（`ca-app-pub-XXXX~XXXX`）→ `app.json` と `Info.plist` に設定
-> - 広告ユニット ID: `/` 区切り（`ca-app-pub-XXXX/XXXX`）→ `.env` に設定
+> - App ID: `~` 区切り（`ca-app-pub-XXXX~XXXX`）→ `app.json` と `Info.plist`
+> - 広告ユニット ID: `/` 区切り（`ca-app-pub-XXXX/XXXX`）→ `.env`
+
+- [ ] AdMob の審査が通るまでアプリ公開を待つ（数日かかる場合あり）
 
 ---
 
-### 3. Firebase
+### ステップ 5｜Google Sign-In
 
-- [ ] Firestore セキュリティルールを再デプロイ（`planType` の更新ルールを追加済み）
+- [ ] [Google Cloud Console](https://console.cloud.google.com) → OAuth 同意画面を **公開済み** に変更
+- [ ] iOS OAuth クライアント ID のバンドル ID が `com.ito-dev.bucketlist` になっているか確認
+- [ ] Android OAuth クライアント ID にリリース用 SHA-1 フィンガープリントを追加
 
 ```bash
-firebase deploy --only firestore:rules --project <your_project_id>
+# リリース用 Keystore の SHA-1 を取得
+keytool -list -v -keystore <your-release.keystore> -alias <alias>
+```
+
+- [ ] `ios/bucketlist/Info.plist` の `CFBundleURLSchemes` に iOS クライアントの逆順 ID があるか確認
+  - 形式: `com.googleusercontent.apps.XXXXXXXXXX-XXXXXXXXXX`
+
+---
+
+### ステップ 6｜Firebase App Check（不正アクセス対策）
+
+- [ ] Apple Developer Console → Certificates → **DeviceCheck** を有効化
+- [ ] Firebase Console → App Check → iOS アプリを DeviceCheck で登録
+- [ ] Google Play Console → **Play Integrity API** を有効化
+- [ ] Firebase Console → App Check → Android アプリを Play Integrity で登録
+- [ ] Firebase Console → App Check → **Firestore・Functions の「強制」をオン**
+- [ ] `@react-native-firebase/app-check` をアプリに追加して初期化実装
+  > 詳細は `src/lib/firebase.ts` のコメントを参照
+
+---
+
+### ステップ 7｜コード内の仮データを削除
+
+- [ ] `src/features/auth/screens/PlanSelectScreen.tsx` のフォールバック価格を削除し、RevenueCat 未取得時はボタンを非表示にする
+
+```ts
+// 削除前（フォールバック価格）
+{monthlyPkg ? monthlyPkg.product.priceString : '¥300'}
+
+// 削除後（パッケージ未取得時はボタンごと非表示）
+{monthlyPkg && <TouchableOpacity ...>}
 ```
 
 ---
 
-### 4. ストア申請
+### ステップ 8｜環境変数の最終確認
 
-- [ ] App Store Connect でアプリ情報・スクリーンショット・プライバシーポリシー URL を登録
-- [ ] iOS 14+ 向けに ATT（App Tracking Transparency）の対応が必要な場合は `Info.plist` に追加
+`.env` の全項目が本番値になっているか確認:
+
+```env
+EXPO_PUBLIC_FIREBASE_API_KEY=
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=
+EXPO_PUBLIC_FIREBASE_PROJECT_ID=
+EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=
+EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+EXPO_PUBLIC_FIREBASE_APP_ID=
+
+EXPO_PUBLIC_GOOGLE_CLIENT_ID_WEB=
+EXPO_PUBLIC_GOOGLE_CLIENT_ID_IOS=
+EXPO_PUBLIC_GOOGLE_CLIENT_ID_ANDROID=
+
+EXPO_PUBLIC_ADMOB_IOS_BANNER_ID=
+EXPO_PUBLIC_ADMOB_ANDROID_BANNER_ID=
+```
+
+---
+
+### ステップ 9｜App Store Connect / Google Play Console
+
+- [ ] App Store Connect でアプリを作成（バンドル ID: `com.ito-dev.bucketlist`）
+- [ ] Google Play Console でアプリを作成
+- [ ] 各ストアで月額・年間・買い切りの In-App Purchase / サブスクリプションを作成・審査提出
+- [ ] プライバシーポリシーの URL を用意してストアに登録
+- [ ] iOS: ATT（App Tracking Transparency）対応が必要な場合は `Info.plist` に追加
 
 ```xml
 <key>NSUserTrackingUsageDescription</key>
@@ -262,4 +370,39 @@ firebase deploy --only firestore:rules --project <your_project_id>
 ```
 
 - [ ] AdMob が要求する `SKAdNetworkItems` を `Info.plist` に追加（AdMob コンソールから取得）
-- [ ] サンドボックスアカウントで購入フローの動作確認
+- [ ] アプリのスクリーンショット・説明文を各ストアに登録
+
+---
+
+### ステップ 10｜EAS Build（本番ビルド）
+
+```bash
+# EAS CLI をインストール（未導入の場合）
+npm install -g eas-cli && eas login
+
+# eas.json を設定（初回のみ）
+eas build:configure
+
+# iOS 本番ビルド
+eas build --platform ios --profile production
+
+# Android 本番ビルド
+eas build --platform android --profile production
+```
+
+- [ ] iOS: Distribution Certificate と Provisioning Profile が設定されているか
+- [ ] Android: Keystore が設定されているか（**Keystore は絶対に紛失しないこと。紛失するとアプリの更新が不可能になる**）
+
+---
+
+### ステップ 11｜最終動作確認
+
+- [ ] Firestore Rules が最新版でデプロイされているか（Firebase Console で確認）
+- [ ] Cloud Functions が全て正常起動しているか（Firebase Console → Functions → ログ）
+- [ ] RevenueCat サンドボックス購入で月額・年間・買い切りが正常に動作するか
+- [ ] 購入後に planType が `premium` に更新され、広告が非表示になるか
+- [ ] フリープランで 4 件目のリスト作成がブロックされるか（Cloud Functions による上限）
+- [ ] フリープランで 6 個目のタグ作成がブロックされるか（Cloud Functions による上限）
+- [ ] 招待コードでリストへの参加が正常に動作するか
+- [ ] アカウント削除が正常に動作するか（全データが削除されるか）
+- [ ] Google Sign-In が本番環境で動作するか

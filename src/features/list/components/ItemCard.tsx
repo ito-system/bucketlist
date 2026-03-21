@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { Link, CheckCircle2, Circle, Clock, GripVertical } from 'lucide-react-native';
 import type { Item, ItemStatus } from '@/types';
 import { useTagStore } from '@/store/tagStore';
+import { openSafeUrl } from '@/lib/url';
 
 type Props = {
   item: Item;
@@ -60,12 +61,16 @@ export function ItemCard({ item, onPress, drag, isActive }: Props) {
           ) : null}
 
           {item.url ? (
-            <View className="flex-row items-center mt-2 gap-x-1">
+            <TouchableOpacity
+              className="flex-row items-center mt-2 gap-x-1"
+              onPress={() => openSafeUrl(item.url!)}
+              activeOpacity={0.7}
+            >
               <Link size={12} color="#6366F1" />
               <Text className="text-xs text-primary" numberOfLines={1}>
                 {item.url.replace(/^https?:\/\//, '')}
               </Text>
-            </View>
+            </TouchableOpacity>
           ) : null}
 
           {itemTags.length > 0 ? (

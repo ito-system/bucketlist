@@ -4,6 +4,18 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
+// ─── [M-4] Firebase App Check について ────────────────────────────────────────
+//
+// React Native での App Check は JS SDK ではなくネイティブ設定が必要。
+// 以下の手順でセットアップする（本番リリース前に必須）:
+//
+// 1. `npm install @react-native-firebase/app @react-native-firebase/app-check`
+// 2. iOS: DeviceCheck を有効化（Apple Developer Console）
+// 3. Android: Play Integrity を有効化（Google Play Console）
+// 4. Firebase Console → App Check → アプリを登録 → 強制モードをオン
+// 5. Firestore / Functions の「App Check を強制」をオンにする
+// ──────────────────────────────────────────────────────────────────────────────
+
 // ─── 環境変数バリデーション ────────────────────────────────────────────────────
 
 const {

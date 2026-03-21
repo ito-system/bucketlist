@@ -1,9 +1,8 @@
 import { create } from 'zustand';
-import { doc, updateDoc, serverTimestamp, getDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { useAuthStore } from '@/store/authStore';
 import { purchaseService } from '@/features/upgrade/services/purchaseService';
-import type { PurchasesPackage, CustomerInfo } from 'react-native-purchases';
+import type { PurchasesPackage } from 'react-native-purchases';
 
 type PurchaseState = {
   isInitialized: boolean;
@@ -11,24 +10,22 @@ type PurchaseState = {
   isLoading: boolean;
   /** RevenueCat を初期化し購入状態を同期する */
   initialize: (userId: string) => Promise<void>;
-  /** パッケージを購入して Firestore の planType を更新する */
+  /** パッケージを購入して Cloud Functions 経由で planType を更新する */
   purchasePackage: (pkg: PurchasesPackage) => Promise<void>;
   /** 以前の購入を復元する */
   restorePurchases: () => Promise<void>;
 };
 
-/** Firestore の planType を更新してストア側の user を再フェッチする */
-async function syncPlanToFirestore(userId: string, customerInfo: CustomerInfo) {
-  const isPremium = purchaseService.isPremium(customerInfo);
-  const userRef = doc(db, 'users', userId);
-  await updateDoc(userRef, {
-    planType: isPremium ? 'premium' : 'free',
-    updatedAt: serverTimestamp(),
-  });
-  const snap = await getDoc(userRef);
-  if (snap.exists()) {
-    useAuthStore.setState({ user: snap.data() as any });
-  }
+/**
+ * Cloud Functions の syncPremiumStatus を呼び出して planType を更新する。
+ * Admin SDK で更新するため Firestore Rules の planType 制限を安全に迂回できる。
+ */
+async function syncPlanViaCloudFunction(): Promise<void> {
+  const functions = getFunctions();
+  const syncPremiumStatus = httpsCallable(functions, 'syncPremiumStatus');
+  await syncPremiumStatus({});
+  // Cloud Functions 側で Firestore を更新したので、ローカル状態を再取得する
+  await useAuthStore.getState().refreshUser();
 }
 
 export const usePurchaseStore = create<PurchaseState>((set) => ({
@@ -51,12 +48,11 @@ export const usePurchaseStore = create<PurchaseState>((set) => ({
   purchasePackage: async (pkg) => {
     set({ isLoading: true });
     try {
-      const userId = useAuthStore.getState().user?.uid;
-      if (!userId) throw new Error('ログインが必要です');
       const customerInfo = await purchaseService.purchasePackage(pkg);
       const isPremium = purchaseService.isPremium(customerInfo);
       set({ isPremium });
-      await syncPlanToFirestore(userId, customerInfo);
+      // Firestore の planType 更新は Cloud Functions 経由
+      await syncPlanViaCloudFunction();
     } finally {
       set({ isLoading: false });
     }
@@ -65,12 +61,10 @@ export const usePurchaseStore = create<PurchaseState>((set) => ({
   restorePurchases: async () => {
     set({ isLoading: true });
     try {
-      const userId = useAuthStore.getState().user?.uid;
-      if (!userId) throw new Error('ログインが必要です');
       const customerInfo = await purchaseService.restorePurchases();
       const isPremium = purchaseService.isPremium(customerInfo);
       set({ isPremium });
-      await syncPlanToFirestore(userId, customerInfo);
+      await syncPlanViaCloudFunction();
     } finally {
       set({ isLoading: false });
     }
