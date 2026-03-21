@@ -1,10 +1,29 @@
-import { useCallback } from 'react';
-import { View, Text, TouchableOpacity, Image, Alert } from 'react-native';
+import { useCallback, useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  Alert,
+  Modal,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { LogOut, Crown, ChevronRight, Pencil, Lock, Tag } from 'lucide-react-native';
+import {
+  LogOut,
+  Crown,
+  ChevronRight,
+  Pencil,
+  Lock,
+  Tag,
+  Trash2,
+  CheckSquare,
+  Square,
+} from 'lucide-react-native';
 import { AdBanner } from '@/components/AdBanner';
 import { useAuthStore } from '@/store/authStore';
 import { useListStore } from '@/store/listStore';
@@ -14,15 +33,23 @@ import type { MainStackParamList } from '@/navigation/MainNavigator';
 
 type ProfileNavProp = StackNavigationProp<MainStackParamList>;
 
+const DELETE_CHECKS = [
+  'リスト・アイテム・タグのデータがすべて削除されます',
+  '削除したデータは復元できません',
+  'プレミアムプランに加入中の場合、各ストア（App Store / Google Play）のサブスクリプション設定から別途キャンセルが必要です。支払済みの料金は返金されません',
+  '上記の内容を確認し、アカウントを削除することに同意します',
+] as const;
+
 export function ProfileScreen() {
   const navigation = useNavigation<ProfileNavProp>();
-  const { user, signOut } = useAuthStore();
-  const { lists } = useListStore();
+  const { user, signOut, deleteAccount } = useAuthStore();
+  const { lists, deleteList } = useListStore();
   const { tags, subscribe: subscribeTags } = useTagStore();
 
-  // フォーカス時に自分自身のタグを購読する。
-  // ブラー時はアンサブしない（TagManageScreen 等の子画面でもタグを参照できるようにするため）。
-  // ListDetailScreen に遷移した際は ListDetailScreen 側が上書き購読するため問題ない。
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [checks, setChecks] = useState<boolean[]>([false, false, false, false]);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   useFocusEffect(
     useCallback(() => {
       if (user) subscribeTags(user.uid);
@@ -36,12 +63,56 @@ export function ProfileScreen() {
     ]);
   };
 
+  const openDeleteModal = () => {
+    setChecks([false, false, false, false]);
+    setDeleteModalVisible(true);
+  };
+
+  const toggleCheck = (i: number) => {
+    setChecks((prev) => prev.map((v, idx) => (idx === i ? !v : v)));
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'アカウントを削除しますか？',
+      'この操作は取り消せません。本当に削除しますか？',
+      [
+        { text: 'いいえ', style: 'cancel' },
+        { text: 'はい', style: 'destructive', onPress: executeDeleteAccount },
+      ],
+    );
+  };
+
+  const executeDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      // 自分が所有するリストを削除
+      const ownedLists = lists.filter((l) => l.ownerId === user!.uid);
+      await Promise.all(ownedLists.map((l) => deleteList(l.listId)));
+
+      // タグ・ユーザードキュメント・Firebase Auth を削除
+      await deleteAccount();
+    } catch (e: any) {
+      setIsDeleting(false);
+      if (e?.code === 'auth/requires-recent-login') {
+        Alert.alert(
+          '再ログインが必要です',
+          'セキュリティのため、一度ログアウトして再ログイン後にもう一度お試しください。',
+        );
+        setDeleteModalVisible(false);
+      } else {
+        Alert.alert('エラー', e.message ?? 'アカウントの削除に失敗しました。');
+      }
+    }
+  };
+
   if (!user) return null;
 
   const listLimit = PLAN_LIMITS[user.planType].maxLists;
   const memberLimit = PLAN_LIMITS[user.planType].maxMembers;
   const tagLimit = PLAN_LIMITS[user.planType].maxTags;
   const isPremium = user.planType === 'premium';
+  const allChecked = checks.every(Boolean);
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
@@ -129,15 +200,89 @@ export function ProfileScreen() {
 
       {/* ログアウト */}
       <TouchableOpacity
-        className="bg-white mx-5 rounded-2xl p-4 flex-row items-center gap-x-3"
+        className="bg-white mx-5 rounded-2xl p-4 flex-row items-center gap-x-3 mb-3"
         onPress={handleSignOut}
       >
         <LogOut size={20} color="#EF4444" />
         <Text className="text-base font-medium text-red-500">ログアウト</Text>
       </TouchableOpacity>
 
+      {/* アカウント削除 */}
+      <TouchableOpacity
+        className="bg-red-50 border border-red-200 mx-5 rounded-2xl p-4 flex-row items-center gap-x-3"
+        onPress={openDeleteModal}
+      >
+        <Trash2 size={20} color="#FCA5A5" />
+        <Text className="text-base font-medium text-red-400">アカウントを削除</Text>
+      </TouchableOpacity>
+
       <View className="flex-1" />
       <AdBanner />
+
+      {/* アカウント削除確認モーダル */}
+      <Modal
+        visible={deleteModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => !isDeleting && setDeleteModalVisible(false)}
+      >
+        <TouchableOpacity
+          className="flex-1 bg-black/40"
+          activeOpacity={1}
+          onPress={() => !isDeleting && setDeleteModalVisible(false)}
+        />
+        <View className="bg-white rounded-t-3xl px-5 pt-6 pb-10">
+          <Text className="text-lg font-bold text-gray-900 mb-1">
+            アカウントを削除しますか？
+          </Text>
+          <Text className="text-sm text-gray-500 mb-6">
+            削除する前に以下の内容をご確認ください
+          </Text>
+
+          <ScrollView scrollEnabled={false}>
+            {DELETE_CHECKS.map((label, i) => (
+              <TouchableOpacity
+                key={i}
+                className="flex-row items-start gap-x-3 mb-4"
+                onPress={() => toggleCheck(i)}
+                activeOpacity={0.7}
+                disabled={isDeleting}
+              >
+                <View className="h-5 items-center justify-center">
+                  {checks[i] ? (
+                    <CheckSquare size={20} color="#EF4444" />
+                  ) : (
+                    <Square size={20} color="#D1D5DB" />
+                  )}
+                </View>
+                <Text className="flex-1 text-sm text-gray-700 leading-5">
+                  {label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+
+          <TouchableOpacity
+            className={`rounded-xl py-3.5 items-center mt-2 ${
+              allChecked && !isDeleting ? 'bg-red-500' : 'bg-gray-200'
+            }`}
+            onPress={handleDeleteAccount}
+            disabled={!allChecked || isDeleting}
+          >
+            {isDeleting ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text
+                className={`font-semibold text-base ${
+                  allChecked ? 'text-white' : 'text-gray-400'
+                }`}
+              >
+                アカウントを削除する
+              </Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

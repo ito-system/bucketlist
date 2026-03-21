@@ -25,15 +25,23 @@ export const listService = {
       collection(db, 'lists'),
       where('memberIds', 'array-contains', userId),
     );
-    return onSnapshot(q, (snapshot) => {
-      const lists = snapshot.docs.map((d) => ({
-        ...d.data(),
-        listId: d.id,
-      })) as List[];
-      // 新しい順に並び替え
-      lists.sort((a, b) => b.createdAt?.seconds - a.createdAt?.seconds);
-      onUpdate(lists);
-    });
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const lists = snapshot.docs.map((d) => ({
+          ...d.data(),
+          listId: d.id,
+        })) as List[];
+        // 新しい順に並び替え
+        lists.sort((a, b) => b.createdAt?.seconds - a.createdAt?.seconds);
+        onUpdate(lists);
+      },
+      (error) => {
+        if (error.code !== 'permission-denied') {
+          console.error('List subscription error:', error);
+        }
+      },
+    );
   },
 
   async createList(title: string, ownerId: string): Promise<string> {

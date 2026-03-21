@@ -46,6 +46,7 @@ export function PlanSelectScreen({ navigation }: Props) {
   const { purchasePackage, isLoading } = usePurchaseStore();
 
   const [monthlyPkg, setMonthlyPkg] = useState<PurchasesPackage | null>(null);
+  const [annualPkg, setAnnualPkg] = useState<PurchasesPackage | null>(null);
   const [lifetimePkg, setLifetimePkg] = useState<PurchasesPackage | null>(null);
   const [isLoadingOfferings, setIsLoadingOfferings] = useState(true);
 
@@ -58,6 +59,7 @@ export function PlanSelectScreen({ navigation }: Props) {
         const offering = await purchaseService.getOfferings();
         if (offering) {
           setMonthlyPkg(offering.monthly ?? null);
+          setAnnualPkg(offering.annual ?? null);
           setLifetimePkg(offering.lifetime ?? null);
         }
       } catch {
@@ -141,51 +143,95 @@ export function PlanSelectScreen({ navigation }: Props) {
             <ActivityIndicator color="#6366F1" />
           ) : (
             <>
-              {monthlyPkg && (
-                <TouchableOpacity
-                  className="bg-primary rounded-2xl p-5 flex-row items-center justify-between"
-                  onPress={() => handlePurchase(monthlyPkg)}
-                  disabled={isLoading}
-                  activeOpacity={0.8}
-                >
-                  <View className="flex-row items-center gap-x-3">
-                    <View className="w-9 h-9 rounded-full bg-white/20 items-center justify-center">
-                      <Crown size={18} color="#fff" />
-                    </View>
-                    <View>
-                      <Text className="text-white font-bold text-base">月額プラン</Text>
-                      <Text className="text-indigo-200 text-xs">いつでもキャンセル可</Text>
-                    </View>
+              {/* 月額プラン */}
+              <TouchableOpacity
+                className="bg-primary rounded-2xl p-5 flex-row items-center justify-between"
+                onPress={() => monthlyPkg ? handlePurchase(monthlyPkg) : undefined}
+                disabled={isLoading || !monthlyPkg}
+                activeOpacity={monthlyPkg ? 0.8 : 1}
+              >
+                <View className="flex-row items-center gap-x-3">
+                  <View className="w-9 h-9 rounded-full bg-white/20 items-center justify-center">
+                    <Crown size={18} color="#fff" />
                   </View>
-                  <View className="items-end">
-                    <Text className="text-white font-bold text-lg">
-                      {monthlyPkg.product.priceString}
-                    </Text>
-                    <Text className="text-indigo-200 text-xs">/ 月</Text>
+                  <View>
+                    <Text className="text-white font-bold text-base">月額プラン</Text>
+                    <Text className="text-indigo-200 text-xs">いつでもキャンセル可</Text>
                   </View>
-                </TouchableOpacity>
-              )}
-              {lifetimePkg && (
-                <TouchableOpacity
-                  className="bg-white border border-gray-200 rounded-2xl p-5 flex-row items-center justify-between"
-                  onPress={() => handlePurchase(lifetimePkg)}
-                  disabled={isLoading}
-                  activeOpacity={0.8}
-                >
-                  <View className="flex-row items-center gap-x-3">
-                    <View className="w-9 h-9 rounded-full bg-amber-100 items-center justify-center">
-                      <Zap size={18} color="#F59E0B" />
-                    </View>
-                    <View>
-                      <Text className="text-gray-900 font-bold text-base">買い切りプラン</Text>
-                      <Text className="text-gray-400 text-xs">一度の購入で永久利用</Text>
-                    </View>
-                  </View>
-                  <Text className="text-gray-900 font-bold text-lg">
-                    {lifetimePkg.product.priceString}
+                </View>
+                <View className="items-end">
+                  <Text className="text-white font-bold text-lg">
+                    {monthlyPkg ? monthlyPkg.product.priceString : '¥300'}
                   </Text>
-                </TouchableOpacity>
-              )}
+                  <Text className="text-indigo-200 text-xs">/ 月</Text>
+                </View>
+              </TouchableOpacity>
+
+              {/* 年間プラン */}
+              {(() => {
+                const annualPrice = annualPkg?.product.price ?? 2400;
+                const monthlyPrice = monthlyPkg?.product.price ?? 300;
+                const savings = Math.round(monthlyPrice * 12 - annualPrice);
+                const savingsText = savings > 0
+                  ? `¥${savings.toLocaleString()} お得！`
+                  : null;
+                return (
+                  <TouchableOpacity
+                    className="bg-white border border-gray-200 rounded-2xl p-5"
+                    onPress={() => annualPkg ? handlePurchase(annualPkg) : undefined}
+                    disabled={isLoading || !annualPkg}
+                    activeOpacity={annualPkg ? 0.8 : 1}
+                  >
+                    <View className="flex-row items-center justify-between">
+                      <View className="flex-row items-center gap-x-3">
+                        <View className="w-9 h-9 rounded-full bg-primary/10 items-center justify-center">
+                          <Crown size={18} color="#6366F1" />
+                        </View>
+                        <View>
+                          <View className="flex-row items-center gap-x-2">
+                            <Text className="text-gray-900 font-bold text-base">年間プラン</Text>
+                            {savingsText && (
+                              <View className="bg-amber-100 rounded-full px-2 py-0.5">
+                                <Text className="text-amber-700 text-xs font-semibold">
+                                  {savingsText}
+                                </Text>
+                              </View>
+                            )}
+                          </View>
+                          <Text className="text-gray-400 text-xs">月額より割安</Text>
+                        </View>
+                      </View>
+                      <View className="items-end">
+                        <Text className="text-gray-900 font-bold text-lg">
+                          {annualPkg ? annualPkg.product.priceString : '¥2,400'}
+                        </Text>
+                        <Text className="text-gray-400 text-xs">/ 年</Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })()}
+
+              {/* 買い切りプラン */}
+              <TouchableOpacity
+                className="bg-white border border-gray-200 rounded-2xl p-5 flex-row items-center justify-between"
+                onPress={() => lifetimePkg ? handlePurchase(lifetimePkg) : undefined}
+                disabled={isLoading || !lifetimePkg}
+                activeOpacity={lifetimePkg ? 0.8 : 1}
+              >
+                <View className="flex-row items-center gap-x-3">
+                  <View className="w-9 h-9 rounded-full bg-amber-100 items-center justify-center">
+                    <Zap size={18} color="#F59E0B" />
+                  </View>
+                  <View>
+                    <Text className="text-gray-900 font-bold text-base">買い切りプラン</Text>
+                    <Text className="text-gray-400 text-xs">一度の購入で永久利用</Text>
+                  </View>
+                </View>
+                <Text className="text-gray-900 font-bold text-lg">
+                  {lifetimePkg ? lifetimePkg.product.priceString : '¥4,800'}
+                </Text>
+              </TouchableOpacity>
               {isLoading && (
                 <View className="items-center py-2">
                   <ActivityIndicator color="#6366F1" />
@@ -197,13 +243,14 @@ export function PlanSelectScreen({ navigation }: Props) {
 
         {/* フリープランで始める */}
         <TouchableOpacity
-          className="items-center py-4"
+          className="border border-gray-300 bg-white rounded-2xl p-4 items-center"
           onPress={goToHome}
           disabled={isLoading}
+          activeOpacity={0.7}
         >
           <View className="flex-row items-center gap-x-2">
             <Check size={15} color="#6B7280" />
-            <Text className="text-gray-500 font-medium">
+            <Text className="text-gray-600 font-semibold text-base">
               フリープランで始める
             </Text>
           </View>

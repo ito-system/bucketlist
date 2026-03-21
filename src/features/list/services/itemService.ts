@@ -47,15 +47,23 @@ export const itemService = {
       collection(db, 'lists', listId, 'items'),
       orderBy('createdAt', 'asc'),
     );
-    return onSnapshot(q, (snapshot) => {
-      const items = snapshot.docs.map((d) => ({
-        ...d.data(),
-        itemId: d.id,
-      })) as Item[];
-      // order フィールド昇順でソート（未設定のアイテムは末尾）
-      items.sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
-      onUpdate(items);
-    });
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const items = snapshot.docs.map((d) => ({
+          ...d.data(),
+          itemId: d.id,
+        })) as Item[];
+        // order フィールド昇順でソート（未設定のアイテムは末尾）
+        items.sort((a, b) => (a.order ?? Infinity) - (b.order ?? Infinity));
+        onUpdate(items);
+      },
+      (error) => {
+        if (error.code !== 'permission-denied') {
+          console.error('Item subscription error:', error);
+        }
+      },
+    );
   },
 
   async createItem(listId: string, input: CreateItemInput, currentItemCount: number): Promise<string> {

@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { TextInput } from '@/components/TextInput';
-import { CheckCircle2, Circle, Eye, EyeOff } from 'lucide-react-native';
+import { CheckCircle2, Circle, Eye, EyeOff, ArrowLeft } from 'lucide-react-native';
 import type { StackScreenProps } from '@react-navigation/stack';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator';
 import { useAuthStore } from '@/store/authStore';
@@ -62,11 +62,18 @@ export function RegisterScreen({ navigation }: Props) {
         contentContainerClassName="flex-grow items-center justify-center px-6 py-12"
         keyboardShouldPersistTaps="handled"
       >
+        <TouchableOpacity
+          className="self-start mb-4"
+          onPress={() => navigation.goBack()}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <ArrowLeft size={22} color="#111827" />
+        </TouchableOpacity>
         <Text className="text-3xl font-bold text-primary mb-2">
           アカウント作成
         </Text>
         <Text className="text-gray-500 mb-10">
-          無料でバケットリストを始めよう
+          無料でBucketListを始めよう
         </Text>
 
         <View className="w-full gap-y-3">

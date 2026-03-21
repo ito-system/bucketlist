@@ -23,13 +23,21 @@ export const tagService = {
       collection(db, 'users', uid, 'tags'),
       orderBy('createdAt', 'asc'),
     );
-    return onSnapshot(q, (snapshot) => {
-      const tags = snapshot.docs.map((d) => ({
-        ...d.data(),
-        tagId: d.id,
-      })) as Tag[];
-      onUpdate(tags);
-    });
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const tags = snapshot.docs.map((d) => ({
+          ...d.data(),
+          tagId: d.id,
+        })) as Tag[];
+        onUpdate(tags);
+      },
+      (error) => {
+        if (error.code !== 'permission-denied') {
+          console.error('Tag subscription error:', error);
+        }
+      },
+    );
   },
 
   async createTag(uid: string, input: CreateTagInput): Promise<string> {

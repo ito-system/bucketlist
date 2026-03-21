@@ -64,8 +64,8 @@ service cloud.firestore {
           || (resource.data.planType == 'free' && request.resource.data.planType == 'premium')
         );
 
-      // 削除は Cloud Functions 経由（退会処理）のみ
-      allow delete: if false;
+      // 本人のみ自分のアカウントを削除できる
+      allow delete: if isAuthenticated() && isCurrentUser(uid);
 
       // ─── /users/{uid}/tags/{tagId} ──────────────────────────────────────
       //

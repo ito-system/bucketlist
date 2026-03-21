@@ -54,6 +54,8 @@ type AuthState = {
   ) => Promise<void>;
   /** RevenueCat 購入後に planType を premium に更新してストアを再フェッチする（purchaseStore から呼ぶ） */
   refreshUser: () => Promise<void>;
+  /** アカウントとすべての関連データを削除する */
+  deleteAccount: () => Promise<void>;
 };
 
 export const useAuthStore = create<AuthState>((set) => {
@@ -214,6 +216,25 @@ export const useAuthStore = create<AuthState>((set) => {
       if (snap.exists()) {
         set({ user: snap.data() as User });
       }
+    },
+
+    deleteAccount: async () => {
+      const fbUser = auth.currentUser;
+      if (!fbUser) throw new Error('ログインが必要です');
+      const uid = fbUser.uid;
+
+      // 1. タグをすべて削除
+      const { getDocs, collection, deleteDoc } = await import('firebase/firestore');
+      const tagsSnap = await getDocs(collection(db, 'users', uid, 'tags'));
+      await Promise.all(tagsSnap.docs.map((d) => deleteDoc(d.ref)));
+
+      // 2. ユーザードキュメントを削除
+      await deleteDoc(doc(db, 'users', uid));
+
+      // 3. Firebase Auth アカウントを削除（セッションが古い場合は requires-recent-login エラーが出る）
+      await fbUser.delete();
+
+      set({ user: null });
     },
   };
 });

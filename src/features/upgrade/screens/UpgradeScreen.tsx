@@ -27,8 +27,9 @@ export function UpgradeScreen({ navigation }: Props) {
   const { purchasePackage, restorePurchases, isLoading } = usePurchaseStore();
   const [offerings, setOfferings] = useState<{
     monthly: PurchasesPackage | null;
+    annual: PurchasesPackage | null;
     lifetime: PurchasesPackage | null;
-  }>({ monthly: null, lifetime: null });
+  }>({ monthly: null, annual: null, lifetime: null });
   const [isLoadingOfferings, setIsLoadingOfferings] = useState(true);
 
   useEffect(() => {
@@ -41,6 +42,7 @@ export function UpgradeScreen({ navigation }: Props) {
         if (offering) {
           setOfferings({
             monthly: offering.monthly ?? null,
+            annual: offering.annual ?? null,
             lifetime: offering.lifetime ?? null,
           });
         }
@@ -129,9 +131,22 @@ export function UpgradeScreen({ navigation }: Props) {
                 pkg={offerings.monthly}
                 title="月額プラン"
                 badge="いつでもキャンセル可"
+                suffix="/ 月"
                 onPress={() => handlePurchase(offerings.monthly!)}
                 isLoading={isLoading}
                 primary
+              />
+            )}
+            {offerings.annual && (
+              <PurchaseButton
+                pkg={offerings.annual}
+                title="年間プラン"
+                badge="月額より割安"
+                suffix="/ 年"
+                savingsBase={offerings.monthly?.product.price}
+                onPress={() => handlePurchase(offerings.annual!)}
+                isLoading={isLoading}
+                primary={false}
               />
             )}
             {offerings.lifetime && (
@@ -144,7 +159,7 @@ export function UpgradeScreen({ navigation }: Props) {
                 primary={false}
               />
             )}
-            {!offerings.monthly && !offerings.lifetime && (
+            {!offerings.monthly && !offerings.annual && !offerings.lifetime && (
               <View className="bg-amber-50 rounded-xl p-4">
                 <Text className="text-sm text-amber-700 text-center">
                   現在、購入プランを読み込めませんでした。{'\n'}
@@ -179,6 +194,8 @@ function PurchaseButton({
   pkg,
   title,
   badge,
+  suffix,
+  savingsBase,
   onPress,
   isLoading,
   primary,
@@ -186,11 +203,18 @@ function PurchaseButton({
   pkg: PurchasesPackage;
   title: string;
   badge: string;
+  suffix?: string;
+  /** 月額price を渡すと年間プランの節約額バッジを表示する */
+  savingsBase?: number;
   onPress: () => void;
   isLoading: boolean;
   primary: boolean;
 }) {
-  const price = pkg.product.priceString;
+  const savings = savingsBase != null
+    ? Math.round(savingsBase * 12 - pkg.product.price)
+    : 0;
+  const savingsText = savings > 0 ? `¥${savings.toLocaleString()} お得！` : null;
+
   return (
     <TouchableOpacity
       className={`rounded-2xl p-5 ${primary ? 'bg-primary' : 'bg-white border border-gray-200'}`}
@@ -200,25 +224,28 @@ function PurchaseButton({
     >
       <View className="flex-row items-center justify-between">
         <View>
-          <Text
-            className={`text-base font-bold ${primary ? 'text-white' : 'text-gray-900'}`}
-          >
-            {title}
-          </Text>
-          <Text
-            className={`text-xs mt-0.5 ${primary ? 'text-indigo-200' : 'text-gray-400'}`}
-          >
+          <View className="flex-row items-center gap-x-2">
+            <Text className={`text-base font-bold ${primary ? 'text-white' : 'text-gray-900'}`}>
+              {title}
+            </Text>
+            {savingsText && (
+              <View className="bg-amber-100 rounded-full px-2 py-0.5">
+                <Text className="text-amber-700 text-xs font-semibold">{savingsText}</Text>
+              </View>
+            )}
+          </View>
+          <Text className={`text-xs mt-0.5 ${primary ? 'text-indigo-200' : 'text-gray-400'}`}>
             {badge}
           </Text>
         </View>
         <View className="items-end">
-          <Text
-            className={`text-xl font-bold ${primary ? 'text-white' : 'text-gray-900'}`}
-          >
-            {price}
+          <Text className={`text-xl font-bold ${primary ? 'text-white' : 'text-gray-900'}`}>
+            {pkg.product.priceString}
           </Text>
-          {primary && (
-            <Text className="text-xs text-indigo-200">/ 月</Text>
+          {suffix && (
+            <Text className={`text-xs ${primary ? 'text-indigo-200' : 'text-gray-400'}`}>
+              {suffix}
+            </Text>
           )}
         </View>
       </View>
