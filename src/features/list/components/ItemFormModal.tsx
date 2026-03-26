@@ -168,9 +168,10 @@ export function ItemFormModal({
           keyboardShouldPersistTaps="handled"
         >
           {/* タイトル */}
+          <Text className="text-sm font-medium text-gray-700 mb-1.5">タイトル <Text className="text-red-400">*</Text></Text>
           <TextInput
-            className="border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-gray-50 mb-3"
-            placeholder="タイトル（必須）"
+            className="border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-gray-50 mb-4"
+            placeholder="例: 富士山に登る"
             placeholderTextColor="#9CA3AF"
             value={title}
             onChangeText={setTitle}
@@ -178,9 +179,10 @@ export function ItemFormModal({
           />
 
           {/* 説明 */}
+          <Text className="text-sm font-medium text-gray-700 mb-1.5">メモ <Text className="text-gray-400 font-normal">（任意）</Text></Text>
           <TextInput
-            className="border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-900 bg-gray-50 mb-3"
-            placeholder="詳細メモ（任意）"
+            className="border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-900 bg-gray-50 mb-4"
+            placeholder="詳細や感想など"
             placeholderTextColor="#9CA3AF"
             value={description}
             onChangeText={setDescription}
@@ -191,9 +193,10 @@ export function ItemFormModal({
           />
 
           {/* URL */}
+          <Text className="text-sm font-medium text-gray-700 mb-1.5">参考URL <Text className="text-gray-400 font-normal">（任意）</Text></Text>
           <TextInput
             className="border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-gray-50 mb-4"
-            placeholder="参考 URL（任意）"
+            placeholder="https://"
             placeholderTextColor="#9CA3AF"
             value={url}
             onChangeText={setUrl}
