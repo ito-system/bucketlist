@@ -6,14 +6,12 @@ import {
   Modal,
   ActivityIndicator,
   ScrollView,
-  Image,
   Alert,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
 import { TextInput } from '@/components/TextInput';
-import * as ImagePicker from 'expo-image-picker';
-import { X, ImagePlus, Trash2 } from 'lucide-react-native';
+import { X, Trash2 } from 'lucide-react-native';
 import type { Item, ItemStatus } from '@/types';
 import { useAuthStore } from '@/store/authStore';
 import { useTagStore } from '@/store/tagStore';
@@ -29,7 +27,6 @@ type Props = {
     title: string;
     description: string | null;
     url: string | null;
-    imageUri?: string;
     status: ItemStatus;
     tagIds: string[];
   }) => Promise<void>;
@@ -59,8 +56,6 @@ export function ItemFormModal({
   const [description, setDescription] = useState('');
   const [url, setUrl] = useState('');
   const [status, setStatus] = useState<ItemStatus>('todo');
-  const [imageUri, setImageUri] = useState<string | undefined>(undefined);
-  const [existingImageURL, setExistingImageURL] = useState<string | null>(null);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -73,16 +68,12 @@ export function ItemFormModal({
       setDescription(item.description ?? '');
       setUrl(item.url ?? '');
       setStatus(item.status);
-      setExistingImageURL(item.imageURL);
-      setImageUri(undefined);
       setSelectedTagIds(item.tagIds ?? []);
     } else {
       setTitle('');
       setDescription('');
       setUrl('');
       setStatus('todo');
-      setImageUri(undefined);
-      setExistingImageURL(null);
       setSelectedTagIds([]);
     }
   }, [item, visible]);
@@ -105,25 +96,6 @@ export function ItemFormModal({
     });
   };
 
-  const pickImage = async () => {
-    const { status: permStatus } =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (permStatus !== 'granted') {
-      Alert.alert('権限が必要です', 'フォトライブラリへのアクセスを許可してください');
-      return;
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.8,
-    });
-    if (!result.canceled) {
-      setImageUri(result.assets[0].uri);
-      setExistingImageURL(null);
-    }
-  };
-
   const handleSubmit = async () => {
     if (!title.trim()) return;
 
@@ -133,7 +105,6 @@ export function ItemFormModal({
         title: title.trim(),
         description: description.trim() || null,
         url: url.trim() || null,
-        imageUri,
         status,
         tagIds: selectedTagIds,
       });
@@ -163,8 +134,6 @@ export function ItemFormModal({
       },
     ]);
   };
-
-  const previewUri = imageUri ?? existingImageURL ?? null;
 
   return (
     <Modal
@@ -198,25 +167,6 @@ export function ItemFormModal({
           className="flex-1 px-5 pt-5"
           keyboardShouldPersistTaps="handled"
         >
-          {/* 写真 */}
-          <TouchableOpacity
-            className="w-full h-44 bg-gray-100 rounded-2xl mb-4 items-center justify-center overflow-hidden"
-            onPress={pickImage}
-          >
-            {previewUri ? (
-              <Image
-                source={{ uri: previewUri }}
-                className="w-full h-full"
-                resizeMode="cover"
-              />
-            ) : (
-              <View className="items-center gap-y-2">
-                <ImagePlus size={28} color="#9CA3AF" />
-                <Text className="text-sm text-gray-400">写真を追加</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-
           {/* タイトル */}
           <TextInput
             className="border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-gray-50 mb-3"

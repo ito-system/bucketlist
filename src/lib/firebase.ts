@@ -1,7 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { initializeAuth, getAuth, type Persistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 // ─── [M-4] Firebase App Check について ────────────────────────────────────────
@@ -75,6 +74,5 @@ export const auth = isFirstInit
   ? initializeAuth(app, { persistence: getReactNativePersistence(ReactNativeAsyncStorage) })
   : getAuth(app);
 export const db = getFirestore(app);
-export const storage = getStorage(app);
 
 export default app;

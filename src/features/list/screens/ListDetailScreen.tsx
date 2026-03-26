@@ -111,7 +111,6 @@ export function ListDetailScreen({ route, navigation }: Props) {
     title: string;
     description: string | null;
     url: string | null;
-    imageUri?: string;
     status: Item['status'];
     tagIds: string[];
   }) => {
@@ -131,7 +130,7 @@ export function ListDetailScreen({ route, navigation }: Props) {
 
   const handleDelete = async () => {
     if (!editingItem) return;
-    await deleteItem(listId, editingItem.itemId, editingItem.imageURL);
+    await deleteItem(listId, editingItem.itemId);
   };
 
   const handleDragEnd = async ({ data }: { data: Item[] }) => {

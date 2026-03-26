@@ -11,16 +11,13 @@ import {
   writeBatch,
   Timestamp,
 } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { db, storage } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import type { Item, ItemStatus } from '@/types';
 
 export type CreateItemInput = {
   title: string;
   description?: string;
   url?: string;
-  /** expo-image-picker が返すローカル URI */
-  imageUri?: string;
   createdBy: string;
   tagIds?: string[];
 };
@@ -29,7 +26,6 @@ export type UpdateItemInput = {
   title?: string;
   description?: string | null;
   url?: string | null;
-  imageUri?: string;
   status?: ItemStatus;
   tagIds?: string[];
 };
@@ -67,17 +63,12 @@ export const itemService = {
   },
 
   async createItem(listId: string, input: CreateItemInput, currentItemCount: number): Promise<string> {
-    let imageURL: string | null = null;
-    if (input.imageUri) {
-      imageURL = await itemService.uploadImage(listId, input.imageUri);
-    }
-
     const docRef = await addDoc(collection(db, 'lists', listId, 'items'), {
       listId,
       title: input.title,
       description: input.description ?? null,
       url: input.url ?? null,
-      imageURL,
+      imageURL: null,
       status: 'todo' satisfies ItemStatus,
       location: null,
       createdBy: input.createdBy,
@@ -102,10 +93,6 @@ export const itemService = {
     if (input.description !== undefined) data.description = input.description;
     if (input.url !== undefined) data.url = input.url;
     if (input.tagIds !== undefined) data.tagIds = input.tagIds;
-
-    if (input.imageUri) {
-      data.imageURL = await itemService.uploadImage(listId, input.imageUri);
-    }
 
     if (input.status !== undefined) {
       data.status = input.status;
@@ -132,32 +119,7 @@ export const itemService = {
     await batch.commit();
   },
 
-  async deleteItem(
-    listId: string,
-    itemId: string,
-    imageURL: string | null,
-  ): Promise<void> {
-    // Storage の画像を先に削除（失敗してもドキュメント削除は続行）
-    if (imageURL) {
-      try {
-        await deleteObject(ref(storage, imageURL));
-      } catch {
-        // 画像が既に削除済みまたは Storage パスが不正な場合を無視
-      }
-    }
+  async deleteItem(listId: string, itemId: string): Promise<void> {
     await deleteDoc(doc(db, 'lists', listId, 'items', itemId));
-  },
-
-  /**
-   * ローカル URI の画像を Firebase Storage にアップロードし、
-   * ダウンロード URL を返す。
-   */
-  async uploadImage(listId: string, uri: string): Promise<string> {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    const filename = `items/${listId}/${Date.now()}.jpg`;
-    const storageRef = ref(storage, filename);
-    await uploadBytes(storageRef, blob);
-    return getDownloadURL(storageRef);
   },
 };

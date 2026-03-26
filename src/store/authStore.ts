@@ -13,8 +13,7 @@ import {
   reauthenticateWithCredential,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { auth, db, storage } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
 import type { User } from '@/types';
 
 type AuthState = {
@@ -38,11 +37,10 @@ type AuthState = {
     accessToken: string | null,
   ) => Promise<void>;
   signOut: () => Promise<void>;
-  /** 名前・メールアドレス・アイコン画像（ローカル URI）を更新する */
+  /** 名前・メールアドレスを更新する */
   updateUserProfile: (updates: {
     displayName?: string;
     email?: string;
-    photoUri?: string;
     currentPassword?: string;
   }) => Promise<void>;
   /** 現在のパスワードが正しいか Firebase で照合する（変更は行わない） */
@@ -148,27 +146,16 @@ export const useAuthStore = create<AuthState>((set) => {
       await firebaseSignOut(auth);
     },
 
-    updateUserProfile: async ({ displayName, email, photoUri, currentPassword }) => {
+    updateUserProfile: async ({ displayName, email, currentPassword }) => {
       const fbUser = auth.currentUser;
       if (!fbUser) throw new Error('ログインが必要です');
 
-      const authUpdates: { displayName?: string; photoURL?: string } = {};
+      const authUpdates: { displayName?: string } = {};
       const firestoreUpdates: Record<string, unknown> = { updatedAt: serverTimestamp() };
 
       if (displayName !== undefined) {
         authUpdates.displayName = displayName;
         firestoreUpdates.displayName = displayName;
-      }
-
-      // アイコン画像: Storage にアップロードしてダウンロード URL を取得
-      if (photoUri) {
-        const response = await fetch(photoUri);
-        const blob = await response.blob();
-        const storageRef = ref(storage, `avatars/${fbUser.uid}.jpg`);
-        await uploadBytes(storageRef, blob);
-        const photoURL = await getDownloadURL(storageRef);
-        authUpdates.photoURL = photoURL;
-        firestoreUpdates.photoURL = photoURL;
       }
 
       if (Object.keys(authUpdates).length > 0) {

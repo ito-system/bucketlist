@@ -5,16 +5,14 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
-  Image,
   Alert,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
 import { TextInput } from '@/components/TextInput';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
-import { ArrowLeft, Camera, Eye, EyeOff } from 'lucide-react-native';
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react-native';
 import { useAuthStore } from '@/store/authStore';
 import { AdBanner } from '@/components/AdBanner';
 
@@ -25,29 +23,10 @@ export function ProfileEditScreen() {
   const [displayName, setDisplayName] = useState(user?.displayName ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
   const [currentPassword, setCurrentPassword] = useState('');
-  const [photoUri, setPhotoUri] = useState<string | undefined>(undefined);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isEmailChanged = email.trim() !== user?.email;
-  const previewUri = photoUri ?? user?.photoURL ?? null;
-
-  const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('権限が必要です', 'フォトライブラリへのアクセスを許可してください');
-      return;
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
-    if (!result.canceled) {
-      setPhotoUri(result.assets[0].uri);
-    }
-  };
 
   const handleSave = async () => {
     if (!displayName.trim()) {
@@ -64,7 +43,6 @@ export function ProfileEditScreen() {
       await updateUserProfile({
         displayName: displayName.trim(),
         email: email.trim(),
-        photoUri,
         currentPassword: isEmailChanged ? currentPassword : undefined,
       });
       Alert.alert('保存しました', '', [
@@ -98,24 +76,11 @@ export function ProfileEditScreen() {
         <ScrollView keyboardShouldPersistTaps="handled" className="flex-1 px-5">
           {/* アイコン */}
           <View className="items-center mt-4 mb-6">
-            <TouchableOpacity onPress={pickImage} className="relative">
-              {previewUri ? (
-                <Image
-                  source={{ uri: previewUri }}
-                  className="w-24 h-24 rounded-full"
-                />
-              ) : (
-                <View className="w-24 h-24 rounded-full bg-primary-100 items-center justify-center">
-                  <Text className="text-4xl font-bold text-primary">
-                    {user?.displayName?.charAt(0).toUpperCase() ?? '?'}
-                  </Text>
-                </View>
-              )}
-              <View className="absolute bottom-0 right-0 w-8 h-8 bg-primary rounded-full items-center justify-center border-2 border-white">
-                <Camera size={14} color="#fff" />
-              </View>
-            </TouchableOpacity>
-            <Text className="text-sm text-gray-400 mt-2">タップして変更</Text>
+            <View className="w-24 h-24 rounded-full bg-primary/10 items-center justify-center">
+              <Text className="text-4xl font-bold text-primary">
+                {user?.displayName?.charAt(0).toUpperCase() ?? '?'}
+              </Text>
+            </View>
           </View>
 
           {/* 名前 */}

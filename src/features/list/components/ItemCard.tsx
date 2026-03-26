@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Link, CheckCircle2, Circle, Clock, GripVertical } from 'lucide-react-native';
 import type { Item, ItemStatus } from '@/types';
 import { useTagStore } from '@/store/tagStore';
@@ -35,13 +35,6 @@ export function ItemCard({ item, onPress, drag, isActive }: Props) {
       onPress={onPress}
       activeOpacity={0.7}
     >
-      {item.imageURL ? (
-        <Image
-          source={{ uri: item.imageURL }}
-          className="w-full h-40"
-          resizeMode="cover"
-        />
-      ) : null}
 
       {/* ステータスとドラッグハンドルを右カラムに集約し、items-center で垂直中央揃え */}
       <View className="p-4 flex-row items-center gap-x-3">

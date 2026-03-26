@@ -19,11 +19,7 @@ type ItemState = {
     input: UpdateItemInput,
     currentStatus?: Item['status'],
   ) => Promise<void>;
-  deleteItem: (
-    listId: string,
-    itemId: string,
-    imageURL: string | null,
-  ) => Promise<void>;
+  deleteItem: (listId: string, itemId: string) => Promise<void>;
   reorderItems: (listId: string, items: Item[]) => Promise<void>;
 };
 
@@ -56,8 +52,8 @@ export const useItemStore = create<ItemState>((set, get) => ({
     await itemService.updateItem(listId, itemId, input, currentStatus);
   },
 
-  deleteItem: async (listId, itemId, imageURL) => {
-    await itemService.deleteItem(listId, itemId, imageURL);
+  deleteItem: async (listId, itemId) => {
+    await itemService.deleteItem(listId, itemId);
   },
 
   reorderItems: async (listId, items) => {
