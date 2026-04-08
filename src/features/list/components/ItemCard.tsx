@@ -59,7 +59,7 @@ export function ItemCard({ item, onPress, drag, isActive }: Props) {
               onPress={() => openSafeUrl(item.url!)}
               activeOpacity={0.7}
             >
-              <Link size={12} color="#6366F1" />
+              <Link size={12} color="#FF6B6B" />
               <Text className="text-xs text-primary" numberOfLines={1}>
                 {item.url.replace(/^https?:\/\//, '')}
               </Text>

@@ -14,11 +14,12 @@ export function TabNavigator() {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: '#6366F1',
+        tabBarActiveTintColor: '#FF6B6B',
         tabBarInactiveTintColor: '#9CA3AF',
         headerShown: false,
         tabBarStyle: {
-          borderTopColor: '#F3F4F6',
+          borderTopColor: '#FFE0E0',
+          backgroundColor: '#FFF5F5',
           elevation: 0,
           shadowOpacity: 0,
         },

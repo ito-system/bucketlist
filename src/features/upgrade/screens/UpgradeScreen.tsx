@@ -78,7 +78,7 @@ export function UpgradeScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-rose-50">
       {/* ヘッダー */}
       <View className="flex-row items-center px-4 pt-2 pb-3">
         <TouchableOpacity
@@ -123,7 +123,7 @@ export function UpgradeScreen({ navigation }: Props) {
 
         {/* 購入ボタン */}
         {isLoadingOfferings ? (
-          <ActivityIndicator size="large" color="#6366F1" />
+          <ActivityIndicator size="large" color="#FF6B6B" />
         ) : (
           <View className="gap-y-3">
             {offerings.monthly && (
@@ -251,7 +251,7 @@ function PurchaseButton({
       </View>
       {isLoading && (
         <View className="absolute inset-0 items-center justify-center bg-black/10 rounded-2xl">
-          <ActivityIndicator color={primary ? '#fff' : '#6366F1'} />
+          <ActivityIndicator color={primary ? '#fff' : '#FF6B6B'} />
         </View>
       )}
     </TouchableOpacity>

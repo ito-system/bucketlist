@@ -90,7 +90,7 @@ export function HomeScreen() {
   if (!user) return null;
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-rose-50">
       {/* ヘッダー */}
       <View className="flex-row items-center justify-between px-5 pt-2 pb-4">
         <Text className="text-2xl font-bold text-gray-900">マイリスト</Text>
@@ -113,7 +113,7 @@ export function HomeScreen() {
       {/* リスト */}
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#6366F1" />
+          <ActivityIndicator size="large" color="#FF6B6B" />
         </View>
       ) : lists.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8">

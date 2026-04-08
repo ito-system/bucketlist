@@ -87,7 +87,7 @@ export function PlanSelectScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-rose-50">
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
@@ -112,7 +112,7 @@ export function PlanSelectScreen({ navigation }: Props) {
             </View>
             <View className="w-28 items-center p-3 border-l border-primary bg-primary/5">
               <View className="flex-row items-center gap-x-1">
-                <Crown size={12} color="#6366F1" />
+                <Crown size={12} color="#FF6B6B" />
                 <Text className="text-sm font-semibold text-primary">プレミアム</Text>
               </View>
             </View>
@@ -140,7 +140,7 @@ export function PlanSelectScreen({ navigation }: Props) {
         {/* プレミアム購入ボタン */}
         <View className="gap-y-3 mb-4">
           {isLoadingOfferings ? (
-            <ActivityIndicator color="#6366F1" />
+            <ActivityIndicator color="#FF6B6B" />
           ) : (
             <>
               {/* 月額プラン */}
@@ -185,7 +185,7 @@ export function PlanSelectScreen({ navigation }: Props) {
                     <View className="flex-row items-center justify-between">
                       <View className="flex-row items-center gap-x-3">
                         <View className="w-9 h-9 rounded-full bg-primary/10 items-center justify-center">
-                          <Crown size={18} color="#6366F1" />
+                          <Crown size={18} color="#FF6B6B" />
                         </View>
                         <View>
                           <View className="flex-row items-center gap-x-2">
@@ -234,7 +234,7 @@ export function PlanSelectScreen({ navigation }: Props) {
               </TouchableOpacity>
               {isLoading && (
                 <View className="items-center py-2">
-                  <ActivityIndicator color="#6366F1" />
+                  <ActivityIndicator color="#FF6B6B" />
                 </View>
               )}
             </>

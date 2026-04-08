@@ -215,7 +215,7 @@ export function ListDetailScreen({ route, navigation }: Props) {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView className="flex-1 bg-gray-50">
+      <SafeAreaView className="flex-1 bg-rose-50">
         {/* ヘッダー */}
         <View className="flex-row items-center px-4 pt-2 pb-3">
           {/* 左右を同じ幅（w-20）に固定してタイトルを真ん中に揃える */}
@@ -249,7 +249,7 @@ export function ListDetailScreen({ route, navigation }: Props) {
               }}
             >
               {showSearch
-                ? <X size={17} color="#6366F1" />
+                ? <X size={17} color="#FF6B6B" />
                 : <Search size={17} color="#6B7280" />
               }
             </TouchableOpacity>
@@ -259,7 +259,7 @@ export function ListDetailScreen({ route, navigation }: Props) {
               disabled={isGeneratingCode}
             >
               {isGeneratingCode ? (
-                <ActivityIndicator size="small" color="#6366F1" />
+                <ActivityIndicator size="small" color="#FF6B6B" />
               ) : (
                 <UserPlus size={17} color="#6B7280" />
               )}
@@ -357,7 +357,7 @@ export function ListDetailScreen({ route, navigation }: Props) {
         <View style={{ flex: 1 }}>
           {isLoading ? (
             <View className="flex-1 items-center justify-center">
-              <ActivityIndicator size="large" color="#6366F1" />
+              <ActivityIndicator size="large" color="#FF6B6B" />
             </View>
           ) : items.length === 0 ? (
             <View className="flex-1 items-center justify-center px-8">

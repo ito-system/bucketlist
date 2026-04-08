@@ -56,13 +56,13 @@ export function ProfileEditScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-rose-50">
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         {/* ヘッダー */}
-        <View className="flex-row items-center justify-between px-4 pt-2 pb-4 bg-gray-50">
+        <View className="flex-row items-center justify-between px-4 pt-2 pb-4 bg-rose-50">
           <TouchableOpacity
             className="w-9 h-9 items-center justify-center"
             onPress={() => navigation.goBack()}

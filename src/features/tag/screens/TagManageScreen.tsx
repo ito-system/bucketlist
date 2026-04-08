@@ -26,7 +26,7 @@ const PRESET_COLORS = [
   '#EAB308', // yellow
   '#22C55E', // green
   '#14B8A6', // teal
-  '#6366F1', // indigo (primary)
+  '#FF6B6B', // coral (primary)
   '#A855F7', // purple
   '#EC4899', // pink
   '#64748B', // slate
@@ -87,7 +87,7 @@ export function TagManageScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-rose-50">
       {/* ヘッダー */}
       <View className="flex-row items-center justify-between px-4 pt-2 pb-3">
         <TouchableOpacity
@@ -118,7 +118,7 @@ export function TagManageScreen({ navigation }: Props) {
 
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#6366F1" />
+          <ActivityIndicator size="large" color="#FF6B6B" />
         </View>
       ) : tags.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8">

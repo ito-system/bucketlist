@@ -115,7 +115,7 @@ export function ProfileScreen() {
   const allChecked = checks.every(Boolean);
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-rose-50">
       <Text className="text-2xl font-bold text-gray-900 px-5 pt-2 pb-5">
         プロフィール
       </Text>
