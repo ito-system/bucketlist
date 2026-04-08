@@ -8,9 +8,10 @@ import {
   Share,
   ScrollView,
 } from 'react-native';
+import { TextInput } from '@/components/TextInput';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
-import { ArrowLeft, Plus, UserPlus, PlusCircle, GripVertical, ArrowUpAZ, Tag, Clock } from 'lucide-react-native';
+import { ArrowLeft, Plus, UserPlus, PlusCircle, GripVertical, ArrowUpAZ, Tag, Clock, Search, X } from 'lucide-react-native';
 import type { StackScreenProps } from '@react-navigation/stack';
 import type { MainStackParamList } from '@/navigation/MainNavigator';
 import { useAuthStore } from '@/store/authStore';
@@ -31,6 +32,17 @@ type Props = StackScreenProps<MainStackParamList, 'ListDetail'>;
 type SortMode = 'manual' | 'name' | 'status' | 'newest' | 'tag';
 
 const STATUS_ORDER = { todo: 0, doing: 1, done: 2 };
+const STATUS_LABELS = { todo: 'やりたい', doing: 'チャレンジ中', done: '達成！' };
+
+const SEARCH_FIELDS = [
+  { key: 'all', label: 'すべて' },
+  { key: 'title', label: 'タイトル' },
+  { key: 'description', label: 'メモ' },
+  { key: 'url', label: 'URL' },
+  { key: 'status', label: 'ステータス' },
+  { key: 'tag', label: 'タグ' },
+] as const;
+type SearchField = typeof SEARCH_FIELDS[number]['key'];
 
 const SORT_OPTIONS: { key: SortMode; label: string; Icon: typeof GripVertical }[] = [
   { key: 'manual', label: '手動', Icon: GripVertical },
@@ -52,6 +64,9 @@ export function ListDetailScreen({ route, navigation }: Props) {
   const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [isGeneratingCode, setIsGeneratingCode] = useState(false);
   const [sortMode, setSortMode] = useState<SortMode>('manual');
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchField, setSearchField] = useState<SearchField>('all');
 
   // オーナー情報（未ロードの場合は現在ユーザーを仮にセット）
   const list = lists.find((l) => l.listId === listId);
@@ -70,32 +85,49 @@ export function ListDetailScreen({ route, navigation }: Props) {
   }, [ownerId]);
 
   const sortedItems = useMemo(() => {
-    if (sortMode === 'manual') return items;
-    const copy = [...items];
+    let result = sortMode === 'manual' ? items : [...items];
+
     if (sortMode === 'name') {
-      return copy.sort((a, b) => a.title.localeCompare(b.title, 'ja'));
-    }
-    if (sortMode === 'status') {
-      return copy.sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status]);
-    }
-    if (sortMode === 'newest') {
-      return copy.sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0));
-    }
-    if (sortMode === 'tag') {
-      return copy.sort((a, b) => {
-        const nameA = a.tagIds?.[0]
-          ? (tags.find((t) => t.tagId === a.tagIds![0])?.name ?? '')
-          : '';
-        const nameB = b.tagIds?.[0]
-          ? (tags.find((t) => t.tagId === b.tagIds![0])?.name ?? '')
-          : '';
+      result = result.sort((a, b) => a.title.localeCompare(b.title, 'ja'));
+    } else if (sortMode === 'status') {
+      result = result.sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status]);
+    } else if (sortMode === 'newest') {
+      result = result.sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0));
+    } else if (sortMode === 'tag') {
+      result = result.sort((a, b) => {
+        const nameA = a.tagIds?.[0] ? (tags.find((t) => t.tagId === a.tagIds![0])?.name ?? '') : '';
+        const nameB = b.tagIds?.[0] ? (tags.find((t) => t.tagId === b.tagIds![0])?.name ?? '') : '';
         if (nameA === '' && nameB !== '') return 1;
         if (nameA !== '' && nameB === '') return -1;
         return nameA.localeCompare(nameB, 'ja');
       });
     }
-    return copy;
-  }, [items, sortMode, tags]);
+
+    if (!searchQuery.trim()) return result;
+    const q = searchQuery.trim().toLowerCase();
+    return result.filter((item) => {
+      switch (searchField) {
+        case 'title':
+          return item.title.toLowerCase().includes(q);
+        case 'description':
+          return item.description?.toLowerCase().includes(q) ?? false;
+        case 'url':
+          return item.url?.toLowerCase().includes(q) ?? false;
+        case 'status':
+          return STATUS_LABELS[item.status].toLowerCase().includes(q);
+        case 'tag':
+          return item.tagIds?.some((id) => tags.find((t) => t.tagId === id)?.name.toLowerCase().includes(q)) ?? false;
+        default:
+          return (
+            item.title.toLowerCase().includes(q) ||
+            (item.description?.toLowerCase().includes(q) ?? false) ||
+            (item.url?.toLowerCase().includes(q) ?? false) ||
+            STATUS_LABELS[item.status].toLowerCase().includes(q) ||
+            (item.tagIds?.some((id) => tags.find((t) => t.tagId === id)?.name.toLowerCase().includes(q)) ?? false)
+          );
+      }
+    });
+  }, [items, sortMode, tags, searchQuery, searchField]);
 
   const handleAddItem = () => {
     setEditingItem(null);
@@ -203,7 +235,24 @@ export function ListDetailScreen({ route, navigation }: Props) {
             {title}
           </Text>
 
-          <View className="w-20 flex-row gap-x-2 justify-end">
+          <View className="flex-row gap-x-2 justify-end">
+            <TouchableOpacity
+              className="w-9 h-9 bg-white border border-gray-200 rounded-full items-center justify-center"
+              onPress={() => {
+                setShowSearch((v) => {
+                  if (v) {
+                    setSearchQuery('');
+                    setSearchField('all');
+                  }
+                  return !v;
+                });
+              }}
+            >
+              {showSearch
+                ? <X size={17} color="#6366F1" />
+                : <Search size={17} color="#6B7280" />
+              }
+            </TouchableOpacity>
             <TouchableOpacity
               className="w-9 h-9 bg-white border border-gray-200 rounded-full items-center justify-center"
               onPress={handleInvite}
@@ -223,6 +272,57 @@ export function ListDetailScreen({ route, navigation }: Props) {
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* 検索バー */}
+        {showSearch && (
+          <View className="px-4 pb-2 gap-y-2">
+            <View className="flex-row items-center bg-white border border-gray-200 rounded-xl px-3 gap-x-2">
+              <Search size={15} color="#9CA3AF" />
+              <TextInput
+                className="flex-1 py-2.5 text-gray-900"
+                style={{ fontSize: 14, lineHeight: 17 }}
+                placeholder="キーワードを入力"
+                placeholderTextColor="#9CA3AF"
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                autoFocus
+                autoCapitalize="none"
+                autoCorrect={false}
+                clearButtonMode="while-editing"
+              />
+            </View>
+            {/* 検索フィールド選択チップ */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 6 }}
+            >
+              {SEARCH_FIELDS.map(({ key, label }) => {
+                const active = searchField === key;
+                return (
+                  <TouchableOpacity
+                    key={key}
+                    onPress={() => setSearchField(key)}
+                    className={`px-3 py-1 rounded-full border ${
+                      active ? 'bg-primary border-primary' : 'bg-white border-gray-200'
+                    }`}
+                  >
+                    <Text className={`text-xs font-medium ${active ? 'text-white' : 'text-gray-600'}`}>
+                      {label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+        )}
+
+        {/* 検索件数 */}
+        {showSearch && searchQuery.trim() !== '' && (
+          <Text className="text-xs text-gray-400 px-5 pb-1">
+            {sortedItems.length} 件ヒット
+          </Text>
+        )}
 
         {/* ソートチップ */}
         <ScrollView
@@ -286,7 +386,7 @@ export function ListDetailScreen({ route, navigation }: Props) {
                   <ItemCard
                     item={item}
                     onPress={() => handleEditItem(item)}
-                    drag={sortMode === 'manual' ? drag : undefined}
+                    drag={sortMode === 'manual' && !searchQuery.trim() ? drag : undefined}
                     isActive={isActive}
                   />
                 </ScaleDecorator>
