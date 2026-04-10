@@ -87,17 +87,17 @@ export function PlanSelectScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-rose-50">
+    <SafeAreaView className="flex-1 bg-amber-50">
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
       >
         {/* ヘッダー */}
         <View className="items-center pt-10 pb-8">
-          <Text className="text-2xl font-bold text-gray-900 mb-2">
+          <Text className="text-2xl font-bold text-amber-900 mb-2">
             プランを選択してください
           </Text>
-          <Text className="text-sm text-gray-500 text-center">
+          <Text className="text-sm text-amber-600 text-center">
             あとからプロフィール画面でいつでも変更できます
           </Text>
         </View>
@@ -105,14 +105,14 @@ export function PlanSelectScreen({ navigation }: Props) {
         {/* プラン比較テーブル */}
         <View className="bg-white rounded-2xl overflow-hidden mb-6">
           {/* ヘッダー行 */}
-          <View className="flex-row bg-gray-50 border-b border-gray-100">
+          <View className="flex-row bg-amber-50 border-b border-amber-100">
             <View className="flex-1 p-3" />
-            <View className="w-28 items-center p-3 border-l border-gray-100">
-              <Text className="text-sm font-semibold text-gray-500">フリー</Text>
+            <View className="w-28 items-center p-3 border-l border-amber-100">
+              <Text className="text-sm font-semibold text-amber-700">フリー</Text>
             </View>
             <View className="w-28 items-center p-3 border-l border-primary bg-primary/5">
               <View className="flex-row items-center gap-x-1">
-                <Crown size={12} color="#FF6B6B" />
+                <Crown size={12} color="#F59E0B" />
                 <Text className="text-sm font-semibold text-primary">プレミアム</Text>
               </View>
             </View>
@@ -122,13 +122,13 @@ export function PlanSelectScreen({ navigation }: Props) {
           {PLAN_ROWS.map((row, i) => (
             <View
               key={row.label}
-              className={`flex-row ${i < PLAN_ROWS.length - 1 ? 'border-b border-gray-100' : ''}`}
+              className={`flex-row ${i < PLAN_ROWS.length - 1 ? 'border-b border-amber-100' : ''}`}
             >
               <View className="flex-1 p-3 justify-center">
-                <Text className="text-sm text-gray-700">{row.label}</Text>
+                <Text className="text-sm text-amber-900">{row.label}</Text>
               </View>
-              <View className="w-28 items-center p-3 border-l border-gray-100 justify-center">
-                <Text className="text-sm text-gray-500">{row.free}</Text>
+              <View className="w-28 items-center p-3 border-l border-amber-100 justify-center">
+                <Text className="text-sm text-amber-700">{row.free}</Text>
               </View>
               <View className="w-28 items-center p-3 border-l border-primary bg-primary/5 justify-center">
                 <Text className="text-sm font-medium text-primary">{row.premium}</Text>
@@ -140,7 +140,7 @@ export function PlanSelectScreen({ navigation }: Props) {
         {/* プレミアム購入ボタン */}
         <View className="gap-y-3 mb-4">
           {isLoadingOfferings ? (
-            <ActivityIndicator color="#FF6B6B" />
+            <ActivityIndicator color="#F59E0B" />
           ) : (
             <>
               {/* 月額プラン */}
@@ -156,14 +156,14 @@ export function PlanSelectScreen({ navigation }: Props) {
                   </View>
                   <View>
                     <Text className="text-white font-bold text-base">月額プラン</Text>
-                    <Text className="text-indigo-200 text-xs">いつでもキャンセル可</Text>
+                    <Text className="text-amber-200 text-xs">いつでもキャンセル可</Text>
                   </View>
                 </View>
                 <View className="items-end">
                   <Text className="text-white font-bold text-lg">
                     {monthlyPkg ? monthlyPkg.product.priceString : '¥300'}
                   </Text>
-                  <Text className="text-indigo-200 text-xs">/ 月</Text>
+                  <Text className="text-amber-200 text-xs">/ 月</Text>
                 </View>
               </TouchableOpacity>
 
@@ -177,7 +177,7 @@ export function PlanSelectScreen({ navigation }: Props) {
                   : null;
                 return (
                   <TouchableOpacity
-                    className="bg-white border border-gray-200 rounded-2xl p-5"
+                    className="bg-white border border-amber-200 rounded-2xl p-5"
                     onPress={() => annualPkg ? handlePurchase(annualPkg) : undefined}
                     disabled={isLoading || !annualPkg}
                     activeOpacity={annualPkg ? 0.8 : 1}
@@ -185,11 +185,11 @@ export function PlanSelectScreen({ navigation }: Props) {
                     <View className="flex-row items-center justify-between">
                       <View className="flex-row items-center gap-x-3">
                         <View className="w-9 h-9 rounded-full bg-primary/10 items-center justify-center">
-                          <Crown size={18} color="#FF6B6B" />
+                          <Crown size={18} color="#F59E0B" />
                         </View>
                         <View>
                           <View className="flex-row items-center gap-x-2">
-                            <Text className="text-gray-900 font-bold text-base">年間プラン</Text>
+                            <Text className="text-amber-900 font-bold text-base">年間プラン</Text>
                             {savingsText && (
                               <View className="bg-amber-100 rounded-full px-2 py-0.5">
                                 <Text className="text-amber-700 text-xs font-semibold">
@@ -198,14 +198,14 @@ export function PlanSelectScreen({ navigation }: Props) {
                               </View>
                             )}
                           </View>
-                          <Text className="text-gray-400 text-xs">月額より割安</Text>
+                          <Text className="text-amber-600 text-xs">月額より割安</Text>
                         </View>
                       </View>
                       <View className="items-end">
-                        <Text className="text-gray-900 font-bold text-lg">
+                        <Text className="text-amber-900 font-bold text-lg">
                           {annualPkg ? annualPkg.product.priceString : '¥2,400'}
                         </Text>
-                        <Text className="text-gray-400 text-xs">/ 年</Text>
+                        <Text className="text-amber-600 text-xs">/ 年</Text>
                       </View>
                     </View>
                   </TouchableOpacity>
@@ -214,7 +214,7 @@ export function PlanSelectScreen({ navigation }: Props) {
 
               {/* 買い切りプラン */}
               <TouchableOpacity
-                className="bg-white border border-gray-200 rounded-2xl p-5 flex-row items-center justify-between"
+                className="bg-white border border-amber-200 rounded-2xl p-5 flex-row items-center justify-between"
                 onPress={() => lifetimePkg ? handlePurchase(lifetimePkg) : undefined}
                 disabled={isLoading || !lifetimePkg}
                 activeOpacity={lifetimePkg ? 0.8 : 1}
@@ -224,17 +224,17 @@ export function PlanSelectScreen({ navigation }: Props) {
                     <Zap size={18} color="#F59E0B" />
                   </View>
                   <View>
-                    <Text className="text-gray-900 font-bold text-base">買い切りプラン</Text>
-                    <Text className="text-gray-400 text-xs">一度の購入で永久利用</Text>
+                    <Text className="text-amber-900 font-bold text-base">買い切りプラン</Text>
+                    <Text className="text-amber-600 text-xs">一度の購入で永久利用</Text>
                   </View>
                 </View>
-                <Text className="text-gray-900 font-bold text-lg">
+                <Text className="text-amber-900 font-bold text-lg">
                   {lifetimePkg ? lifetimePkg.product.priceString : '¥4,800'}
                 </Text>
               </TouchableOpacity>
               {isLoading && (
                 <View className="items-center py-2">
-                  <ActivityIndicator color="#FF6B6B" />
+                  <ActivityIndicator color="#F59E0B" />
                 </View>
               )}
             </>
@@ -243,18 +243,18 @@ export function PlanSelectScreen({ navigation }: Props) {
 
         {/* フリープランで始める */}
         <TouchableOpacity
-          className="border border-gray-300 bg-white rounded-2xl p-4 items-center"
+          className="border border-amber-200 bg-white rounded-2xl p-4 items-center"
           onPress={goToHome}
           disabled={isLoading}
           activeOpacity={0.7}
         >
           <View className="flex-row items-center gap-x-2">
-            <Check size={15} color="#6B7280" />
-            <Text className="text-gray-600 font-semibold text-base">
+            <Check size={15} color="#D97706" />
+            <Text className="text-amber-700 font-semibold text-base">
               フリープランで始める
             </Text>
           </View>
-          <Text className="text-xs text-gray-400 mt-1">
+          <Text className="text-xs text-amber-600 mt-1">
             あとからアップグレードできます
           </Text>
         </TouchableOpacity>
