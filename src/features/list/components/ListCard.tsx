@@ -14,24 +14,32 @@ export function ListCard({ list, currentUserId, onPress, onLongPress }: Props) {
 
   return (
     <TouchableOpacity
-      className="bg-white rounded-2xl p-4 mb-3 flex-row items-center shadow-sm"
+      className="bg-white rounded-2xl p-4 mb-3 flex-row items-center"
+      style={{ shadowColor: '#F59E0B', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.14, shadowRadius: 16, elevation: 3 }}
       onPress={onPress}
       onLongPress={onLongPress}
       activeOpacity={0.7}
     >
+      {/* アイコンエリア */}
+      <View className="w-11 h-11 bg-amber-100 rounded-xl items-center justify-center mr-3">
+        <Text className="text-xl font-bold text-amber-700">
+          {list.title.charAt(0).toUpperCase()}
+        </Text>
+      </View>
+
       <View className="flex-1">
-        <Text className="text-base font-semibold text-gray-900" numberOfLines={1}>
+        <Text className="text-base font-semibold text-amber-900" numberOfLines={1}>
           {list.title}
         </Text>
         <View className="flex-row items-center mt-1 gap-x-1">
-          <Users size={13} color="#9CA3AF" />
-          <Text className="text-xs text-gray-400">
+          <Users size={13} color="#D97706" />
+          <Text className="text-xs text-amber-600">
             {list.memberIds.length}人
             {isOwner ? ' · オーナー' : ''}
           </Text>
         </View>
       </View>
-      <ChevronRight size={18} color="#D1D5DB" />
+      <ChevronRight size={18} color="#FDE68A" />
     </TouchableOpacity>
   );
 }
