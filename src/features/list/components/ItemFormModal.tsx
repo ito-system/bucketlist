@@ -147,9 +147,9 @@ export function ItemFormModal({
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         {/* ヘッダー */}
-        <View className="flex-row items-center justify-between px-5 pt-5 pb-3 border-b border-gray-100">
+        <View className="flex-row items-center justify-between px-5 pt-5 pb-3 border-b border-amber-100">
           <TouchableOpacity onPress={onClose} className="p-1">
-            <X size={22} color="#6B7280" />
+            <X size={22} color="#D97706" />
           </TouchableOpacity>
           <Text className="text-base font-bold text-gray-900">
             {isEdit ? 'アイテムを編集' : 'アイテムを追加'}
@@ -168,22 +168,22 @@ export function ItemFormModal({
           keyboardShouldPersistTaps="handled"
         >
           {/* タイトル */}
-          <Text className="text-sm font-medium text-gray-700 mb-1.5">タイトル <Text className="text-red-400">*</Text></Text>
+          <Text className="text-sm font-medium text-amber-900 mb-1.5">タイトル <Text className="text-red-400">*</Text></Text>
           <TextInput
-            className="border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-gray-50 mb-4"
+            className="border border-amber-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-amber-50 mb-4"
             placeholder="例: 富士山に登る"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#D97706"
             value={title}
             onChangeText={setTitle}
             maxLength={80}
           />
 
           {/* 説明 */}
-          <Text className="text-sm font-medium text-gray-700 mb-1.5">メモ <Text className="text-gray-400 font-normal">（任意）</Text></Text>
+          <Text className="text-sm font-medium text-amber-900 mb-1.5">メモ <Text className="text-gray-400 font-normal">（任意）</Text></Text>
           <TextInput
-            className="border border-gray-200 rounded-xl px-4 py-3 text-base text-gray-900 bg-gray-50 mb-4"
+            className="border border-amber-200 rounded-xl px-4 py-3 text-base text-gray-900 bg-amber-50 mb-4"
             placeholder="詳細や感想など"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#D97706"
             value={description}
             onChangeText={setDescription}
             multiline
@@ -193,11 +193,11 @@ export function ItemFormModal({
           />
 
           {/* URL */}
-          <Text className="text-sm font-medium text-gray-700 mb-1.5">参考URL <Text className="text-gray-400 font-normal">（任意）</Text></Text>
+          <Text className="text-sm font-medium text-amber-900 mb-1.5">参考URL <Text className="text-gray-400 font-normal">（任意）</Text></Text>
           <TextInput
-            className="border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-gray-50 mb-4"
+            className="border border-amber-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-amber-50 mb-4"
             placeholder="https://"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#D97706"
             value={url}
             onChangeText={setUrl}
             keyboardType="url"
@@ -206,7 +206,7 @@ export function ItemFormModal({
           />
 
           {/* ステータス */}
-          <Text className="text-sm font-medium text-gray-700 mb-2">
+          <Text className="text-sm font-medium text-amber-900 mb-2">
             ステータス
           </Text>
           <View className="flex-row gap-x-2 mb-4">
@@ -232,7 +232,7 @@ export function ItemFormModal({
           </View>
 
           {/* タグ */}
-          <Text className="text-sm font-medium text-gray-700 mb-2">
+          <Text className="text-sm font-medium text-amber-900 mb-2">
             タグ
           </Text>
           {tags.length > 0 ? (
@@ -264,14 +264,14 @@ export function ItemFormModal({
               })}
             </View>
           ) : (
-            <Text className="text-xs text-gray-400 mb-8">
+            <Text className="text-xs text-amber-500 mb-8">
               タグがありません。プロフィールの「タグ管理」から作成できます。
             </Text>
           )}
         </ScrollView>
 
         {/* 保存ボタン */}
-        <View className="px-5 pb-8 pt-3 border-t border-gray-100">
+        <View className="px-5 pb-8 pt-3 border-t border-amber-100">
           <TouchableOpacity
             className={`rounded-xl py-4 items-center ${
               title.trim() && !isSubmitting ? 'bg-primary' : 'bg-gray-200'
