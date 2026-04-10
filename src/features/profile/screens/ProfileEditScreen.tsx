@@ -56,27 +56,27 @@ export function ProfileEditScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-rose-50">
+    <SafeAreaView className="flex-1 bg-amber-50">
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         {/* ヘッダー */}
-        <View className="flex-row items-center justify-between px-4 pt-2 pb-4 bg-rose-50">
+        <View className="flex-row items-center justify-between px-4 pt-2 pb-4 bg-amber-50">
           <TouchableOpacity
             className="w-9 h-9 items-center justify-center"
             onPress={() => navigation.goBack()}
           >
             <ArrowLeft size={22} color="#111827" />
           </TouchableOpacity>
-          <Text className="text-lg font-bold text-gray-900">プロフィール編集</Text>
+          <Text className="text-lg font-bold text-amber-900">プロフィール編集</Text>
           <View className="w-9" />
         </View>
 
         <ScrollView keyboardShouldPersistTaps="handled" className="flex-1 px-5">
           {/* アイコン */}
           <View className="items-center mt-4 mb-6">
-            <View className="w-24 h-24 rounded-full bg-primary/10 items-center justify-center">
+            <View className="w-24 h-24 rounded-full bg-amber-100 items-center justify-center">
               <Text className="text-4xl font-bold text-primary">
                 {user?.displayName?.charAt(0).toUpperCase() ?? '?'}
               </Text>
@@ -84,9 +84,9 @@ export function ProfileEditScreen() {
           </View>
 
           {/* 名前 */}
-          <Text className="text-sm font-medium text-gray-700 mb-1.5">名前</Text>
+          <Text className="text-sm font-medium text-amber-900 mb-1.5">名前</Text>
           <TextInput
-            className="border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-white mb-4"
+            className="border border-amber-200 rounded-xl px-4 py-3.5 text-base text-amber-900 bg-amber-50 mb-4"
 
             value={displayName}
             onChangeText={setDisplayName}
@@ -95,11 +95,11 @@ export function ProfileEditScreen() {
           />
 
           {/* メールアドレス */}
-          <Text className="text-sm font-medium text-gray-700 mb-1.5">
+          <Text className="text-sm font-medium text-amber-900 mb-1.5">
             メールアドレス
           </Text>
           <TextInput
-            className="border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-white mb-1"
+            className="border border-amber-200 rounded-xl px-4 py-3.5 text-base text-amber-900 bg-amber-50 mb-1"
 
             value={email}
             onChangeText={setEmail}
@@ -111,15 +111,15 @@ export function ProfileEditScreen() {
           {/* メール変更時のみ現在のパスワードを要求 */}
           {isEmailChanged && (
             <View className="mb-4">
-              <Text className="text-xs text-gray-400 mb-2">
+              <Text className="text-xs text-amber-600 mb-2">
                 メールアドレスを変更するには現在のパスワードが必要です
               </Text>
-              <View className="flex-row items-center border border-amber-300 rounded-xl px-4 bg-white">
+              <View className="flex-row items-center border border-amber-200 rounded-xl px-4 bg-white">
                 <TextInput
-                  className="flex-1 py-3.5 text-base text-gray-900"
-      
+                  className="flex-1 py-3.5 text-base text-amber-900"
+
                   placeholder="現在のパスワード"
-                  placeholderTextColor="#9CA3AF"
+                  placeholderTextColor="#D97706"
                   value={currentPassword}
                   onChangeText={setCurrentPassword}
                   secureTextEntry={!showCurrentPassword}
@@ -129,9 +129,9 @@ export function ProfileEditScreen() {
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 >
                   {showCurrentPassword ? (
-                    <EyeOff size={18} color="#9CA3AF" />
+                    <EyeOff size={18} color="#D97706" />
                   ) : (
-                    <Eye size={18} color="#9CA3AF" />
+                    <Eye size={18} color="#D97706" />
                   )}
                 </TouchableOpacity>
               </View>

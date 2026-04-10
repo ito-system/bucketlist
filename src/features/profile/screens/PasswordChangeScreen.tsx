@@ -62,35 +62,35 @@ export function PasswordChangeScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-rose-50">
+    <SafeAreaView className="flex-1 bg-amber-50">
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         {/* ヘッダー */}
-        <View className="flex-row items-center justify-between px-4 pt-2 pb-4 bg-rose-50">
+        <View className="flex-row items-center justify-between px-4 pt-2 pb-4 bg-amber-50">
           <TouchableOpacity
             className="w-9 h-9 items-center justify-center"
             onPress={() => navigation.goBack()}
           >
             <ArrowLeft size={22} color="#111827" />
           </TouchableOpacity>
-          <Text className="text-lg font-bold text-gray-900">パスワード変更</Text>
+          <Text className="text-lg font-bold text-amber-900">パスワード変更</Text>
           <View className="w-9" />
         </View>
 
         <ScrollView keyboardShouldPersistTaps="handled" className="flex-1 px-5 pt-4">
 
           {/* 現在のパスワード */}
-          <Text className="text-sm font-medium text-gray-700 mb-1.5">
+          <Text className="text-sm font-medium text-amber-900 mb-1.5">
             現在のパスワード
           </Text>
-          <View className="flex-row items-center border border-gray-200 rounded-xl px-4 bg-white mb-5">
+          <View className="flex-row items-center border border-amber-200 rounded-xl px-4 bg-amber-50 mb-5">
             <TextInput
-              className="flex-1 py-3.5 text-base text-gray-900"
+              className="flex-1 py-3.5 text-base text-amber-900"
 
               placeholder="現在のパスワードを入力"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor="#D97706"
               value={currentPassword}
               onChangeText={setCurrentPassword}
               secureTextEntry={!showCurrentPassword}
@@ -100,23 +100,23 @@ export function PasswordChangeScreen() {
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
               {showCurrentPassword ? (
-                <EyeOff size={18} color="#9CA3AF" />
+                <EyeOff size={18} color="#D97706" />
               ) : (
-                <Eye size={18} color="#9CA3AF" />
+                <Eye size={18} color="#D97706" />
               )}
             </TouchableOpacity>
           </View>
 
           {/* 新しいパスワード */}
-          <Text className="text-sm font-medium text-gray-700 mb-1.5">
+          <Text className="text-sm font-medium text-amber-900 mb-1.5">
             新しいパスワード
           </Text>
-          <View className="flex-row items-center border border-gray-200 rounded-xl px-4 bg-white mb-3">
+          <View className="flex-row items-center border border-amber-200 rounded-xl px-4 bg-amber-50 mb-3">
             <TextInput
-              className="flex-1 py-3.5 text-base text-gray-900"
+              className="flex-1 py-3.5 text-base text-amber-900"
 
               placeholder="新しいパスワードを入力"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor="#D97706"
               value={newPassword}
               onChangeText={setNewPassword}
               secureTextEntry={!showNewPassword}
@@ -126,16 +126,16 @@ export function PasswordChangeScreen() {
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
               {showNewPassword ? (
-                <EyeOff size={18} color="#9CA3AF" />
+                <EyeOff size={18} color="#D97706" />
               ) : (
-                <Eye size={18} color="#9CA3AF" />
+                <Eye size={18} color="#D97706" />
               )}
             </TouchableOpacity>
           </View>
 
           {/* バリデーションチェックリスト */}
           {showValidation && (
-            <View className="bg-white border border-gray-100 rounded-xl px-4 py-3 mb-4 gap-y-2.5">
+            <View className="bg-white border border-amber-100 rounded-xl px-4 py-3 mb-4 gap-y-2.5">
               {PASSWORD_RULES.map((rule) => {
                 const met = validation[rule.key];
                 return (
@@ -157,7 +157,7 @@ export function PasswordChangeScreen() {
           )}
 
           {/* 確認用パスワード */}
-          <Text className="text-sm font-medium text-gray-700 mb-1.5">
+          <Text className="text-sm font-medium text-amber-900 mb-1.5">
             新しいパスワード（確認）
           </Text>
           <View
@@ -166,14 +166,14 @@ export function PasswordChangeScreen() {
                 ? 'border-red-300'
                 : showConfirmSuccess
                   ? 'border-emerald-400'
-                  : 'border-gray-200'
+                  : 'border-amber-200'
             }`}
           >
             <TextInput
-              className="flex-1 py-3.5 text-base text-gray-900"
+              className="flex-1 py-3.5 text-base text-amber-900"
 
               placeholder="もう一度入力してください"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor="#D97706"
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               secureTextEntry={!showConfirmPassword}
@@ -183,9 +183,9 @@ export function PasswordChangeScreen() {
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
               {showConfirmPassword ? (
-                <EyeOff size={18} color="#9CA3AF" />
+                <EyeOff size={18} color="#D97706" />
               ) : (
-                <Eye size={18} color="#9CA3AF" />
+                <Eye size={18} color="#D97706" />
               )}
             </TouchableOpacity>
           </View>
