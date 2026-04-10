@@ -78,7 +78,7 @@ export function UpgradeScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-rose-50">
+    <SafeAreaView className="flex-1 bg-amber-50">
       {/* ヘッダー */}
       <View className="flex-row items-center px-4 pt-2 pb-3">
         <TouchableOpacity
@@ -87,7 +87,7 @@ export function UpgradeScreen({ navigation }: Props) {
         >
           <ArrowLeft size={22} color="#111827" />
         </TouchableOpacity>
-        <Text className="flex-1 text-lg font-bold text-gray-900 text-center mr-9">
+        <Text className="flex-1 text-lg font-bold text-amber-900 text-center mr-9">
           プレミアムにアップグレード
         </Text>
       </View>
@@ -98,17 +98,17 @@ export function UpgradeScreen({ navigation }: Props) {
           <View className="w-20 h-20 rounded-full bg-amber-100 items-center justify-center mb-4">
             <Crown size={40} color="#F59E0B" />
           </View>
-          <Text className="text-2xl font-bold text-gray-900 mb-2">
+          <Text className="text-2xl font-bold text-amber-900 mb-2">
             プレミアムプラン
           </Text>
-          <Text className="text-sm text-gray-500 text-center">
+          <Text className="text-sm text-amber-600 text-center">
             制限なしでBucketListを楽しもう
           </Text>
         </View>
 
         {/* 特典リスト */}
         <View className="bg-white rounded-2xl p-5 mb-6">
-          <Text className="text-base font-semibold text-gray-800 mb-4">
+          <Text className="text-base font-semibold text-amber-900 mb-4">
             プレミアムの特典
           </Text>
           {BENEFITS.map((benefit) => (
@@ -116,14 +116,14 @@ export function UpgradeScreen({ navigation }: Props) {
               <View className="w-6 h-6 rounded-full bg-green-100 items-center justify-center">
                 <Check size={14} color="#10B981" />
               </View>
-              <Text className="text-sm text-gray-700">{benefit}</Text>
+              <Text className="text-sm text-amber-900">{benefit}</Text>
             </View>
           ))}
         </View>
 
         {/* 購入ボタン */}
         {isLoadingOfferings ? (
-          <ActivityIndicator size="large" color="#FF6B6B" />
+          <ActivityIndicator size="large" color="#F59E0B" />
         ) : (
           <View className="gap-y-3">
             {offerings.monthly && (
@@ -176,11 +176,11 @@ export function UpgradeScreen({ navigation }: Props) {
           onPress={handleRestore}
           disabled={isLoading}
         >
-          <RotateCcw size={14} color="#6B7280" />
-          <Text className="text-sm text-gray-500">以前の購入を復元する</Text>
+          <RotateCcw size={14} color="#D97706" />
+          <Text className="text-sm text-amber-600">以前の購入を復元する</Text>
         </TouchableOpacity>
 
-        <Text className="text-xs text-gray-400 text-center mt-2 leading-5">
+        <Text className="text-xs text-amber-600 text-center mt-2 leading-5">
           お支払いは iTunes アカウントに請求されます。{'\n'}
           サブスクリプションは現在の期間終了の24時間前までに{'\n'}
           キャンセルしない限り自動更新されます。
@@ -217,7 +217,7 @@ function PurchaseButton({
 
   return (
     <TouchableOpacity
-      className={`rounded-2xl p-5 ${primary ? 'bg-primary' : 'bg-white border border-gray-200'}`}
+      className={`rounded-2xl p-5 ${primary ? 'bg-primary' : 'bg-white border border-amber-200'}`}
       onPress={onPress}
       disabled={isLoading}
       activeOpacity={0.8}
@@ -225,7 +225,7 @@ function PurchaseButton({
       <View className="flex-row items-center justify-between">
         <View>
           <View className="flex-row items-center gap-x-2">
-            <Text className={`text-base font-bold ${primary ? 'text-white' : 'text-gray-900'}`}>
+            <Text className={`text-base font-bold ${primary ? 'text-white' : 'text-amber-900'}`}>
               {title}
             </Text>
             {savingsText && (
@@ -234,16 +234,16 @@ function PurchaseButton({
               </View>
             )}
           </View>
-          <Text className={`text-xs mt-0.5 ${primary ? 'text-indigo-200' : 'text-gray-400'}`}>
+          <Text className={`text-xs mt-0.5 ${primary ? 'text-amber-200' : 'text-gray-400'}`}>
             {badge}
           </Text>
         </View>
         <View className="items-end">
-          <Text className={`text-xl font-bold ${primary ? 'text-white' : 'text-gray-900'}`}>
+          <Text className={`text-xl font-bold ${primary ? 'text-white' : 'text-amber-900'}`}>
             {pkg.product.priceString}
           </Text>
           {suffix && (
-            <Text className={`text-xs ${primary ? 'text-indigo-200' : 'text-gray-400'}`}>
+            <Text className={`text-xs ${primary ? 'text-amber-200' : 'text-gray-400'}`}>
               {suffix}
             </Text>
           )}
@@ -251,7 +251,7 @@ function PurchaseButton({
       </View>
       {isLoading && (
         <View className="absolute inset-0 items-center justify-center bg-black/10 rounded-2xl">
-          <ActivityIndicator color={primary ? '#fff' : '#FF6B6B'} />
+          <ActivityIndicator color={primary ? '#fff' : '#F59E0B'} />
         </View>
       )}
     </TouchableOpacity>
