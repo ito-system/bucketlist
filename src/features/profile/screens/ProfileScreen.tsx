@@ -115,8 +115,8 @@ export function ProfileScreen() {
   const allChecked = checks.every(Boolean);
 
   return (
-    <SafeAreaView className="flex-1 bg-rose-50">
-      <Text className="text-2xl font-bold text-gray-900 px-5 pt-2 pb-5">
+    <SafeAreaView className="flex-1 bg-amber-50">
+      <Text className="text-2xl font-bold text-amber-900 px-5 pt-2 pb-5">
         プロフィール
       </Text>
 
@@ -132,19 +132,19 @@ export function ProfileScreen() {
             className="w-16 h-16 rounded-full"
           />
         ) : (
-          <View className="w-16 h-16 rounded-full bg-primary-100 items-center justify-center">
-            <Text className="text-2xl font-bold text-primary">
+          <View className="w-16 h-16 rounded-full bg-amber-100 items-center justify-center">
+            <Text className="text-2xl font-bold text-amber-900">
               {user.displayName.charAt(0).toUpperCase()}
             </Text>
           </View>
         )}
         <View className="flex-1">
-          <Text className="text-lg font-bold text-gray-900">
+          <Text className="text-lg font-bold text-amber-900">
             {user.displayName}
           </Text>
-          <Text className="text-sm text-gray-400">{user.email}</Text>
+          <Text className="text-sm text-amber-600">{user.email}</Text>
         </View>
-        <Pencil size={16} color="#9CA3AF" />
+        <Pencil size={16} color="#D97706" />
       </TouchableOpacity>
 
       {/* プラン情報 */}
@@ -152,13 +152,13 @@ export function ProfileScreen() {
         <View className="flex-row items-center justify-between mb-4">
           <View className="flex-row items-center gap-x-2">
             {isPremium && <Crown size={16} color="#F59E0B" />}
-            <Text className="text-base font-semibold text-gray-900">
+            <Text className="text-base font-semibold text-amber-900">
               {isPremium ? 'プレミアムプラン' : 'フリープラン'}
             </Text>
           </View>
           {!isPremium && (
             <TouchableOpacity
-              className="bg-secondary-500 rounded-lg px-3 py-1.5"
+              className="bg-primary rounded-lg px-3 py-1.5"
               onPress={() => navigation.navigate('Upgrade')}
             >
               <Text className="text-white text-xs font-semibold">
@@ -187,13 +187,13 @@ export function ProfileScreen() {
       <View className="bg-white mx-5 rounded-2xl mb-4 overflow-hidden">
         <MenuItem
           label="タグ管理"
-          icon={<Tag size={18} color="#6B7280" />}
+          icon={<Tag size={18} color="#D97706" />}
           onPress={() => navigation.navigate('TagManage')}
         />
-        <View className="h-px bg-gray-100 mx-5" />
+        <View className="h-px bg-amber-100 mx-5" />
         <MenuItem
           label="パスワード変更"
-          icon={<Lock size={18} color="#6B7280" />}
+          icon={<Lock size={18} color="#D97706" />}
           onPress={() => navigation.navigate('PasswordChange')}
         />
       </View>
@@ -290,8 +290,8 @@ export function ProfileScreen() {
 function PlanRow({ label, value }: { label: string; value: string }) {
   return (
     <View className="flex-row items-center justify-between">
-      <Text className="text-sm text-gray-500">{label}</Text>
-      <Text className="text-sm font-medium text-gray-800">{value}</Text>
+      <Text className="text-sm text-amber-600">{label}</Text>
+      <Text className="text-sm font-medium text-amber-900">{value}</Text>
     </View>
   );
 }
@@ -312,8 +312,8 @@ function MenuItem({
       activeOpacity={0.7}
     >
       {icon}
-      <Text className="flex-1 text-base text-gray-800">{label}</Text>
-      <ChevronRight size={16} color="#D1D5DB" />
+      <Text className="flex-1 text-base text-amber-900">{label}</Text>
+      <ChevronRight size={16} color="#FDE68A" />
     </TouchableOpacity>
   );
 }
