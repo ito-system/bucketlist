@@ -215,7 +215,7 @@ export function ListDetailScreen({ route, navigation }: Props) {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView className="flex-1 bg-rose-50">
+      <SafeAreaView className="flex-1 bg-amber-50">
         {/* ヘッダー */}
         <View className="flex-row items-center px-4 pt-2 pb-3">
           {/* 左右を同じ幅（w-20）に固定してタイトルを真ん中に揃える */}
@@ -229,7 +229,7 @@ export function ListDetailScreen({ route, navigation }: Props) {
           </View>
 
           <Text
-            className="flex-1 text-lg font-bold text-gray-900 text-center"
+            className="flex-1 text-lg font-bold text-amber-900 text-center"
             numberOfLines={1}
           >
             {title}
@@ -237,7 +237,7 @@ export function ListDetailScreen({ route, navigation }: Props) {
 
           <View className="flex-row gap-x-2 justify-end">
             <TouchableOpacity
-              className="w-9 h-9 bg-white border border-gray-200 rounded-full items-center justify-center"
+              className="w-9 h-9 bg-white border border-amber-200 rounded-full items-center justify-center"
               onPress={() => {
                 setShowSearch((v) => {
                   if (v) {
@@ -249,19 +249,19 @@ export function ListDetailScreen({ route, navigation }: Props) {
               }}
             >
               {showSearch
-                ? <X size={17} color="#FF6B6B" />
-                : <Search size={17} color="#6B7280" />
+                ? <X size={17} color="#F59E0B" />
+                : <Search size={17} color="#D97706" />
               }
             </TouchableOpacity>
             <TouchableOpacity
-              className="w-9 h-9 bg-white border border-gray-200 rounded-full items-center justify-center"
+              className="w-9 h-9 bg-white border border-amber-200 rounded-full items-center justify-center"
               onPress={handleInvite}
               disabled={isGeneratingCode}
             >
               {isGeneratingCode ? (
-                <ActivityIndicator size="small" color="#FF6B6B" />
+                <ActivityIndicator size="small" color="#F59E0B" />
               ) : (
-                <UserPlus size={17} color="#6B7280" />
+                <UserPlus size={17} color="#D97706" />
               )}
             </TouchableOpacity>
             <TouchableOpacity
@@ -276,13 +276,13 @@ export function ListDetailScreen({ route, navigation }: Props) {
         {/* 検索バー */}
         {showSearch && (
           <View className="px-4 pb-2 gap-y-2">
-            <View className="flex-row items-center bg-white border border-gray-200 rounded-xl px-3 gap-x-2">
-              <Search size={15} color="#9CA3AF" />
+            <View className="flex-row items-center bg-white border border-amber-200 rounded-xl px-3 gap-x-2">
+              <Search size={15} color="#D97706" />
               <TextInput
-                className="flex-1 py-2.5 text-gray-900"
+                className="flex-1 py-2.5 text-amber-900"
                 style={{ fontSize: 14, lineHeight: 17 }}
                 placeholder="キーワードを入力"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor="#D97706"
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 autoFocus
@@ -304,10 +304,10 @@ export function ListDetailScreen({ route, navigation }: Props) {
                     key={key}
                     onPress={() => setSearchField(key)}
                     className={`px-3 py-1 rounded-full border ${
-                      active ? 'bg-primary border-primary' : 'bg-white border-gray-200'
+                      active ? 'bg-primary border-primary' : 'bg-white border-amber-200'
                     }`}
                   >
-                    <Text className={`text-xs font-medium ${active ? 'text-white' : 'text-gray-600'}`}>
+                    <Text className={`text-xs font-medium ${active ? 'text-white' : 'text-amber-700'}`}>
                       {label}
                     </Text>
                   </TouchableOpacity>
@@ -319,7 +319,7 @@ export function ListDetailScreen({ route, navigation }: Props) {
 
         {/* 検索件数 */}
         {showSearch && searchQuery.trim() !== '' && (
-          <Text className="text-xs text-gray-400 px-5 pb-1">
+          <Text className="text-xs text-amber-600 px-5 pb-1">
             {sortedItems.length} 件ヒット
           </Text>
         )}
@@ -339,12 +339,12 @@ export function ListDetailScreen({ route, navigation }: Props) {
                 key={key}
                 onPress={() => setSortMode(key)}
                 className={`flex-row items-center gap-x-1.5 px-3 py-1.5 rounded-full mr-2 ${
-                  active ? 'bg-primary' : 'bg-white border border-gray-200'
+                  active ? 'bg-primary' : 'bg-white border border-amber-200'
                 }`}
               >
-                <Icon size={13} color={active ? '#fff' : '#6B7280'} />
+                <Icon size={13} color={active ? '#fff' : '#D97706'} />
                 <Text
-                  className={`text-xs font-medium ${active ? 'text-white' : 'text-gray-600'}`}
+                  className={`text-xs font-medium ${active ? 'text-white' : 'text-amber-700'}`}
                 >
                   {label}
                 </Text>
@@ -357,15 +357,15 @@ export function ListDetailScreen({ route, navigation }: Props) {
         <View style={{ flex: 1 }}>
           {isLoading ? (
             <View className="flex-1 items-center justify-center">
-              <ActivityIndicator size="large" color="#FF6B6B" />
+              <ActivityIndicator size="large" color="#F59E0B" />
             </View>
           ) : items.length === 0 ? (
             <View className="flex-1 items-center justify-center px-8">
-              <PlusCircle size={64} color="#D1D5DB" className="mb-4" />
-              <Text className="text-lg font-semibold text-gray-700 mb-2">
+              <PlusCircle size={64} color="#FDE68A" className="mb-4" />
+              <Text className="text-lg font-semibold text-amber-900 mb-2">
                 やりたいことを追加しよう
               </Text>
-              <Text className="text-sm text-gray-400 text-center mb-6">
+              <Text className="text-sm text-amber-600 text-center mb-6">
                 「+」ボタンからアイテムを追加できます
               </Text>
               <TouchableOpacity
