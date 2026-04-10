@@ -90,16 +90,16 @@ export function HomeScreen() {
   if (!user) return null;
 
   return (
-    <SafeAreaView className="flex-1 bg-rose-50">
+    <SafeAreaView className="flex-1 bg-amber-50">
       {/* ヘッダー */}
       <View className="flex-row items-center justify-between px-5 pt-2 pb-4">
-        <Text className="text-2xl font-bold text-gray-900">マイリスト</Text>
+        <Text className="text-2xl font-bold text-amber-900">マイリスト</Text>
         <View className="flex-row gap-x-2">
           <TouchableOpacity
-            className="w-9 h-9 bg-white border border-gray-200 rounded-full items-center justify-center"
+            className="w-9 h-9 bg-white border border-amber-200 rounded-full items-center justify-center"
             onPress={() => setShowJoinModal(true)}
           >
-            <UserPlus size={18} color="#6B7280" />
+            <UserPlus size={18} color="#D97706" />
           </TouchableOpacity>
           <TouchableOpacity
             className="w-9 h-9 bg-primary rounded-full items-center justify-center"
@@ -113,15 +113,15 @@ export function HomeScreen() {
       {/* リスト */}
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#FF6B6B" />
+          <ActivityIndicator size="large" color="#F59E0B" />
         </View>
       ) : lists.length === 0 ? (
         <View className="flex-1 items-center justify-center px-8">
-          <ClipboardList size={64} color="#D1D5DB" className="mb-4" />
-          <Text className="text-lg font-semibold text-gray-700 mb-2">
+          <ClipboardList size={64} color="#FDE68A" className="mb-4" />
+          <Text className="text-lg font-semibold text-amber-900 mb-2">
             リストがありません
           </Text>
-          <Text className="text-sm text-gray-400 text-center mb-6">
+          <Text className="text-sm text-amber-600 text-center mb-6">
             「+」ボタンでリストを作成するか、{'\n'}招待コードで参加しましょう
           </Text>
           <TouchableOpacity
@@ -183,17 +183,17 @@ export function HomeScreen() {
             onPress={() => setShowJoinModal(false)}
           />
           <View className="bg-white rounded-t-3xl px-6 pt-5 pb-10">
-            <Text className="text-lg font-bold text-gray-900 mb-2">
+            <Text className="text-lg font-bold text-amber-900 mb-2">
               招待コードで参加
             </Text>
-            <Text className="text-sm text-gray-400 mb-4">
+            <Text className="text-sm text-amber-600 mb-4">
               6桁の招待コードを入力してください
             </Text>
             <TextInput
-              className="border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-gray-50 mb-4 tracking-widest text-center"
+              className="border border-amber-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-amber-50 mb-4 tracking-widest text-center"
 
               placeholder="XXXXXX"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor="#D97706"
               value={inviteCode}
               onChangeText={(t) => setInviteCode(t.toUpperCase())}
               autoCapitalize="characters"
