@@ -114,7 +114,7 @@ export function ProfileEditScreen() {
               <Text className="text-xs text-amber-600 mb-2">
                 メールアドレスを変更するには現在のパスワードが必要です
               </Text>
-              <View className="flex-row items-center border border-amber-200 rounded-xl px-4 bg-white">
+              <View className="flex-row items-center border border-amber-200 rounded-xl px-4 bg-amber-50">
                 <TextInput
                   className="flex-1 py-3.5 text-base text-amber-900"
 

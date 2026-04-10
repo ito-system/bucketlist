@@ -161,7 +161,7 @@ export function PasswordChangeScreen() {
             新しいパスワード（確認）
           </Text>
           <View
-            className={`flex-row items-center border rounded-xl px-4 bg-white mb-1 ${
+            className={`flex-row items-center border rounded-xl px-4 bg-amber-50 mb-1 ${
               showConfirmError
                 ? 'border-red-300'
                 : showConfirmSuccess
