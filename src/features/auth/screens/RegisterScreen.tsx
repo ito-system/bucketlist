@@ -55,7 +55,7 @@ export function RegisterScreen({ navigation }: Props) {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-white"
+      className="flex-1 bg-amber-50"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
@@ -72,25 +72,25 @@ export function RegisterScreen({ navigation }: Props) {
         <Text className="text-3xl font-bold text-primary mb-2">
           アカウント作成
         </Text>
-        <Text className="text-gray-500 mb-10">
+        <Text className="text-amber-600 mb-10">
           無料でBucketListを始めよう
         </Text>
 
         <View className="w-full gap-y-3">
           <TextInput
-            className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-gray-50"
+            className="w-full border border-amber-200 rounded-xl px-4 py-3.5 text-base text-amber-900 bg-amber-50"
             style={{ lineHeight: 17 }}
             placeholder="名前（表示名）"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#D97706"
             value={displayName}
             onChangeText={setDisplayName}
             autoCapitalize="words"
           />
           <TextInput
-            className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-gray-50"
+            className="w-full border border-amber-200 rounded-xl px-4 py-3.5 text-base text-amber-900 bg-amber-50"
             style={{ lineHeight: 17 }}
             placeholder="メールアドレス"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#D97706"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -99,12 +99,12 @@ export function RegisterScreen({ navigation }: Props) {
           />
 
           {/* パスワード（表示トグル付き） */}
-          <View className="w-full flex-row items-center border border-gray-200 rounded-xl px-4 bg-gray-50">
+          <View className="w-full flex-row items-center border border-amber-200 rounded-xl px-4 bg-amber-50">
             <TextInput
-              className="flex-1 py-3.5 text-base text-gray-900"
+              className="flex-1 py-3.5 text-base text-amber-900"
 
               placeholder="パスワード"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor="#D97706"
               value={password}
               onChangeText={setPassword}
               secureTextEntry={!showPassword}
@@ -114,16 +114,16 @@ export function RegisterScreen({ navigation }: Props) {
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
               {showPassword ? (
-                <EyeOff size={18} color="#9CA3AF" />
+                <EyeOff size={18} color="#D97706" />
               ) : (
-                <Eye size={18} color="#9CA3AF" />
+                <Eye size={18} color="#D97706" />
               )}
             </TouchableOpacity>
           </View>
 
           {/* 入力中にリアルタイムで表示するバリデーションリスト */}
           {showValidation && (
-            <View className="bg-gray-50 rounded-xl px-4 py-3 gap-y-2">
+            <View className="bg-amber-50 rounded-xl px-4 py-3 gap-y-2">
               {PASSWORD_RULES.map((rule) => {
                 const met = validation[rule.key];
                 return (
@@ -166,7 +166,7 @@ export function RegisterScreen({ navigation }: Props) {
         </View>
 
         <TouchableOpacity className="mt-8" onPress={() => navigation.goBack()}>
-          <Text className="text-gray-500">
+          <Text className="text-amber-700">
             すでにアカウントをお持ちの方は{' '}
             <Text className="text-primary font-semibold">ログイン</Text>
           </Text>

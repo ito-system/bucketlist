@@ -67,19 +67,19 @@ export function LoginScreen({ navigation }: Props) {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-white"
+      className="flex-1 bg-amber-50"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View className="flex-1 items-center justify-center px-6">
         <Text className="text-4xl font-bold text-primary mb-2">BucketList</Text>
-        <Text className="text-gray-500 mb-10">夢を叶えるリストを作ろう</Text>
+        <Text className="text-amber-600 mb-10">夢を叶えるリストを作ろう</Text>
 
         <View className="w-full gap-y-3">
           <TextInput
-            className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-gray-50"
+            className="w-full border border-amber-200 rounded-xl px-4 py-3.5 text-base text-amber-900 bg-amber-50"
 
             placeholder="メールアドレス"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#D97706"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -87,10 +87,10 @@ export function LoginScreen({ navigation }: Props) {
             autoCorrect={false}
           />
           <TextInput
-            className="w-full border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-gray-50"
+            className="w-full border border-amber-200 rounded-xl px-4 py-3.5 text-base text-amber-900 bg-amber-50"
 
             placeholder="パスワード（6文字以上）"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#D97706"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -112,17 +112,17 @@ export function LoginScreen({ navigation }: Props) {
         </View>
 
         <View className="flex-row items-center w-full my-6">
-          <View className="flex-1 h-px bg-gray-200" />
-          <Text className="mx-3 text-gray-400 text-sm">または</Text>
-          <View className="flex-1 h-px bg-gray-200" />
+          <View className="flex-1 h-px bg-amber-200" />
+          <Text className="mx-3 text-amber-600 text-sm">または</Text>
+          <View className="flex-1 h-px bg-amber-200" />
         </View>
 
         <TouchableOpacity
-          className="w-full border border-gray-200 rounded-xl py-3.5 items-center"
+          className="w-full border border-amber-200 rounded-xl py-3.5 items-center"
           onPress={() => promptAsync()}
           disabled={!request || isSubmitting}
         >
-          <Text className="text-gray-700 font-medium text-base">
+          <Text className="text-amber-900 font-medium text-base">
             Google でログイン
           </Text>
         </TouchableOpacity>
@@ -131,7 +131,7 @@ export function LoginScreen({ navigation }: Props) {
           className="mt-8"
           onPress={() => navigation.navigate('Register')}
         >
-          <Text className="text-gray-500">
+          <Text className="text-amber-700">
             アカウントをお持ちでない方は{' '}
             <Text className="text-primary font-semibold">新規登録</Text>
           </Text>
