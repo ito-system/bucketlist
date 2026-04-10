@@ -234,7 +234,7 @@ function PurchaseButton({
               </View>
             )}
           </View>
-          <Text className={`text-xs mt-0.5 ${primary ? 'text-amber-200' : 'text-gray-400'}`}>
+          <Text className={`text-xs mt-0.5 ${primary ? 'text-amber-200' : 'text-amber-600'}`}>
             {badge}
           </Text>
         </View>
@@ -243,7 +243,7 @@ function PurchaseButton({
             {pkg.product.priceString}
           </Text>
           {suffix && (
-            <Text className={`text-xs ${primary ? 'text-amber-200' : 'text-gray-400'}`}>
+            <Text className={`text-xs ${primary ? 'text-amber-200' : 'text-amber-600'}`}>
               {suffix}
             </Text>
           )}
