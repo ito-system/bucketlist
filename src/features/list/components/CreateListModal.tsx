@@ -58,19 +58,19 @@ export function CreateListModal({ visible, onClose, onSubmit }: Props) {
         />
         <View className="bg-white rounded-t-3xl px-6 pt-5 pb-10">
           <View className="flex-row items-center justify-between mb-5">
-            <Text className="text-lg font-bold text-gray-900">
+            <Text className="text-lg font-bold text-amber-900">
               新しいリストを作成
             </Text>
             <TouchableOpacity onPress={handleClose} className="p-1">
-              <X size={20} color="#6B7280" />
+              <X size={20} color="#D97706" />
             </TouchableOpacity>
           </View>
 
           <TextInput
-            className="border border-gray-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-gray-50 mb-4"
+            className="border border-amber-200 rounded-xl px-4 py-3.5 text-base text-gray-900 bg-amber-50 mb-4"
 
             placeholder="リストのタイトル（例: カップルでやりたいこと）"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#D97706"
             value={title}
             onChangeText={setTitle}
             autoFocus
