@@ -15,7 +15,7 @@ const STATUS_CONFIG: Record<
   ItemStatus,
   { label: string; color: string; Icon: typeof Circle }
 > = {
-  todo: { label: 'やりたい', color: '#9CA3AF', Icon: Circle },
+  todo: { label: 'やりたい', color: '#F59E0B', Icon: Circle },
   doing: { label: 'チャレンジ中', color: '#F59E0B', Icon: Clock },
   done: { label: '達成！', color: '#10B981', Icon: CheckCircle2 },
 };
@@ -30,8 +30,8 @@ export function ItemCard({ item, onPress, drag, isActive }: Props) {
 
   return (
     <TouchableOpacity
-      className="bg-white rounded-2xl mb-3 overflow-hidden shadow-sm"
-      style={isActive ? { opacity: 0.9, shadowOpacity: 0.2, elevation: 8 } : undefined}
+      className="bg-white rounded-2xl mb-3 overflow-hidden"
+      style={isActive ? { opacity: 0.9, shadowColor: '#F59E0B', shadowOpacity: 0.2, shadowRadius: 10, elevation: 8 } : { shadowColor: '#F59E0B', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.10, shadowRadius: 10, elevation: 2 }}
       onPress={onPress}
       activeOpacity={0.7}
     >
@@ -59,8 +59,8 @@ export function ItemCard({ item, onPress, drag, isActive }: Props) {
               onPress={() => openSafeUrl(item.url!)}
               activeOpacity={0.7}
             >
-              <Link size={12} color="#FF6B6B" />
-              <Text className="text-xs text-primary" numberOfLines={1}>
+              <Link size={12} color="#F59E0B" />
+              <Text className="text-xs text-amber-500" numberOfLines={1}>
                 {item.url.replace(/^https?:\/\//, '')}
               </Text>
             </TouchableOpacity>
