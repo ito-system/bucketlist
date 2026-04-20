@@ -17,7 +17,6 @@ import {
   LogOut,
   Crown,
   ChevronRight,
-  Pencil,
   Lock,
   Tag,
   Trash2,
@@ -116,110 +115,138 @@ export function ProfileScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-amber-50">
-      <Text className="text-2xl font-bold text-amber-900 px-5 pt-2 pb-5">
-        プロフィール
-      </Text>
+      {/* ScrollView でラップ（コンテンツが増えたため） */}
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* タイトル */}
+        <Text className="text-2xl font-bold text-amber-900 px-5 pt-2 pb-4">
+          プロフィール
+        </Text>
 
-      {/* ユーザー情報カード */}
-      <TouchableOpacity
-        className="bg-white mx-5 rounded-2xl p-5 mb-4 flex-row items-center gap-x-4"
-        onPress={() => navigation.navigate('ProfileEdit')}
-        activeOpacity={0.7}
-      >
-        {user.photoURL ? (
-          <Image
-            source={{ uri: user.photoURL }}
-            className="w-16 h-16 rounded-full"
-          />
-        ) : (
-          <View className="w-16 h-16 rounded-full bg-amber-100 items-center justify-center">
-            <Text className="text-2xl font-bold text-amber-900">
-              {user.displayName.charAt(0).toUpperCase()}
-            </Text>
-          </View>
-        )}
-        <View className="flex-1">
-          <Text className="text-lg font-bold text-amber-900">
+        {/* ヒーローカード - タップでプロフィール編集 */}
+        <TouchableOpacity
+          className="bg-white mx-5 rounded-2xl p-5 mb-4 items-center"
+          onPress={() => navigation.navigate('ProfileEdit')}
+          activeOpacity={0.7}
+          style={{ shadowColor: '#F59E0B', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.10, shadowRadius: 16, elevation: 3 }}
+        >
+          {user.photoURL ? (
+            <Image
+              source={{ uri: user.photoURL }}
+              className="w-20 h-20 rounded-2xl mb-3"
+            />
+          ) : (
+            <View
+              className="w-20 h-20 rounded-2xl items-center justify-center mb-3"
+              style={{ backgroundColor: '#F59E0B' }}
+            >
+              <Text className="text-3xl font-bold text-white">
+                {user.displayName.charAt(0).toUpperCase()}
+              </Text>
+            </View>
+          )}
+          <Text className="text-xl font-bold text-amber-900 mb-1">
             {user.displayName}
           </Text>
-          <Text className="text-sm text-amber-600">{user.email}</Text>
-        </View>
-        <Pencil size={16} color="#D97706" />
-      </TouchableOpacity>
-
-      {/* プラン情報 */}
-      <View className="bg-white mx-5 rounded-2xl p-5 mb-4">
-        <View className="flex-row items-center justify-between mb-4">
-          <View className="flex-row items-center gap-x-2">
-            {isPremium && <Crown size={16} color="#F59E0B" />}
-            <Text className="text-base font-semibold text-amber-900">
-              {isPremium ? 'プレミアムプラン' : 'フリープラン'}
+          <Text className="text-sm text-amber-600 mb-3">{user.email}</Text>
+          {/* プランバッジ */}
+          <View className="flex-row items-center bg-amber-100 rounded-full px-3 py-1 gap-x-1">
+            {isPremium && <Crown size={12} color="#F59E0B" />}
+            <Text className="text-xs font-semibold text-amber-800">
+              {isPremium ? '🌟 プレミアムプラン' : 'フリープラン'}
             </Text>
           </View>
-          {!isPremium && (
-            <TouchableOpacity
-              className="bg-primary rounded-lg px-3 py-1.5"
-              onPress={() => navigation.navigate('Upgrade')}
-            >
-              <Text className="text-white text-xs font-semibold">
-                アップグレード
-              </Text>
-            </TouchableOpacity>
-          )}
+        </TouchableOpacity>
+
+        {/* アップグレードボタン（フリープランのみ） */}
+        {!isPremium && (
+          <TouchableOpacity
+            className="bg-primary mx-5 rounded-2xl p-4 mb-4 flex-row items-center justify-center gap-x-2"
+            onPress={() => navigation.navigate('Upgrade')}
+          >
+            <Crown size={16} color="#fff" />
+            <Text className="text-white font-semibold text-base">
+              プレミアムにアップグレード
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        {/* 統計カード */}
+        <View className="flex-row mx-5 gap-x-3 mb-4">
+          <View
+            className="flex-1 bg-white rounded-2xl py-4 items-center"
+            style={{ shadowColor: '#F59E0B', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 2 }}
+          >
+            <Text className="text-2xl font-extrabold text-amber-400">{lists.length}</Text>
+            <Text className="text-xs text-amber-600 mt-1">リスト</Text>
+          </View>
+          <View
+            className="flex-1 bg-white rounded-2xl py-4 items-center"
+            style={{ shadowColor: '#F59E0B', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 2 }}
+          >
+            <Text className="text-2xl font-extrabold text-amber-400">{tags.length}</Text>
+            <Text className="text-xs text-amber-600 mt-1">タグ</Text>
+          </View>
+          <View
+            className="flex-1 bg-white rounded-2xl py-4 items-center"
+            style={{ shadowColor: '#F59E0B', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.10, shadowRadius: 8, elevation: 2 }}
+          >
+            <Text className="text-2xl font-extrabold text-amber-400">
+              {memberLimit}
+            </Text>
+            <Text className="text-xs text-amber-600 mt-1">招待上限</Text>
+          </View>
         </View>
-        <View className="gap-y-2">
+
+        {/* プラン情報（テキストのみ・簡略版） */}
+        <View className="bg-white mx-5 rounded-2xl p-4 mb-4">
           <PlanRow
             label="作成できるリスト数"
             value={`${lists.length} / ${listLimit === Infinity ? '無制限' : listLimit}`}
           />
-          <PlanRow
-            label="リストあたりのメンバー数"
-            value={`最大 ${memberLimit}人`}
-          />
+          <View className="h-px bg-amber-100 my-2" />
           <PlanRow
             label="作成できるタグ数"
             value={`${tags.length} / ${tagLimit === Infinity ? '無制限' : tagLimit}`}
           />
         </View>
-      </View>
 
-      {/* 設定メニュー */}
-      <View className="bg-white mx-5 rounded-2xl mb-4 overflow-hidden">
-        <MenuItem
-          label="タグ管理"
-          icon={<Tag size={18} color="#D97706" />}
-          onPress={() => navigation.navigate('TagManage')}
-        />
-        <View className="h-px bg-amber-100 mx-5" />
-        <MenuItem
-          label="パスワード変更"
-          icon={<Lock size={18} color="#D97706" />}
-          onPress={() => navigation.navigate('PasswordChange')}
-        />
-      </View>
+        {/* 設定メニュー */}
+        <View className="bg-white mx-5 rounded-2xl mb-4 overflow-hidden">
+          <MenuItem
+            label="タグ管理"
+            icon={<Tag size={18} color="#D97706" />}
+            onPress={() => navigation.navigate('TagManage')}
+          />
+          <View className="h-px bg-amber-100 mx-5" />
+          <MenuItem
+            label="パスワード変更"
+            icon={<Lock size={18} color="#D97706" />}
+            onPress={() => navigation.navigate('PasswordChange')}
+          />
+        </View>
 
-      {/* ログアウト */}
-      <TouchableOpacity
-        className="bg-white mx-5 rounded-2xl p-4 flex-row items-center gap-x-3 mb-3"
-        onPress={handleSignOut}
-      >
-        <LogOut size={20} color="#EF4444" />
-        <Text className="text-base font-medium text-red-500">ログアウト</Text>
-      </TouchableOpacity>
+        {/* ログアウト */}
+        <TouchableOpacity
+          className="bg-white mx-5 rounded-2xl p-4 flex-row items-center gap-x-3 mb-3"
+          onPress={handleSignOut}
+        >
+          <LogOut size={20} color="#EF4444" />
+          <Text className="text-base font-medium text-red-500">ログアウト</Text>
+        </TouchableOpacity>
 
-      {/* アカウント削除 */}
-      <TouchableOpacity
-        className="bg-red-50 border border-red-200 mx-5 rounded-2xl p-4 flex-row items-center gap-x-3"
-        onPress={openDeleteModal}
-      >
-        <Trash2 size={20} color="#FCA5A5" />
-        <Text className="text-base font-medium text-red-400">アカウントを削除</Text>
-      </TouchableOpacity>
+        {/* アカウント削除 */}
+        <TouchableOpacity
+          className="bg-red-50 border border-red-200 mx-5 rounded-2xl p-4 flex-row items-center gap-x-3 mb-8"
+          onPress={openDeleteModal}
+        >
+          <Trash2 size={20} color="#FCA5A5" />
+          <Text className="text-base font-medium text-red-400">アカウントを削除</Text>
+        </TouchableOpacity>
+      </ScrollView>
 
-      <View className="flex-1" />
       <AdBanner />
 
-      {/* アカウント削除確認モーダル */}
+      {/* アカウント削除確認モーダル（変更なし） */}
       <Modal
         visible={deleteModalVisible}
         transparent
