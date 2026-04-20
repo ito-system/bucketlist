@@ -120,7 +120,7 @@ export function CreateListModal({ visible, onClose, onSubmit }: Props) {
                       : 'bg-amber-50 border-amber-200'
                   }`}
                 >
-                  <Text className="text-xl">{emoji}</Text>
+                  <Text className="text-xl text-center">{emoji}</Text>
                 </TouchableOpacity>
               ))}
             </View>
