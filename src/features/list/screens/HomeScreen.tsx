@@ -21,6 +21,7 @@ import { useListStore } from '@/store/listStore';
 import { inviteService } from '@/features/invite/services/inviteService';
 import { ListCard } from '@/features/list/components/ListCard';
 import { CreateListModal } from '@/features/list/components/CreateListModal';
+import { EditListModal } from '@/features/list/components/EditListModal';
 import { AdBanner } from '@/components/AdBanner';
 import { PLAN_LIMITS } from '@/types';
 
@@ -29,10 +30,11 @@ type HomeNavProp = StackNavigationProp<MainStackParamList, 'Tabs'>;
 export function HomeScreen() {
   const navigation = useNavigation<HomeNavProp>();
   const { user } = useAuthStore();
-  const { lists, isLoading, subscribe, unsubscribe, createList, deleteList } =
+  const { lists, isLoading, subscribe, unsubscribe, createList, updateList, deleteList } =
     useListStore();
 
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingList, setEditingList] = useState<(typeof lists)[0] | null>(null);
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [inviteCode, setInviteCode] = useState('');
   const [isJoining, setIsJoining] = useState(false);
@@ -57,15 +59,25 @@ export function HomeScreen() {
     setShowCreateModal(true);
   };
 
-  const handleDeleteList = (listId: string, title: string) => {
-    Alert.alert(`「${title}」を削除`, 'このリストとすべてのアイテムを削除しますか？', [
+  const handleLongPress = (list: (typeof lists)[0]) => {
+    Alert.alert(list.title, undefined, [
       { text: 'キャンセル', style: 'cancel' },
+      { text: '編集', onPress: () => setEditingList(list) },
       {
         text: '削除',
         style: 'destructive',
-        onPress: () => deleteList(listId),
+        onPress: () =>
+          Alert.alert(`「${list.title}」を削除`, 'このリストとすべてのアイテムを削除しますか？', [
+            { text: 'キャンセル', style: 'cancel' },
+            { text: '削除', style: 'destructive', onPress: () => deleteList(list.listId) },
+          ]),
       },
     ]);
+  };
+
+  const handleEditList = async (title: string, emoji: string | null) => {
+    if (!editingList) return;
+    await updateList(editingList.listId, title, emoji);
   };
 
   const handleJoinByCode = async () => {
@@ -148,7 +160,7 @@ export function HomeScreen() {
               }
               onLongPress={
                 item.ownerId === user.uid
-                  ? () => handleDeleteList(item.listId, item.title)
+                  ? () => handleLongPress(item)
                   : undefined
               }
             />
@@ -165,6 +177,16 @@ export function HomeScreen() {
         onClose={() => setShowCreateModal(false)}
         onSubmit={handleCreateList}
       />
+
+      {/* リスト編集モーダル */}
+      {editingList && (
+        <EditListModal
+          list={editingList}
+          visible={!!editingList}
+          onClose={() => setEditingList(null)}
+          onSubmit={handleEditList}
+        />
+      )}
 
       {/* 招待コード参加モーダル */}
       <Modal

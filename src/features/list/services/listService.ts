@@ -4,6 +4,7 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
+  deleteField,
   serverTimestamp,
   onSnapshot,
   query,
@@ -56,9 +57,10 @@ export const listService = {
     return ref.id;
   },
 
-  async updateList(listId: string, title: string): Promise<void> {
+  async updateList(listId: string, title: string, emoji: string | null): Promise<void> {
     await updateDoc(doc(db, 'lists', listId), {
       title,
+      emoji: emoji !== null ? emoji : deleteField(),
       updatedAt: serverTimestamp(),
     });
   },
