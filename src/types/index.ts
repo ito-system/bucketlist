@@ -53,6 +53,8 @@ export type User = {
 export type List = {
   listId: string;
   title: string;
+  /** 絵文字アイコン（未設定時は title の頭文字を表示） */
+  emoji?: string;
   ownerId: string;
   /** ownerId を含む全メンバーの uid 配列 */
   memberIds: string[];

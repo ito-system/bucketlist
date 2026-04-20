@@ -23,7 +23,7 @@ export function ListCard({ list, currentUserId, onPress, onLongPress }: Props) {
       {/* アイコンエリア */}
       <View className="w-14 h-14 bg-amber-100 rounded-xl items-center justify-center mr-3">
         <Text className="text-2xl">
-          {list.title.charAt(0).toUpperCase()}
+          {list.emoji ?? list.title.charAt(0).toUpperCase()}
         </Text>
       </View>
 

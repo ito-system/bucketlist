@@ -44,9 +44,10 @@ export const listService = {
     );
   },
 
-  async createList(title: string, ownerId: string): Promise<string> {
+  async createList(title: string, ownerId: string, emoji?: string): Promise<string> {
     const ref = await addDoc(collection(db, 'lists'), {
       title,
+      ...(emoji ? { emoji } : {}),
       ownerId,
       memberIds: [ownerId],
       createdAt: serverTimestamp(),

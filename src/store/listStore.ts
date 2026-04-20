@@ -8,7 +8,7 @@ type ListState = {
   _unsubscribe: (() => void) | null;
   subscribe: (userId: string) => void;
   unsubscribe: () => void;
-  createList: (title: string, ownerId: string) => Promise<string>;
+  createList: (title: string, ownerId: string, emoji?: string) => Promise<string>;
   deleteList: (listId: string) => Promise<void>;
 };
 
@@ -33,8 +33,8 @@ export const useListStore = create<ListState>((set, get) => ({
     set({ _unsubscribe: null, lists: [], isLoading: false });
   },
 
-  createList: async (title, ownerId) => {
-    return listService.createList(title, ownerId);
+  createList: async (title, ownerId, emoji) => {
+    return listService.createList(title, ownerId, emoji);
   },
 
   deleteList: async (listId) => {

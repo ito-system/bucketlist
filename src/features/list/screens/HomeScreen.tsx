@@ -42,9 +42,9 @@ export function HomeScreen() {
     return () => unsubscribe();
   }, [user?.uid]);
 
-  const handleCreateList = async (title: string) => {
+  const handleCreateList = async (title: string, emoji?: string) => {
     if (!user) return;
-    await createList(title, user.uid);
+    await createList(title, user.uid, emoji);
   };
 
   const handlePressCreate = () => {
