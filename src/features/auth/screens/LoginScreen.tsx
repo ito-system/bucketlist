@@ -71,8 +71,8 @@ export function LoginScreen({ navigation }: Props) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View className="flex-1 items-center justify-center px-6">
-        <Text className="text-4xl font-bold text-primary mb-2">BucketList</Text>
-        <Text className="text-amber-600 mb-10">夢を叶えるリストを作ろう</Text>
+        <Text className="text-4xl font-bold text-primary mb-2">夢ノート</Text>
+        <Text className="text-amber-600 mb-10">やりたいことを、全部叶えよう</Text>
 
         <View className="w-full gap-y-3">
           <TextInput

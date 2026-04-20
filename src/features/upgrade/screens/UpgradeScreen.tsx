@@ -102,7 +102,7 @@ export function UpgradeScreen({ navigation }: Props) {
             プレミアムプラン
           </Text>
           <Text className="text-sm text-amber-600 text-center">
-            制限なしでBucketListを楽しもう
+            制限なしで夢ノートを楽しもう
           </Text>
         </View>
 

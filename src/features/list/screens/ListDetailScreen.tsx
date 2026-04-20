@@ -200,7 +200,7 @@ export function ListDetailScreen({ route, navigation }: Props) {
             text: 'シェア',
             onPress: () =>
               Share.share({
-                message: `BucketListに招待します！\n招待コード: ${code}`,
+                message: `夢ノートに招待します！\n招待コード: ${code}`,
               }),
           },
           { text: '閉じる', style: 'cancel' },

@@ -73,7 +73,7 @@ export function RegisterScreen({ navigation }: Props) {
           アカウント作成
         </Text>
         <Text className="text-amber-600 mb-10">
-          無料でBucketListを始めよう
+          無料で夢ノートを始めよう
         </Text>
 
         <View className="w-full gap-y-3">
