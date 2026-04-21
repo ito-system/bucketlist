@@ -10,14 +10,49 @@ import {
   ScrollView,
 } from 'react-native';
 import { TextInput } from '@/components/TextInput';
-import { X } from 'lucide-react-native';
+import {
+  X,
+  Globe,
+  Plane,
+  Mountain,
+  Target,
+  BookOpen,
+  Music,
+  Palette,
+  Bike,
+  Utensils,
+  Dumbbell,
+  Smile,
+  Flower,
+  Waves,
+  Car,
+  Gamepad2,
+  Lightbulb,
+  Star,
+  Moon,
+  Home,
+  Briefcase,
+  PartyPopper,
+  Sparkles,
+  Rocket,
+  Guitar,
+  Bird,
+  Flower2,
+  Dog,
+  Clover,
+  Trophy,
+  Heart,
+  type LucideIcon,
+} from 'lucide-react-native';
 
-const PRESET_EMOJIS = [
-  '🌍', '🛫', '🗻', '🎯', '📚', '🎵', '🎨', '🏃',
-  '🍜', '💪', '🎭', '🌸', '🌊', '🚗', '🎮', '💡',
-  '⭐', '🌙', '🏠', '💼', '🎉', '🌈', '🚀', '🎸',
-  '🦋', '🌺', '🐶', '🍀', '🏆', '💖',
-];
+export const ICON_MAP: Record<string, LucideIcon> = {
+  Globe, Plane, Mountain, Target, BookOpen, Music, Palette, Bike,
+  Utensils, Dumbbell, Smile, Flower, Waves, Car, Gamepad2, Lightbulb,
+  Star, Moon, Home, Briefcase, PartyPopper, Sparkles, Rocket, Guitar,
+  Bird, Flower2, Dog, Clover, Trophy, Heart,
+};
+
+const PRESET_ICON_NAMES = Object.keys(ICON_MAP);
 
 type Props = {
   visible: boolean;
@@ -27,7 +62,7 @@ type Props = {
 
 export function CreateListModal({ visible, onClose, onSubmit }: Props) {
   const [title, setTitle] = useState('');
-  const [selectedEmoji, setSelectedEmoji] = useState<string | undefined>(undefined);
+  const [selectedIcon, setSelectedIcon] = useState<string | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
@@ -36,9 +71,9 @@ export function CreateListModal({ visible, onClose, onSubmit }: Props) {
 
     setIsSubmitting(true);
     try {
-      await onSubmit(trimmed, selectedEmoji);
+      await onSubmit(trimmed, selectedIcon);
       setTitle('');
-      setSelectedEmoji(undefined);
+      setSelectedIcon(undefined);
       onClose();
     } finally {
       setIsSubmitting(false);
@@ -47,7 +82,7 @@ export function CreateListModal({ visible, onClose, onSubmit }: Props) {
 
   const handleClose = () => {
     setTitle('');
-    setSelectedEmoji(undefined);
+    setSelectedIcon(undefined);
     onClose();
   };
 
@@ -91,7 +126,7 @@ export function CreateListModal({ visible, onClose, onSubmit }: Props) {
             returnKeyType="done"
           />
 
-          {/* 絵文字ピッカー */}
+          {/* アイコンピッカー */}
           <Text className="text-sm font-medium text-amber-900 mb-2">
             アイコン（任意）
           </Text>
@@ -99,30 +134,34 @@ export function CreateListModal({ visible, onClose, onSubmit }: Props) {
             <View className="flex-row flex-wrap gap-2 mb-5">
               {/* なし（クリア）ボタン */}
               <TouchableOpacity
-                onPress={() => setSelectedEmoji(undefined)}
+                onPress={() => setSelectedIcon(undefined)}
                 className={`w-10 h-10 rounded-xl items-center justify-center border ${
-                  selectedEmoji === undefined
+                  selectedIcon === undefined
                     ? 'bg-amber-400 border-amber-400'
                     : 'bg-amber-50 border-amber-200'
                 }`}
               >
-                <Text className={`text-xs font-medium ${selectedEmoji === undefined ? 'text-white' : 'text-amber-600'}`}>
+                <Text className={`text-xs font-medium ${selectedIcon === undefined ? 'text-white' : 'text-amber-600'}`}>
                   なし
                 </Text>
               </TouchableOpacity>
-              {PRESET_EMOJIS.map((emoji) => (
-                <TouchableOpacity
-                  key={emoji}
-                  onPress={() => setSelectedEmoji(emoji)}
-                  className={`w-10 h-10 rounded-xl items-center justify-center border ${
-                    selectedEmoji === emoji
-                      ? 'bg-amber-400 border-amber-400'
-                      : 'bg-amber-50 border-amber-200'
-                  }`}
-                >
-                  <Text className="text-xl text-center">{emoji}</Text>
-                </TouchableOpacity>
-              ))}
+              {PRESET_ICON_NAMES.map((name) => {
+                const IconComponent = ICON_MAP[name];
+                const isSelected = selectedIcon === name;
+                return (
+                  <TouchableOpacity
+                    key={name}
+                    onPress={() => setSelectedIcon(name)}
+                    className={`w-10 h-10 rounded-xl items-center justify-center border ${
+                      isSelected
+                        ? 'bg-amber-400 border-amber-400'
+                        : 'bg-amber-50 border-amber-200'
+                    }`}
+                  >
+                    <IconComponent size={20} color={isSelected ? '#fff' : '#D97706'} />
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </ScrollView>
 

@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Users, ChevronRight } from 'lucide-react-native';
+import { ICON_MAP } from './CreateListModal';
 import type { List } from '@/types';
 
 type Props = {
@@ -11,6 +12,7 @@ type Props = {
 
 export function ListCard({ list, currentUserId, onPress, onLongPress }: Props) {
   const isOwner = list.ownerId === currentUserId;
+  const IconComponent = list.emoji ? ICON_MAP[list.emoji] : null;
 
   return (
     <TouchableOpacity
@@ -22,9 +24,13 @@ export function ListCard({ list, currentUserId, onPress, onLongPress }: Props) {
     >
       {/* アイコンエリア */}
       <View className="w-14 h-14 bg-amber-100 rounded-xl items-center justify-center mr-3">
-        <Text className="text-2xl text-center">
-          {list.emoji ?? list.title.charAt(0).toUpperCase()}
-        </Text>
+        {IconComponent ? (
+          <IconComponent size={28} color="#D97706" />
+        ) : (
+          <Text className="text-2xl font-bold text-amber-700">
+            {list.title.charAt(0).toUpperCase()}
+          </Text>
+        )}
       </View>
 
       <View className="flex-1">

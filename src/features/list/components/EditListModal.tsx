@@ -11,14 +11,10 @@ import {
 } from 'react-native';
 import { TextInput } from '@/components/TextInput';
 import { X } from 'lucide-react-native';
+import { ICON_MAP } from './CreateListModal';
 import type { List } from '@/types';
 
-const PRESET_EMOJIS = [
-  '🌍', '🛫', '🗻', '🎯', '📚', '🎵', '🎨', '🏃',
-  '🍜', '💪', '🎭', '🌸', '🌊', '🚗', '🎮', '💡',
-  '⭐', '🌙', '🏠', '💼', '🎉', '🌈', '🚀', '🎸',
-  '🦋', '🌺', '🐶', '🍀', '🏆', '💖',
-];
+const PRESET_ICON_NAMES = Object.keys(ICON_MAP);
 
 type Props = {
   list: List;
@@ -29,7 +25,7 @@ type Props = {
 
 export function EditListModal({ list, visible, onClose, onSubmit }: Props) {
   const [title, setTitle] = useState(list.title);
-  const [selectedEmoji, setSelectedEmoji] = useState<string | null>(list.emoji ?? null);
+  const [selectedIcon, setSelectedIcon] = useState<string | null>(list.emoji ?? null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
@@ -38,7 +34,7 @@ export function EditListModal({ list, visible, onClose, onSubmit }: Props) {
 
     setIsSubmitting(true);
     try {
-      await onSubmit(trimmed, selectedEmoji);
+      await onSubmit(trimmed, selectedIcon);
       onClose();
     } finally {
       setIsSubmitting(false);
@@ -47,7 +43,7 @@ export function EditListModal({ list, visible, onClose, onSubmit }: Props) {
 
   const handleClose = () => {
     setTitle(list.title);
-    setSelectedEmoji(list.emoji ?? null);
+    setSelectedIcon(list.emoji ?? null);
     onClose();
   };
 
@@ -91,7 +87,7 @@ export function EditListModal({ list, visible, onClose, onSubmit }: Props) {
             returnKeyType="done"
           />
 
-          {/* 絵文字ピッカー */}
+          {/* アイコンピッカー */}
           <Text className="text-sm font-medium text-amber-900 mb-2">
             アイコン（任意）
           </Text>
@@ -99,30 +95,34 @@ export function EditListModal({ list, visible, onClose, onSubmit }: Props) {
             <View className="flex-row flex-wrap gap-2 mb-5">
               {/* なし（クリア）ボタン */}
               <TouchableOpacity
-                onPress={() => setSelectedEmoji(null)}
+                onPress={() => setSelectedIcon(null)}
                 className={`w-10 h-10 rounded-xl items-center justify-center border ${
-                  selectedEmoji === null
+                  selectedIcon === null
                     ? 'bg-amber-400 border-amber-400'
                     : 'bg-amber-50 border-amber-200'
                 }`}
               >
-                <Text className={`text-xs font-medium ${selectedEmoji === null ? 'text-white' : 'text-amber-600'}`}>
+                <Text className={`text-xs font-medium ${selectedIcon === null ? 'text-white' : 'text-amber-600'}`}>
                   なし
                 </Text>
               </TouchableOpacity>
-              {PRESET_EMOJIS.map((emoji) => (
-                <TouchableOpacity
-                  key={emoji}
-                  onPress={() => setSelectedEmoji(emoji)}
-                  className={`w-10 h-10 rounded-xl items-center justify-center border ${
-                    selectedEmoji === emoji
-                      ? 'bg-amber-400 border-amber-400'
-                      : 'bg-amber-50 border-amber-200'
-                  }`}
-                >
-                  <Text className="text-xl text-center">{emoji}</Text>
-                </TouchableOpacity>
-              ))}
+              {PRESET_ICON_NAMES.map((name) => {
+                const IconComponent = ICON_MAP[name];
+                const isSelected = selectedIcon === name;
+                return (
+                  <TouchableOpacity
+                    key={name}
+                    onPress={() => setSelectedIcon(name)}
+                    className={`w-10 h-10 rounded-xl items-center justify-center border ${
+                      isSelected
+                        ? 'bg-amber-400 border-amber-400'
+                        : 'bg-amber-50 border-amber-200'
+                    }`}
+                  >
+                    <IconComponent size={20} color={isSelected ? '#fff' : '#D97706'} />
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </ScrollView>
 
