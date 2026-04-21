@@ -25,7 +25,9 @@ type Props = {
 
 export function EditListModal({ list, visible, onClose, onSubmit }: Props) {
   const [title, setTitle] = useState(list.title);
-  const [selectedIcon, setSelectedIcon] = useState<string | null>(list.emoji ?? null);
+  // ICON_MAP にないキー（古い絵文字文字など）は null（なし）として扱う
+  const initialIcon = list.emoji && ICON_MAP[list.emoji] ? list.emoji : null;
+  const [selectedIcon, setSelectedIcon] = useState<string | null>(initialIcon);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
@@ -43,7 +45,7 @@ export function EditListModal({ list, visible, onClose, onSubmit }: Props) {
 
   const handleClose = () => {
     setTitle(list.title);
-    setSelectedIcon(list.emoji ?? null);
+    setSelectedIcon(list.emoji && ICON_MAP[list.emoji] ? list.emoji : null);
     onClose();
   };
 
