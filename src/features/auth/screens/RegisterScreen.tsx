@@ -78,7 +78,7 @@ export function RegisterScreen({ navigation }: Props) {
 
         <View className="w-full gap-y-3">
           <TextInput
-            className="w-full border border-amber-200 rounded-xl px-4 py-3.5 text-base text-amber-900 bg-amber-50"
+            className="w-full border border-amber-200 rounded-xl px-4 py-3.5 text-base text-amber-900 bg-white"
             style={{ lineHeight: 17 }}
             placeholder="名前（表示名）"
             placeholderTextColor="#D97706"
@@ -87,7 +87,7 @@ export function RegisterScreen({ navigation }: Props) {
             autoCapitalize="words"
           />
           <TextInput
-            className="w-full border border-amber-200 rounded-xl px-4 py-3.5 text-base text-amber-900 bg-amber-50"
+            className="w-full border border-amber-200 rounded-xl px-4 py-3.5 text-base text-amber-900 bg-white"
             style={{ lineHeight: 17 }}
             placeholder="メールアドレス"
             placeholderTextColor="#D97706"
@@ -99,7 +99,7 @@ export function RegisterScreen({ navigation }: Props) {
           />
 
           {/* パスワード（表示トグル付き） */}
-          <View className="w-full flex-row items-center border border-amber-200 rounded-xl px-4 bg-amber-50">
+          <View className="w-full flex-row items-center border border-amber-200 rounded-xl px-4 bg-white">
             <TextInput
               className="flex-1 py-3.5 text-base text-amber-900"
 

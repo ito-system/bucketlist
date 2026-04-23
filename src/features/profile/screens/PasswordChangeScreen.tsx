@@ -85,7 +85,7 @@ export function PasswordChangeScreen() {
           <Text className="text-sm font-medium text-amber-900 mb-1.5">
             現在のパスワード
           </Text>
-          <View className="flex-row items-center border border-amber-200 rounded-xl px-4 bg-amber-50 mb-5">
+          <View className="flex-row items-center border border-amber-200 rounded-xl px-4 bg-white mb-5">
             <TextInput
               className="flex-1 py-3.5 text-base text-amber-900"
 
@@ -111,7 +111,7 @@ export function PasswordChangeScreen() {
           <Text className="text-sm font-medium text-amber-900 mb-1.5">
             新しいパスワード
           </Text>
-          <View className="flex-row items-center border border-amber-200 rounded-xl px-4 bg-amber-50 mb-3">
+          <View className="flex-row items-center border border-amber-200 rounded-xl px-4 bg-white mb-3">
             <TextInput
               className="flex-1 py-3.5 text-base text-amber-900"
 
@@ -161,7 +161,7 @@ export function PasswordChangeScreen() {
             新しいパスワード（確認）
           </Text>
           <View
-            className={`flex-row items-center border rounded-xl px-4 bg-amber-50 mb-1 ${
+            className={`flex-row items-center border rounded-xl px-4 bg-white mb-1 ${
               showConfirmError
                 ? 'border-red-300'
                 : showConfirmSuccess
