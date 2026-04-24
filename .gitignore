@@ -45,3 +45,6 @@ yarn-error.*
 # superpowers
 .superpowers/
 docs/superpowers/
+
+# app.json
+app.json
