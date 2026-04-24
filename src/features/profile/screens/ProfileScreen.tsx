@@ -22,8 +22,16 @@ import {
   Trash2,
   CheckSquare,
   Square,
+  FileText,
+  Shield,
+  Mail,
+  Receipt,
 } from 'lucide-react-native';
+import * as WebBrowser from 'expo-web-browser';
 import { AdBanner } from '@/components/AdBanner';
+
+// ▼ お問い合わせフォームのURLをここに入れてください
+const CONTACT_URL = 'https://example.com/contact';
 import { useAuthStore } from '@/store/authStore';
 import { useListStore } from '@/store/listStore';
 import { useTagStore } from '@/store/tagStore';
@@ -222,6 +230,30 @@ export function ProfileScreen() {
             label="パスワード変更"
             icon={<Lock size={18} color="#D97706" />}
             onPress={() => navigation.navigate('PasswordChange')}
+          />
+          <View className="h-px bg-amber-100 mx-5" />
+          <MenuItem
+            label="利用規約"
+            icon={<FileText size={18} color="#D97706" />}
+            onPress={() => navigation.navigate('Legal', { type: 'terms' })}
+          />
+          <View className="h-px bg-amber-100 mx-5" />
+          <MenuItem
+            label="プライバシーポリシー"
+            icon={<Shield size={18} color="#D97706" />}
+            onPress={() => navigation.navigate('Legal', { type: 'privacy' })}
+          />
+          <View className="h-px bg-amber-100 mx-5" />
+          <MenuItem
+            label="特定商取引法に基づく表記"
+            icon={<Receipt size={18} color="#D97706" />}
+            onPress={() => navigation.navigate('Legal', { type: 'tokushoho' })}
+          />
+          <View className="h-px bg-amber-100 mx-5" />
+          <MenuItem
+            label="お問い合わせ"
+            icon={<Mail size={18} color="#D97706" />}
+            onPress={() => WebBrowser.openBrowserAsync(CONTACT_URL)}
           />
         </View>
 

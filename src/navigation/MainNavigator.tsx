@@ -6,6 +6,7 @@ import { PasswordChangeScreen } from '@/features/profile/screens/PasswordChangeS
 import { TagManageScreen } from '@/features/tag/screens/TagManageScreen';
 import { UpgradeScreen } from '@/features/upgrade/screens/UpgradeScreen';
 import { PlanSelectScreen } from '@/features/auth/screens/PlanSelectScreen';
+import { LegalScreen } from '@/features/legal/screens/LegalScreen';
 import { useAuthStore } from '@/store/authStore';
 
 export type MainStackParamList = {
@@ -16,6 +17,7 @@ export type MainStackParamList = {
   TagManage: undefined;
   Upgrade: undefined;
   PlanSelect: undefined;
+  Legal: { type: 'terms' | 'privacy' | 'tokushoho' };
 };
 
 const Stack = createStackNavigator<MainStackParamList>();
@@ -35,6 +37,9 @@ export function MainNavigator() {
       <Stack.Screen name="PasswordChange" component={PasswordChangeScreen} />
       <Stack.Screen name="TagManage" component={TagManageScreen} />
       <Stack.Screen name="Upgrade" component={UpgradeScreen} />
+      <Stack.Screen name="Legal">
+        {({ route }) => <LegalScreen type={route.params.type} />}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 }

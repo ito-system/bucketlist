@@ -158,7 +158,7 @@ export function HomeScreen() {
                   title: item.title,
                 })
               }
-              onLongPress={
+              onMenuPress={
                 item.ownerId === user.uid
                   ? () => handleLongPress(item)
                   : undefined

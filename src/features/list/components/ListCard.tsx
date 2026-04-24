@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity } from 'react-native';
-import { Users, ChevronRight } from 'lucide-react-native';
+import { Users, MoreVertical } from 'lucide-react-native';
 import { ICON_MAP } from './CreateListModal';
 import type { List } from '@/types';
 
@@ -7,10 +7,10 @@ type Props = {
   list: List;
   currentUserId: string;
   onPress: () => void;
-  onLongPress?: () => void;
+  onMenuPress?: () => void;
 };
 
-export function ListCard({ list, currentUserId, onPress, onLongPress }: Props) {
+export function ListCard({ list, currentUserId, onPress, onMenuPress }: Props) {
   const isOwner = list.ownerId === currentUserId;
   const IconComponent = list.emoji ? ICON_MAP[list.emoji] : null;
 
@@ -19,7 +19,6 @@ export function ListCard({ list, currentUserId, onPress, onLongPress }: Props) {
       className="bg-white rounded-2xl p-5 mb-3 flex-row items-center"
       style={{ shadowColor: '#F59E0B', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.14, shadowRadius: 16, elevation: 3 }}
       onPress={onPress}
-      onLongPress={onLongPress}
       activeOpacity={0.7}
     >
       {/* アイコンエリア */}
@@ -45,7 +44,16 @@ export function ListCard({ list, currentUserId, onPress, onLongPress }: Props) {
           </Text>
         </View>
       </View>
-      <ChevronRight size={18} color="#FDE68A" />
+
+      {isOwner && onMenuPress ? (
+        <TouchableOpacity
+          onPress={onMenuPress}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          className="pl-2"
+        >
+          <MoreVertical size={18} color="#9CA3AF" />
+        </TouchableOpacity>
+      ) : null}
     </TouchableOpacity>
   );
 }

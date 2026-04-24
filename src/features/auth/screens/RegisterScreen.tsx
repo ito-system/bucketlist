@@ -163,6 +163,25 @@ export function RegisterScreen({ navigation }: Props) {
               </Text>
             )}
           </TouchableOpacity>
+
+          {/* 利用規約・プライバシーポリシー同意文言 */}
+          <Text className="text-xs text-gray-400 text-center mt-3 leading-5">
+            登録することで{' '}
+            <Text
+              className="text-amber-600 underline"
+              onPress={() => navigation.navigate('Legal', { type: 'terms' })}
+            >
+              利用規約
+            </Text>
+            {' '}および{' '}
+            <Text
+              className="text-amber-600 underline"
+              onPress={() => navigation.navigate('Legal', { type: 'privacy' })}
+            >
+              プライバシーポリシー
+            </Text>
+            {' '}に同意したものとみなします。
+          </Text>
         </View>
 
         <TouchableOpacity className="mt-8" onPress={() => navigation.goBack()}>
