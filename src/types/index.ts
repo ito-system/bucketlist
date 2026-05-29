@@ -36,6 +36,7 @@ export type User = {
   email: string;
   displayName: string;
   planType: PlanType;
+  isExempt?: boolean;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 };
