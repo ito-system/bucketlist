@@ -86,7 +86,7 @@ export function ProfileEditScreen() {
           {/* 名前 */}
           <Text className="text-sm font-medium text-amber-900 mb-1.5">名前</Text>
           <TextInput
-            className="border border-amber-200 rounded-xl px-4 py-3.5 text-base text-amber-900 bg-amber-50 mb-4"
+            className="border border-amber-200 rounded-xl px-4 py-3.5 text-base text-amber-900 bg-white mb-4"
 
             value={displayName}
             onChangeText={setDisplayName}
@@ -99,7 +99,7 @@ export function ProfileEditScreen() {
             メールアドレス
           </Text>
           <TextInput
-            className="border border-amber-200 rounded-xl px-4 py-3.5 text-base text-amber-900 bg-amber-50 mb-1"
+            className="border border-amber-200 rounded-xl px-4 py-3.5 text-base text-amber-900 bg-white mb-1"
 
             value={email}
             onChangeText={setEmail}

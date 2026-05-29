@@ -109,7 +109,7 @@ export function TagManageScreen({ navigation }: Props) {
 
       {/* プラン情報 */}
       <View className="mx-4 mb-3 bg-white rounded-xl px-4 py-3">
-        <Text className="text-sm text-gray-500">
+        <Text className="text-sm text-amber-600">
           {maxTags === Infinity
             ? `作成済み: ${tags.length}個（無制限）`
             : `作成済み: ${tags.length} / ${maxTags}個`}
@@ -173,16 +173,16 @@ export function TagManageScreen({ navigation }: Props) {
           activeOpacity={1}
           onPress={() => setModalVisible(false)}
         />
-        <View className="bg-white rounded-t-3xl px-5 pt-5 pb-8">
+        <View className="bg-amber-50 rounded-t-3xl px-5 pt-5 pb-8">
           <Text className="text-lg font-bold text-gray-900 mb-4">新しいタグ</Text>
 
           {/* タグ名 */}
           <Text className="text-sm font-medium text-gray-700 mb-1.5">タグ名</Text>
           <TextInput
-            className="bg-gray-100 rounded-xl px-4 py-3 text-gray-900 mb-4"
+            className="bg-white border border-amber-200 rounded-xl px-4 py-3 text-amber-900 mb-4"
             style={{ lineHeight: 17 }}
             placeholder="タグ名を入力"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#D97706"
             value={tagName}
             onChangeText={setTagName}
             maxLength={20}
