@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Image,
   Alert,
   Modal,
   ScrollView,
@@ -137,21 +136,14 @@ export function ProfileScreen() {
           activeOpacity={0.7}
           style={{ shadowColor: '#F59E0B', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.10, shadowRadius: 16, elevation: 3 }}
         >
-          {user.photoURL ? (
-            <Image
-              source={{ uri: user.photoURL }}
-              className="w-20 h-20 rounded-2xl mb-3"
-            />
-          ) : (
-            <View
-              className="w-20 h-20 rounded-2xl items-center justify-center mb-3"
-              style={{ backgroundColor: '#F59E0B' }}
-            >
-              <Text className="text-3xl font-bold text-white">
-                {user.displayName.charAt(0).toUpperCase()}
-              </Text>
-            </View>
-          )}
+          <View
+            className="w-20 h-20 rounded-2xl items-center justify-center mb-3"
+            style={{ backgroundColor: '#F59E0B' }}
+          >
+            <Text className="text-3xl font-bold text-white">
+              {user.displayName.charAt(0).toUpperCase()}
+            </Text>
+          </View>
           <Text className="text-xl font-bold text-amber-900 mb-1">
             {user.displayName}
           </Text>
