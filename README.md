@@ -1,4 +1,4 @@
-# BucketList
+# 夢ノート
 
 やりたいことをリストにまとめて管理できる、共有対応のバケットリストアプリ。
 リストを複数メンバーと共有し、アイテムごとにステータス・タグ・画像・URLを管理できます。
@@ -15,7 +15,7 @@
 - ログイン状態の永続化（AsyncStorage）
 
 ### リスト管理
-- リストの作成・削除
+- リストの作成・削除（絵文字アイコン付き）
 - リストへの招待コード発行（有効期限 7 日間）
 - 招待コードによるリスト参加
 - 招待コードのコピー・シェア
@@ -35,9 +35,16 @@
 - アイテムカードへのタグバッジ表示
 
 ### プロフィール
-- 表示名・プロフィール画像の編集
+- 表示名の編集
 - パスワードの変更（現在のパスワード確認あり）
 - タグ管理画面へのアクセス
+
+### プレミアムプラン（課金）
+- RevenueCat による月額・年間・買い切りプランの購入
+- 購入・復元フロー
+
+### 法的情報
+- 利用規約・プライバシーポリシーの表示
 
 ### プラン
 | 項目 | フリー | プレミアム |
@@ -75,10 +82,12 @@ src/
 ├── components/          # 共通コンポーネント（TextInput など）
 ├── features/
 │   ├── auth/            # 認証（ログイン・新規登録）
+│   ├── invite/          # 招待コード
+│   ├── legal/           # 利用規約・プライバシーポリシー
 │   ├── list/            # リスト・アイテム管理
 │   ├── profile/         # プロフィール・パスワード変更
 │   ├── tag/             # タグ管理
-│   └── invite/          # 招待コード
+│   └── upgrade/         # プレミアムプラン・課金（RevenueCat）
 ├── lib/                 # Firebase 初期化・パスワードバリデーション
 ├── navigation/          # ナビゲーター定義
 ├── store/               # Zustand ストア
@@ -163,17 +172,18 @@ npm run android
 
 ```
 /users/{uid}
-  - displayName, email, photoURL, planType, createdAt, updatedAt
+  - uid, displayName, email, planType, createdAt, updatedAt
 
 /users/{uid}/tags/{tagId}
-  - name, color, createdAt, updatedAt
+  - tagId, name, color, createdAt, updatedAt
 
 /lists/{listId}
-  - title, ownerId, memberIds[], createdAt, updatedAt
+  - listId, title, emoji?, ownerId, memberIds[], createdAt, updatedAt
 
 /lists/{listId}/items/{itemId}
-  - title, description, url, imageURL, status, tagIds[]
-  - order, createdBy, completedAt, createdAt, updatedAt
+  - itemId, listId, title, description, url, imageURL
+  - status, location?, tagIds[], order?
+  - createdBy, completedAt, createdAt, updatedAt
 
 /invites/{code}
   - listId, createdBy, expiresAt, usedBy[], createdAt
