@@ -36,6 +36,7 @@ export type User = {
   email: string;
   displayName: string;
   planType: PlanType;
+  /** true の場合、料金免除。RevenueCat Webhook による planType の上書きをスキップする */
   isExempt?: boolean;
   createdAt: Timestamp;
   updatedAt: Timestamp;
