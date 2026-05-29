@@ -47,7 +47,7 @@ export function PlanSelectScreen({ navigation }: Props) {
 
   const [monthlyPkg, setMonthlyPkg] = useState<PurchasesPackage | null>(null);
   const [annualPkg, setAnnualPkg] = useState<PurchasesPackage | null>(null);
-  const [lifetimePkg, setLifetimePkg] = useState<PurchasesPackage | null>(null);
+  const [foreverPkg, setForeverPkg] = useState<PurchasesPackage | null>(null);
   const [isLoadingOfferings, setIsLoadingOfferings] = useState(true);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export function PlanSelectScreen({ navigation }: Props) {
         if (offering) {
           setMonthlyPkg(offering.monthly ?? null);
           setAnnualPkg(offering.annual ?? null);
-          setLifetimePkg(offering.lifetime ?? null);
+          setForeverPkg(offering.availablePackages?.find(p => p.identifier === 'forever') ?? null);
         }
       } catch {
         // RevenueCat 未設定時は無視
@@ -215,9 +215,9 @@ export function PlanSelectScreen({ navigation }: Props) {
               {/* 買い切りプラン */}
               <TouchableOpacity
                 className="bg-white border border-amber-200 rounded-2xl p-5 flex-row items-center justify-between"
-                onPress={() => lifetimePkg ? handlePurchase(lifetimePkg) : undefined}
-                disabled={isLoading || !lifetimePkg}
-                activeOpacity={lifetimePkg ? 0.8 : 1}
+                onPress={() => foreverPkg ? handlePurchase(foreverPkg) : undefined}
+                disabled={isLoading || !foreverPkg}
+                activeOpacity={foreverPkg ? 0.8 : 1}
               >
                 <View className="flex-row items-center gap-x-3">
                   <View className="w-9 h-9 rounded-full bg-amber-100 items-center justify-center">
@@ -229,7 +229,7 @@ export function PlanSelectScreen({ navigation }: Props) {
                   </View>
                 </View>
                 <Text className="text-amber-900 font-bold text-lg">
-                  {lifetimePkg ? lifetimePkg.product.priceString : '¥4,800'}
+                  {foreverPkg ? foreverPkg.product.priceString : '¥4,800'}
                 </Text>
               </TouchableOpacity>
               {isLoading && (

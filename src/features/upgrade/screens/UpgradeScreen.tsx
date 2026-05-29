@@ -28,8 +28,8 @@ export function UpgradeScreen({ navigation }: Props) {
   const [offerings, setOfferings] = useState<{
     monthly: PurchasesPackage | null;
     annual: PurchasesPackage | null;
-    lifetime: PurchasesPackage | null;
-  }>({ monthly: null, annual: null, lifetime: null });
+    forever: PurchasesPackage | null;
+  }>({ monthly: null, annual: null, forever: null });
   const [isLoadingOfferings, setIsLoadingOfferings] = useState(true);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export function UpgradeScreen({ navigation }: Props) {
           setOfferings({
             monthly: offering.monthly ?? null,
             annual: offering.annual ?? null,
-            lifetime: offering.lifetime ?? null,
+            forever: offering.availablePackages?.find(p => p.identifier === 'forever') ?? null,
           });
         }
       } catch {
@@ -149,17 +149,17 @@ export function UpgradeScreen({ navigation }: Props) {
                 primary={false}
               />
             )}
-            {offerings.lifetime && (
+            {offerings.forever && (
               <PurchaseButton
-                pkg={offerings.lifetime}
+                pkg={offerings.forever}
                 title="買い切りプラン"
                 badge="一度の購入で永久利用"
-                onPress={() => handlePurchase(offerings.lifetime!)}
+                onPress={() => handlePurchase(offerings.forever!)}
                 isLoading={isLoading}
                 primary={false}
               />
             )}
-            {!offerings.monthly && !offerings.annual && !offerings.lifetime && (
+            {!offerings.monthly && !offerings.annual && !offerings.forever && (
               <View className="bg-amber-50 rounded-xl p-4">
                 <Text className="text-sm text-amber-700 text-center">
                   現在、購入プランを読み込めませんでした。{'\n'}
