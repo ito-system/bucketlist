@@ -5,16 +5,10 @@ import Purchases, {
 } from 'react-native-purchases';
 import { Platform } from 'react-native';
 
-/**
- * RevenueCat API キー
- * RevenueCat ダッシュボード → Project Settings → API Keys で取得してください。
- * iOS 用と Android 用で別々のキーになります。
- *
- * TODO: 本番リリース前に実際の API Key に差し替えること
- */
+/** RevenueCat API キー */
 const REVENUECAT_API_KEY = Platform.select({
-  ios: 'appl_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',     // ← RevenueCat iOS Public API Key
-  android: 'goog_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', // ← RevenueCat Android Public API Key
+  ios: process.env.EXPO_PUBLIC_REVENUECAT_IOS_API_KEY ?? '',     // ← RevenueCat iOS Public API Key
+  android: process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY ?? '', // ← RevenueCat Android Public API Key
 }) ?? '';
 
 /** RevenueCat で設定したエンタイトルメント ID */
