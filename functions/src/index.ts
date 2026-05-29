@@ -172,10 +172,20 @@ export const enforceTagLimit = functions.firestore
  * 呼び出し方（Firebase CLI）:
  *   firebase functions:shell
  *   > grantPremiumExemption({email: "user@example.com"})
+ *
+ * 事前準備（初回のみ）:
+ *   node -e "
+ *     const admin = require('firebase-admin');
+ *     admin.initializeApp();
+ *     admin.auth().setCustomUserClaims('YOUR_UID', { admin: true });
+ *   "
  */
 export const grantPremiumExemption = functions.https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError('unauthenticated', 'ログインが必要です');
+  }
+  if (context.auth.token.admin !== true) {
+    throw new functions.https.HttpsError('permission-denied', '管理者権限が必要です');
   }
 
   const email: string | undefined = data?.email;
