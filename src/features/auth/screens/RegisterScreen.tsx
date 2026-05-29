@@ -180,7 +180,7 @@ export function RegisterScreen({ navigation }: Props) {
             >
               プライバシーポリシー
             </Text>
-            {' '}に同意したものとみなします。
+            に{'\n'}同意したものとみなします。
           </Text>
         </View>
 
