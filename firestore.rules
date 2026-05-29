@@ -46,14 +46,16 @@ service cloud.firestore {
       allow create: if isAuthenticated()
         && isCurrentUser(uid)
         && request.resource.data.uid == uid
-        && request.resource.data.planType == 'free';
+        && request.resource.data.planType == 'free'
+        && request.resource.data.get('isExempt', false) == false;
 
       // [H-1修正] planType の変更をクライアントから完全に禁止。
       // planType は Cloud Functions (RevenueCat Webhook) 経由でのみ更新する。
       allow update: if isAuthenticated()
         && isCurrentUser(uid)
         && request.resource.data.uid == resource.data.uid
-        && request.resource.data.planType == resource.data.planType;
+        && request.resource.data.planType == resource.data.planType
+        && request.resource.data.get('isExempt', false) == resource.data.get('isExempt', false);
 
       // 本人のみ自分のアカウントを削除できる
       allow delete: if isAuthenticated() && isCurrentUser(uid);
