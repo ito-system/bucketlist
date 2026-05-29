@@ -36,7 +36,10 @@ export type User = {
   email: string;
   displayName: string;
   planType: PlanType;
-  /** true の場合、料金免除。RevenueCat Webhook による planType の上書きをスキップする */
+  /**
+   * true の場合、RevenueCat Webhook による planType の自動更新をスキップする。
+   * 特定のユーザーを料金免除にする際に使用。
+   */
   isExempt?: boolean;
   createdAt: Timestamp;
   updatedAt: Timestamp;
