@@ -183,7 +183,16 @@ export const grantPremiumExemption = functions.https.onCall(async (data, context
     throw new functions.https.HttpsError('invalid-argument', 'email が必要です');
   }
 
-  const userRecord = await admin.auth().getUserByEmail(email);
+  let userRecord;
+  try {
+    userRecord = await admin.auth().getUserByEmail(email);
+  } catch (e: unknown) {
+    const err = e as { code?: string };
+    if (err.code === 'auth/user-not-found') {
+      throw new functions.https.HttpsError('not-found', 'ユーザーが見つかりません');
+    }
+    throw new functions.https.HttpsError('internal', 'ユーザー検索に失敗しました');
+  }
   const uid = userRecord.uid;
 
   await db.doc(`users/${uid}`).update({
