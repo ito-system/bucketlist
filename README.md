@@ -8,6 +8,7 @@
 ## 機能一覧
 
 ### 認証
+
 - メールアドレス＋パスワードによる新規登録 / ログイン
 - Google アカウントによるソーシャルログイン
 - ログアウト
@@ -15,12 +16,14 @@
 - ログイン状態の永続化（AsyncStorage）
 
 ### リスト管理
+
 - リストの作成・削除（絵文字アイコン付き）
 - リストへの招待コード発行（有効期限 7 日間）
 - 招待コードによるリスト参加
 - 招待コードのコピー・シェア
 
 ### アイテム管理
+
 - アイテムの作成・編集・削除
 - タイトル・詳細メモ・参考 URL・写真の設定
 - ステータス管理：やりたい / チャレンジ中 / 達成！
@@ -28,6 +31,7 @@
 - ソート：手動 / 名前順 / 状態別 / 新着順 / タグ別
 
 ### タグ機能
+
 - タグの作成（名称 ＋ 10 色のプリセットカラー）
 - タグはユーザーごとに管理し、全リスト共通で使用可能
 - 複数ユーザーのリストではオーナーのタグを共有
@@ -35,43 +39,47 @@
 - アイテムカードへのタグバッジ表示
 
 ### プロフィール
+
 - 表示名の編集
 - パスワードの変更（現在のパスワード確認あり）
 - タグ管理画面へのアクセス
 
 ### プレミアムプラン（課金）
+
 - RevenueCat による月額・年間・買い切りプランの購入
 - 購入・復元フロー
 
 ### 法的情報
+
 - 利用規約・プライバシーポリシーの表示
 
 ### プラン
-| 項目 | フリー | プレミアム |
-|---|---|---|
-| 作成できるリスト数 | 3 | 無制限 |
-| リストあたりのメンバー数 | 2 | 10 |
-| 作成できるタグ数 | 5 | 無制限 |
+
+| 項目                     | フリー | プレミアム |
+| ------------------------ | ------ | ---------- |
+| 作成できるリスト数       | 3      | 無制限     |
+| リストあたりのメンバー数 | 2      | 10         |
+| 作成できるタグ数         | 5      | 無制限     |
 
 ---
 
 ## 技術スタック
 
-| カテゴリ | 技術 |
-|---|---|
-| フレームワーク | [Expo](https://expo.dev/) SDK 55 (Managed Workflow) |
-| UI | [React Native](https://reactnative.dev/) 0.83.2 |
-| スタイリング | [NativeWind](https://www.nativewind.dev/) v4（Tailwind CSS） |
-| アイコン | [Lucide React Native](https://lucide.dev/) |
-| 状態管理 | [Zustand](https://zustand-demo.pmnd.rs/) v5 |
-| ナビゲーション | [React Navigation](https://reactnavigation.org/)（Stack + Bottom Tabs） |
-| バックエンド | [Firebase](https://firebase.google.com/)（Auth / Firestore / Storage） |
-| 認証 | Firebase Authentication（Email/Password・Google） |
-| DB | Cloud Firestore |
-| ストレージ | Firebase Storage（アイテム画像） |
-| 永続化 | [@react-native-async-storage/async-storage](https://github.com/react-native-async-storage/async-storage) |
-| ドラッグ操作 | [react-native-draggable-flatlist](https://github.com/computerjazz/react-native-draggable-flatlist) |
-| 言語 | TypeScript 5.9 |
+| カテゴリ       | 技術                                                                                                     |
+| -------------- | -------------------------------------------------------------------------------------------------------- |
+| フレームワーク | [Expo](https://expo.dev/) SDK 55 (Managed Workflow)                                                      |
+| UI             | [React Native](https://reactnative.dev/) 0.83.2                                                          |
+| スタイリング   | [NativeWind](https://www.nativewind.dev/) v4（Tailwind CSS）                                             |
+| アイコン       | [Lucide React Native](https://lucide.dev/)                                                               |
+| 状態管理       | [Zustand](https://zustand-demo.pmnd.rs/) v5                                                              |
+| ナビゲーション | [React Navigation](https://reactnavigation.org/)（Stack + Bottom Tabs）                                  |
+| バックエンド   | [Firebase](https://firebase.google.com/)（Auth / Firestore / Storage）                                   |
+| 認証           | Firebase Authentication（Email/Password・Google）                                                        |
+| DB             | Cloud Firestore                                                                                          |
+| ストレージ     | Firebase Storage（アイテム画像）                                                                         |
+| 永続化         | [@react-native-async-storage/async-storage](https://github.com/react-native-async-storage/async-storage) |
+| ドラッグ操作   | [react-native-draggable-flatlist](https://github.com/computerjazz/react-native-draggable-flatlist)       |
+| 言語           | TypeScript 5.9                                                                                           |
 
 ---
 
@@ -99,6 +107,7 @@ src/
 ## 環境構築
 
 ### 前提条件
+
 - Node.js 18 以上
 - npm または yarn
 - [Expo Go](https://expo.dev/go) アプリ（実機確認用）または iOS / Android シミュレーター
@@ -172,7 +181,7 @@ npm run android
 
 ```
 /users/{uid}
-  - uid, displayName, email, planType, createdAt, updatedAt
+  - uid, displayName, email, planType, isExempt?, createdAt, updatedAt
 
 /users/{uid}/tags/{tagId}
   - tagId, name, color, createdAt, updatedAt
@@ -196,6 +205,55 @@ npm run android
 - `.env` ファイルには機密情報が含まれるため、`.gitignore` に追加し、リポジトリにコミットしないでください。
 - タグはリストオーナーのものが全メンバーに共有されます。メンバーはオーナーのタグをアイテムに付与できますが、タグの作成・削除はオーナー本人のみ行えます。
 - RevenueCat の API Key が未設定（`XXXX` のまま）の場合、購入・復元機能はスキップされます。開発中はエラーなしで動作します。
+
+---
+
+## 料金免除の付与
+
+特定のユーザーを課金なしでプレミアムプランとして扱う手順です。
+
+### 1. 管理者権限の設定（初回のみ）
+
+Firebase Admin SDK を使って、ご自身のアカウントに `admin: true` の Custom Claim を付与します。
+
+```bash
+# firebase-admin をインストール
+npm install -g firebase-admin
+
+# UID は Firebase Console → Authentication → ユーザー一覧 で確認
+node -e "
+const admin = require('firebase-admin');
+const serviceAccount = require('./serviceAccountKey.json');
+admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+admin.auth().setCustomUserClaims('YOUR_UID', { admin: true }).then(() => {
+  console.log('管理者権限を設定しました');
+  process.exit(0);
+});
+"
+```
+
+> `serviceAccountKey.json` は Firebase Console → プロジェクトの設定 → サービスアカウント → 「新しい秘密鍵の生成」で取得できます。機密情報のため `.gitignore` に追加してください。
+
+### 2. 料金免除の付与
+
+Cloud Functions をデプロイ済みの状態で以下を実行します。
+
+```bash
+firebase functions:shell
+> grantPremiumExemption({email: "user@example.com"})
+```
+
+成功すると以下が返ります：
+
+```json
+{ "uid": "...", "email": "user@example.com", "planType": "premium", "isExempt": true }
+```
+
+### 仕組み
+
+- `isExempt: true` のユーザーは RevenueCat Webhook による `planType` の自動更新がスキップされます
+- サブスクが切れても `free` に戻りません
+- 免除を解除する場合は Firebase Console から直接 `isExempt` を削除または `false` に更新してください
 
 ---
 
@@ -232,11 +290,12 @@ firebase functions:config:set \
 firebase deploy --only functions
 ```
 
-- [ ] Firebase Console → Functions で以下の 4 関数が表示されること
+- [ ] Firebase Console → Functions で以下の 5 関数が表示されること
   - `syncPremiumStatus` — 購入後のクライアントから planType を更新
   - `revenuecatWebhook` — RevenueCat からの自動通知（サブスク更新・失効など）
   - `enforceListLimit` — フリープランのリスト数上限を Firestore トリガーで強制
   - `enforceTagLimit` — フリープランのタグ数上限を Firestore トリガーで強制
+  - `grantPremiumExemption` — 特定ユーザーへの料金免除付与（管理者専用）
 
 ---
 
@@ -246,9 +305,9 @@ firebase deploy --only functions
 - [ ] iOS / Android アプリを RevenueCat に登録
 - [ ] **Entitlement** を作成（ID は必ず `premium`）
 - [ ] App Store Connect / Google Play で商品を先に作成し、RevenueCat に登録
-  - 月額プラン ¥300（例: `com.ito-dev.bucketlist.premium.monthly`）
-  - 年間プラン ¥2,400（例: `com.ito-dev.bucketlist.premium.annual`）
-  - 買い切りプラン ¥4,800（例: `com.ito-dev.bucketlist.premium.lifetime`）
+  - 月額プラン ¥300（例: `com.ito_dev.bucketlist.premium.monthly`）
+  - 年間プラン ¥2,400（例: `com.ito_dev.bucketlist.premium.annual`）
+  - 買い切りプラン ¥4,800（例: `com.ito_dev.bucketlist.premium.forever`）
 - [ ] **Offering** を作成し、3 つの商品をパッケージとして設定
   - `monthly` パッケージ → 月額商品
   - `annual` パッケージ → 年間商品
@@ -295,6 +354,7 @@ EXPO_PUBLIC_ADMOB_ANDROID_BANNER_ID=ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
 ```
 
 > **App ID と広告ユニット ID の違い**
+>
 > - App ID: `~` 区切り（`ca-app-pub-XXXX~XXXX`）→ `app.json` と `Info.plist`
 > - 広告ユニット ID: `/` 区切り（`ca-app-pub-XXXX/XXXX`）→ `.env`
 
