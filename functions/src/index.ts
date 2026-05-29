@@ -9,7 +9,7 @@ const db = admin.firestore();
 
 const FREE_PLAN_LIST_LIMIT = 3;
 const FREE_PLAN_TAG_LIMIT = 5;
-const REVENUECAT_API_KEY = functions.config().revenuecat?.api_key ?? '';
+const REVENUECAT_API_KEY = process.env.REVENUECAT_API_KEY ?? '';
 const ENTITLEMENT_ID = 'premium';
 
 // ─── [H-1] planType の同期（購入後にクライアントから呼び出す） ───────────────────
@@ -27,6 +27,12 @@ export const syncPremiumStatus = functions.https.onCall(async (data, context) =>
   }
 
   const uid = context.auth.uid;
+
+  // isExempt ユーザーは RevenueCat の結果に関わらず premium を維持
+  const userSnap = await db.doc(`users/${uid}`).get();
+  if (userSnap.data()?.isExempt === true) {
+    return { planType: 'premium' };
+  }
 
   // RevenueCat REST API でエンタイトルメントを検証
   let isPremium = false;
@@ -62,7 +68,7 @@ export const syncPremiumStatus = functions.https.onCall(async (data, context) =>
  */
 export const revenuecatWebhook = functions.https.onRequest(async (req, res) => {
   const authHeader = req.headers.authorization ?? '';
-  const expectedAuth = functions.config().revenuecat?.webhook_auth ?? '';
+  const expectedAuth = process.env.REVENUECAT_WEBHOOK_AUTH ?? '';
 
   if (expectedAuth && authHeader !== expectedAuth) {
     res.status(401).send('Unauthorized');
