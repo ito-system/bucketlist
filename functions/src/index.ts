@@ -100,6 +100,16 @@ export const revenuecatWebhook = functions.https.onRequest(async (req, res) => {
   if (revokeEvents.includes(event.type)) planType = 'free';
 
   if (planType) {
+    // isExempt ユーザーは free へのダウングレードをスキップ
+    if (planType === 'free') {
+      const userSnap = await db.doc(`users/${uid}`).get();
+      if (userSnap.data()?.isExempt === true) {
+        functions.logger.info(`Skipping downgrade for exempt user: ${uid}`);
+        res.status(200).send('OK');
+        return;
+      }
+    }
+
     await db.doc(`users/${uid}`).update({
       planType,
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
