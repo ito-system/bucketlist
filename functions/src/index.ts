@@ -5,14 +5,10 @@ import axios from 'axios';
 admin.initializeApp();
 const db = admin.firestore();
 
-// ─── 定数 ──────────────────────────────────────────────────────────────────────
-
 const FREE_PLAN_LIST_LIMIT = 3;
 const FREE_PLAN_TAG_LIMIT = 5;
 const REVENUECAT_API_KEY = process.env.REVENUECAT_API_KEY ?? '';
 const ENTITLEMENT_ID = 'premium';
-
-// ─── [H-1] planType の同期（購入後にクライアントから呼び出す） ───────────────────
 
 /**
  * RevenueCat の購入完了後にクライアントから呼び出す。
@@ -58,8 +54,6 @@ export const syncPremiumStatus = functions.https.onCall(async (data, context) =>
 
   return { planType: isPremium ? 'premium' : 'free' };
 });
-
-// ─── [H-1] RevenueCat Webhook（サーバー側からの自動更新） ──────────────────────
 
 /**
  * RevenueCat ダッシュボード → Integrations → Webhooks に以下の URL を登録:
@@ -120,8 +114,6 @@ export const revenuecatWebhook = functions.https.onRequest(async (req, res) => {
   res.status(200).send('OK');
 });
 
-// ─── [H-3] フリープランのリスト数上限を Cloud Functions で強制 ───────────────────
-
 /**
  * リスト作成時にオーナーのリスト数を確認し、超過していれば削除する。
  * Firestore Rules では件数チェックができないため、このトリガーで補完する。
@@ -149,8 +141,6 @@ export const enforceListLimit = functions.firestore
     }
   });
 
-// ─── [M-1] フリープランのタグ数上限を Cloud Functions で強制 ────────────────────
-
 /**
  * タグ作成時にユーザーのタグ数を確認し、超過していれば削除する。
  */
@@ -174,3 +164,34 @@ export const enforceTagLimit = functions.firestore
       await snap.ref.delete();
     }
   });
+
+/**
+ * 指定メールアドレスのユーザーを料金免除プレミアムに設定する。
+ * 開発者が Firebase CLI または curl から呼び出すことを想定。
+ *
+ * 呼び出し方（Firebase CLI）:
+ *   firebase functions:shell
+ *   > grantPremiumExemption({email: "user@example.com"})
+ */
+export const grantPremiumExemption = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'ログインが必要です');
+  }
+
+  const email: string | undefined = data?.email;
+  if (!email) {
+    throw new functions.https.HttpsError('invalid-argument', 'email が必要です');
+  }
+
+  const userRecord = await admin.auth().getUserByEmail(email);
+  const uid = userRecord.uid;
+
+  await db.doc(`users/${uid}`).update({
+    planType: 'premium',
+    isExempt: true,
+    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
+
+  functions.logger.info(`Premium exemption granted: ${email} (${uid})`);
+  return { uid, email, planType: 'premium', isExempt: true };
+});
