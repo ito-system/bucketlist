@@ -43,6 +43,7 @@ const DELETE_CHECKS = [
   'リスト・アイテム・タグのデータがすべて削除されます',
   '削除したデータは復元できません',
   'プレミアムプランに加入中の場合、各ストア（App Store / Google Play）のサブスクリプション設定から別途キャンセルが必要です。支払済みの料金は返金されません',
+  '削除後、同じメールアドレスは24時間経過後に再度ご利用いただけます',
   '上記の内容を確認し、アカウントを削除することに同意します',
 ] as const;
 
@@ -53,7 +54,7 @@ export function ProfileScreen() {
   const { tags, subscribe: subscribeTags } = useTagStore();
 
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [checks, setChecks] = useState<boolean[]>([false, false, false, false]);
+  const [checks, setChecks] = useState<boolean[]>([false, false, false, false, false]);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useFocusEffect(
@@ -70,7 +71,7 @@ export function ProfileScreen() {
   };
 
   const openDeleteModal = () => {
-    setChecks([false, false, false, false]);
+    setChecks([false, false, false, false, false]);
     setDeleteModalVisible(true);
   };
 

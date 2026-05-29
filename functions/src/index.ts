@@ -214,3 +214,40 @@ export const grantPremiumExemption = functions.https.onCall(async (data, context
   functions.logger.info(`Premium exemption granted: ${email} (${uid})`);
   return { uid, email, planType: 'premium', isExempt: true };
 });
+
+/**
+ * 指定メールアドレスのユーザーを Firebase Auth から強制削除する。
+ * 退会済みアカウントのメールアドレスを即時解放するための管理者専用操作。
+ *
+ * 呼び出し方（Firebase CLI）:
+ *   firebase functions:shell
+ *   > deleteUserByEmail({email: "user@example.com"})
+ */
+export const deleteUserByEmail = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError('unauthenticated', 'ログインが必要です');
+  }
+  if (context.auth.token.admin !== true) {
+    throw new functions.https.HttpsError('permission-denied', '管理者権限が必要です');
+  }
+
+  const email: string | undefined = data?.email;
+  if (!email) {
+    throw new functions.https.HttpsError('invalid-argument', 'email が必要です');
+  }
+
+  let userRecord;
+  try {
+    userRecord = await admin.auth().getUserByEmail(email);
+  } catch (e: unknown) {
+    const err = e as { code?: string };
+    if (err.code === 'auth/user-not-found') {
+      throw new functions.https.HttpsError('not-found', 'ユーザーが見つかりません（既に削除済みの可能性があります）');
+    }
+    throw new functions.https.HttpsError('internal', 'ユーザー検索に失敗しました');
+  }
+
+  await admin.auth().deleteUser(userRecord.uid);
+  functions.logger.info(`User deleted by admin: ${email} (${userRecord.uid})`);
+  return { uid: userRecord.uid, email };
+});
