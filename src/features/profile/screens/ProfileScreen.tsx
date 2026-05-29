@@ -30,7 +30,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { AdBanner } from '@/components/AdBanner';
 
 // ▼ お問い合わせフォームのURLをここに入れてください
-const CONTACT_URL = 'https://example.com/contact';
+const CONTACT_URL = 'https://forms.gle/dvYL3tQo3igv63bG9';
 import { useAuthStore } from '@/store/authStore';
 import { useListStore } from '@/store/listStore';
 import { useTagStore } from '@/store/tagStore';
