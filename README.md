@@ -246,7 +246,12 @@ firebase functions:shell
 成功すると以下が返ります：
 
 ```json
-{ "uid": "...", "email": "user@example.com", "planType": "premium", "isExempt": true }
+{
+  "uid": "...",
+  "email": "user@example.com",
+  "planType": "premium",
+  "isExempt": true
+}
 ```
 
 ### 仕組み
@@ -311,7 +316,7 @@ firebase deploy --only functions
 - [ ] **Offering** を作成し、3 つの商品をパッケージとして設定
   - `monthly` パッケージ → 月額商品
   - `annual` パッケージ → 年間商品
-  - `lifetime` パッケージ → 買い切り商品
+  - `forever` パッケージ → 買い切り商品
 - [ ] **Public API キー**を取得して `src/features/upgrade/services/purchaseService.ts` を差し替え
 
 ```ts
@@ -351,6 +356,8 @@ android: 'goog_実際のキー',
 ```env
 EXPO_PUBLIC_ADMOB_IOS_BANNER_ID=ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
 EXPO_PUBLIC_ADMOB_ANDROID_BANNER_ID=ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
+EXPO_PUBLIC_ADMOB_IOS_NATIVE_ID=ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
+EXPO_PUBLIC_ADMOB_ANDROID_NATIVE_ID=ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
 ```
 
 > **App ID と広告ユニット ID の違い**
@@ -422,6 +429,8 @@ EXPO_PUBLIC_GOOGLE_CLIENT_ID_ANDROID=
 
 EXPO_PUBLIC_ADMOB_IOS_BANNER_ID=
 EXPO_PUBLIC_ADMOB_ANDROID_BANNER_ID=
+EXPO_PUBLIC_ADMOB_IOS_NATIVE_ID=
+EXPO_PUBLIC_ADMOB_ANDROID_NATIVE_ID=
 ```
 
 ---

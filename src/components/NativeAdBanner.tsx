@@ -23,12 +23,17 @@ export function NativeAdBanner() {
   useEffect(() => {
     if (!user || user.planType === 'premium') return;
 
+    let cancelled = false;
     let ad: NativeAd | null = null;
 
     NativeAd.createForAdRequest(AD_UNIT_ID, {
       requestNonPersonalizedAdsOnly: true,
     })
       .then((loadedAd) => {
+        if (cancelled) {
+          loadedAd.destroy();
+          return;
+        }
         ad = loadedAd;
         setNativeAd(loadedAd);
       })
@@ -37,9 +42,11 @@ export function NativeAdBanner() {
       });
 
     return () => {
+      cancelled = true;
+      setNativeAd(null);
       ad?.destroy();
     };
-  }, [user]);
+  }, [user?.planType]);
 
   if (!user || user.planType === 'premium' || !nativeAd) return null;
 
