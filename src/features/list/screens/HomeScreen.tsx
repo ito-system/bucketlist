@@ -22,7 +22,7 @@ import { inviteService } from '@/features/invite/services/inviteService';
 import { ListCard } from '@/features/list/components/ListCard';
 import { CreateListModal } from '@/features/list/components/CreateListModal';
 import { EditListModal } from '@/features/list/components/EditListModal';
-import { AdBanner } from '@/components/AdBanner';
+import { NativeAdBanner } from '@/components/NativeAdBanner';
 import { PLAN_LIMITS } from '@/types';
 
 type HomeNavProp = StackNavigationProp<MainStackParamList, 'Tabs'>;
@@ -168,8 +168,8 @@ export function HomeScreen() {
         />
       )}
 
-      {/* バナー広告（フリープランのみ） */}
-      <AdBanner />
+      {/* ネイティブ広告（フリープランのみ） */}
+      <NativeAdBanner />
 
       {/* リスト作成モーダル */}
       <CreateListModal
