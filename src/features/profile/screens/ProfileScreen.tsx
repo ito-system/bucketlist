@@ -27,7 +27,7 @@ import {
   Receipt,
 } from 'lucide-react-native';
 import * as WebBrowser from 'expo-web-browser';
-import { AdBanner } from '@/components/AdBanner';
+import { NativeAdBanner } from '@/components/NativeAdBanner';
 
 // ▼ お問い合わせフォームのURLをここに入れてください
 const CONTACT_URL = 'https://forms.gle/dvYL3tQo3igv63bG9';
@@ -269,7 +269,7 @@ export function ProfileScreen() {
         </TouchableOpacity>
       </ScrollView>
 
-      <AdBanner />
+      <NativeAdBanner />
 
       {/* アカウント削除確認モーダル（変更なし） */}
       <Modal
