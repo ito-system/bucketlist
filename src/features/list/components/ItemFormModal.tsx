@@ -127,6 +127,8 @@ export function ItemFormModal({
           try {
             await onDelete?.();
             onClose();
+          } catch {
+            Alert.alert('エラー', '削除に失敗しました。再度お試しください');
           } finally {
             setIsSubmitting(false);
           }

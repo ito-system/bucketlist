@@ -69,7 +69,17 @@ export function HomeScreen() {
         onPress: () =>
           Alert.alert(`「${list.title}」を削除`, 'このリストとすべてのアイテムを削除しますか？', [
             { text: 'キャンセル', style: 'cancel' },
-            { text: '削除', style: 'destructive', onPress: () => deleteList(list.listId) },
+            {
+              text: '削除',
+              style: 'destructive',
+              onPress: async () => {
+                try {
+                  await deleteList(list.listId);
+                } catch {
+                  Alert.alert('エラー', 'リストの削除に失敗しました。再度お試しください');
+                }
+              },
+            },
           ]),
       },
     ]);

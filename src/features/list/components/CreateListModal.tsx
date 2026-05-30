@@ -4,6 +4,7 @@ import {
   Text,
   TouchableOpacity,
   Modal,
+  Alert,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
@@ -75,6 +76,8 @@ export function CreateListModal({ visible, onClose, onSubmit }: Props) {
       setTitle('');
       setSelectedIcon(undefined);
       onClose();
+    } catch {
+      Alert.alert('エラー', 'リストの作成に失敗しました。再度お試しください');
     } finally {
       setIsSubmitting(false);
     }

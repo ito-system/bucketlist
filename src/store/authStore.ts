@@ -65,16 +65,20 @@ export const useAuthStore = create<AuthState>((set) => {
       return;
     }
 
-    const userSnap = await getDoc(doc(db, 'users', firebaseUser.uid));
-    if (userSnap.exists()) {
-      set({ user: userSnap.data() as User, isLoading: false });
-      // RevenueCat をユーザー UID で初期化（ネイティブビルド時のみ有効）
-      import('@/features/upgrade/services/purchaseService')
-        .then(({ purchaseService }) => purchaseService.initialize(firebaseUser.uid))
-        .catch(() => {/* Expo Go では react-native-purchases が利用不可 */});
-    } else {
-      // Firestore ドキュメントが存在しない（初回 Google ログイン直後など）は
-      // signInWithGoogle 側でドキュメント作成後に onAuthStateChanged が再発火する
+    try {
+      const userSnap = await getDoc(doc(db, 'users', firebaseUser.uid));
+      if (userSnap.exists()) {
+        set({ user: userSnap.data() as User, isLoading: false });
+        // RevenueCat をユーザー UID で初期化（ネイティブビルド時のみ有効）
+        import('@/features/upgrade/services/purchaseService')
+          .then(({ purchaseService }) => purchaseService.initialize(firebaseUser.uid))
+          .catch(() => {/* Expo Go では react-native-purchases が利用不可 */});
+      } else {
+        // Firestore ドキュメントが存在しない（初回 Google ログイン直後など）は
+        // signInWithGoogle 側でドキュメント作成後に onAuthStateChanged が再発火する
+        set({ user: null, isLoading: false });
+      }
+    } catch {
       set({ user: null, isLoading: false });
     }
   });

@@ -166,7 +166,11 @@ export function ListDetailScreen({ route, navigation }: Props) {
   };
 
   const handleDragEnd = async ({ data }: { data: Item[] }) => {
-    await reorderItems(listId, data);
+    try {
+      await reorderItems(listId, data);
+    } catch {
+      // 楽観的更新済みのため画面上は反映されているが、次回起動時に元に戻る
+    }
   };
 
   const handleInvite = async () => {

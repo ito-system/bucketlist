@@ -18,7 +18,8 @@ service cloud.firestore {
     }
 
     function isPremium(uid) {
-      return getUserData(uid).planType == 'premium';
+      let data = getUserData(uid);
+      return data != null && data.planType == 'premium';
     }
 
     function maxMembersFor(ownerId) {

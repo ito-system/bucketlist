@@ -18,6 +18,7 @@ export type CreateItemInput = {
   title: string;
   description?: string;
   url?: string;
+  status?: ItemStatus;
   createdBy: string;
   tagIds?: string[];
 };
@@ -69,7 +70,7 @@ export const itemService = {
       description: input.description ?? null,
       url: input.url ?? null,
       imageURL: null,
-      status: 'todo' satisfies ItemStatus,
+      status: (input.status ?? 'todo') satisfies ItemStatus,
       location: null,
       createdBy: input.createdBy,
       completedAt: null,

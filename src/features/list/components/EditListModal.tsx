@@ -4,6 +4,7 @@ import {
   Text,
   TouchableOpacity,
   Modal,
+  Alert,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
@@ -38,6 +39,8 @@ export function EditListModal({ list, visible, onClose, onSubmit }: Props) {
     try {
       await onSubmit(trimmed, selectedIcon);
       onClose();
+    } catch {
+      Alert.alert('エラー', 'リストの更新に失敗しました。再度お試しください');
     } finally {
       setIsSubmitting(false);
     }
