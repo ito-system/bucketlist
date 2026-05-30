@@ -23,7 +23,7 @@ import { ItemCard } from '@/features/list/components/ItemCard';
 import { ItemFormModal } from '@/features/list/components/ItemFormModal';
 import type { Item } from '@/types';
 import { PLAN_LIMITS } from '@/types';
-import { AdBanner } from '@/components/AdBanner';
+import { NativeAdBanner } from '@/components/NativeAdBanner';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -404,7 +404,7 @@ export function ListDetailScreen({ route, navigation }: Props) {
           onDelete={editingItem ? handleDelete : undefined}
           isOwner={isOwner}
         />
-        <AdBanner />
+        <NativeAdBanner />
       </SafeAreaView>
     </GestureHandlerRootView>
   );
