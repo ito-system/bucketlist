@@ -13,8 +13,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ito-dev.bucketlist"
+      "bundleIdentifier": "com.ito-dev.bucketlist",
+      "xcodeProjectName": "bucketlist",
+      "buildNumber": "1",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
+    "scheme": "bucketlist",
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -24,7 +30,6 @@
       },
       "predictiveBackGestureEnabled": false
     },
-    "scheme": "bucketlist",
     "web": {
       "favicon": "./assets/favicon.png"
     },
@@ -37,6 +42,12 @@
           "iosAppId": "ca-app-pub-1357523946741675~5266031479"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "74a489ef-562d-41ae-9705-4a2ba4098c58"
+      }
+    },
+    "owner": "ito-dev"
   }
 }

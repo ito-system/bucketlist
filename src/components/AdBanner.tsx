@@ -6,8 +6,6 @@ import { useAuthStore } from '@/store/authStore';
  * フリープランのユーザーにのみ表示するバナー広告。
  * 本番用の Ad Unit ID は環境変数で管理してください。
  */
-const ADS_DISABLED = process.env.EXPO_PUBLIC_ADS_DISABLED === 'true';
-
 const AD_UNIT_ID = __DEV__
   ? TestIds.BANNER
   : Platform.select({
@@ -18,7 +16,7 @@ const AD_UNIT_ID = __DEV__
 export function AdBanner() {
   const { user } = useAuthStore();
 
-  if (!user || user.planType === 'premium' || ADS_DISABLED) return null;
+  if (!user || user.planType === 'premium') return null;
 
   return (
     <BannerAd
