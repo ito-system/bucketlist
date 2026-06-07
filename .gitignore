@@ -49,8 +49,5 @@ functions/lib/
 .superpowers/
 docs/superpowers/
 
-# app.json
-app.json
-
 # credentials
 credentials.json
