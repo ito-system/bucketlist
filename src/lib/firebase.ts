@@ -15,46 +15,15 @@ import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 // 5. Firestore / Functions の「App Check を強制」をオンにする
 // ──────────────────────────────────────────────────────────────────────────────
 
-// ─── 環境変数バリデーション ────────────────────────────────────────────────────
-
-const {
-  EXPO_PUBLIC_FIREBASE_API_KEY,
-  EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  EXPO_PUBLIC_FIREBASE_PROJECT_ID,
-  EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  EXPO_PUBLIC_FIREBASE_APP_ID,
-} = process.env;
-
-const requiredEnvVars = {
-  EXPO_PUBLIC_FIREBASE_API_KEY,
-  EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  EXPO_PUBLIC_FIREBASE_PROJECT_ID,
-  EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  EXPO_PUBLIC_FIREBASE_APP_ID,
-};
-
-const missingVars = Object.entries(requiredEnvVars)
-  .filter(([, value]) => !value)
-  .map(([key]) => key);
-
-if (missingVars.length > 0) {
-  throw new Error(
-    `Firebase の環境変数が不足しています: ${missingVars.join(', ')}\n` +
-      '.env.example を参考に .env ファイルを作成してください。',
-  );
-}
-
 // ─── Firebase 初期化 ──────────────────────────────────────────────────────────
 
 const firebaseConfig = {
-  apiKey: EXPO_PUBLIC_FIREBASE_API_KEY!,
-  authDomain: EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN!,
-  projectId: EXPO_PUBLIC_FIREBASE_PROJECT_ID!,
-  storageBucket: EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET!,
-  messagingSenderId: EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
-  appId: EXPO_PUBLIC_FIREBASE_APP_ID!,
+  apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY ?? 'AIzaSyB6xNghzSFuAnWvTQ21aFERgbXKH313wx8',
+  authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN ?? 'bucketlist-c6ecf.firebaseapp.com',
+  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID ?? 'bucketlist-c6ecf',
+  storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET ?? 'bucketlist-c6ecf.firebasestorage.app',
+  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ?? '838187642905',
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID ?? '1:838187642905:ios:be8021321034ee14eb7a88',
 };
 
 // getReactNativePersistence は @firebase/auth の React Native ビルドにのみ存在する。
