@@ -28,8 +28,8 @@ export function LoginScreen({ navigation }: Props) {
   const { signInWithEmail, signInWithGoogle } = useAuthStore();
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_WEB,
-    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_IOS,
+    clientId: "838187642905-ke7vt3lu7j20mljn92bt36i7h7830utb.apps.googleusercontent.com",
+    iosClientId: "838187642905-tbgc08ujqga1bogrcbe1p7787f2ice2n.apps.googleusercontent.com",
     androidClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_ANDROID,
   });
 

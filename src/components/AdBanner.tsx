@@ -9,7 +9,7 @@ import { useAuthStore } from '@/store/authStore';
 const AD_UNIT_ID = __DEV__
   ? TestIds.BANNER
   : Platform.select({
-      ios: process.env.EXPO_PUBLIC_ADMOB_IOS_BANNER_ID ?? TestIds.BANNER,
+      ios: "ca-app-pub-1357523946741675/1097510151",
       android: process.env.EXPO_PUBLIC_ADMOB_ANDROID_BANNER_ID ?? TestIds.BANNER,
     }) ?? TestIds.BANNER;
 

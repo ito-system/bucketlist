@@ -14,7 +14,6 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.ito-dev.bucketlist",
-      "xcodeProjectName": "bucketlist",
       "buildNumber": "1",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
