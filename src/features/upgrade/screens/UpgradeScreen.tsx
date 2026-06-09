@@ -43,7 +43,7 @@ export function UpgradeScreen({ navigation }: Props) {
           setOfferings({
             monthly: offering.monthly ?? null,
             annual: offering.annual ?? null,
-            forever: offering.availablePackages?.find(p => p.identifier === 'forever') ?? null,
+            forever: offering.availablePackages?.find(p => p.identifier === '$rc_lifetime') ?? null,
           });
         }
       } catch {
