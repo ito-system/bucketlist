@@ -9,6 +9,7 @@ import {
   Alert,
   ScrollView,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TextInput } from '@/components/TextInput';
 import { CheckCircle2, Circle, Eye, EyeOff, ArrowLeft } from 'lucide-react-native';
 import type { StackScreenProps } from '@react-navigation/stack';
@@ -25,6 +26,7 @@ export function RegisterScreen({ navigation }: Props) {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { signUpWithEmail } = useAuthStore();
+  const insets = useSafeAreaInsets();
 
   const validation = validatePassword(password);
   const showValidation = password.length > 0;
@@ -58,17 +60,19 @@ export function RegisterScreen({ navigation }: Props) {
       className="flex-1 bg-amber-50"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView
-        contentContainerClassName="flex-grow items-center justify-center px-6 py-12"
-        keyboardShouldPersistTaps="handled"
-      >
+      <View style={{ paddingTop: insets.top }} className="px-4 bg-amber-50">
         <TouchableOpacity
-          className="self-start mb-4"
+          className="py-3 self-start"
           onPress={() => navigation.goBack()}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
           <ArrowLeft size={22} color="#111827" />
         </TouchableOpacity>
+      </View>
+      <ScrollView
+        contentContainerClassName="flex-grow items-center justify-center px-6 pb-12"
+        keyboardShouldPersistTaps="handled"
+      >
         <Text className="text-3xl font-bold text-primary mb-2">
           アカウント作成
         </Text>

@@ -25,6 +25,7 @@ export function LoginScreen({ navigation }: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { signInWithEmail, signInWithGoogle } = useAuthStore();
 
   const [request, response, promptAsync] = Google.useAuthRequest({
@@ -53,14 +54,16 @@ export function LoginScreen({ navigation }: Props) {
 
   const handleEmailLogin = async () => {
     if (!email.trim() || !password) {
-      Alert.alert('入力エラー', 'メールアドレスとパスワードを入力してください');
+      setErrorMessage('メールアドレスとパスワードを入力してください');
       return;
     }
+    setErrorMessage(null);
     setIsSubmitting(true);
     try {
       await signInWithEmail(email.trim(), password);
     } catch (e: any) {
-      Alert.alert('ログイン失敗', getErrorMessage(e.code));
+      console.error('[LoginScreen] login error:', e);
+      setErrorMessage(getErrorMessage(e?.code));
     } finally {
       setIsSubmitting(false);
     }
@@ -110,6 +113,12 @@ export function LoginScreen({ navigation }: Props) {
               </Text>
             )}
           </TouchableOpacity>
+
+          {errorMessage && (
+            <Text className="text-red-500 text-sm text-center mt-1">
+              {errorMessage}
+            </Text>
+          )}
         </View>
 
         <View className="flex-row items-center w-full my-6">

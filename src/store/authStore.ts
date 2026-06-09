@@ -90,7 +90,14 @@ export const useAuthStore = create<AuthState>((set) => {
     clearNewUser: () => set({ isNewUser: false }),
 
     signInWithEmail: async (email, password) => {
-      await signInWithEmailAndPassword(auth, email, password);
+      const { user: fbUser } = await signInWithEmailAndPassword(auth, email, password);
+      // Firestore にユーザードキュメントが存在するか確認する。
+      // 存在しない場合（データ不整合など）はサインアウトしてエラーをthrowする。
+      const userSnap = await getDoc(doc(db, 'users', fbUser.uid));
+      if (!userSnap.exists()) {
+        await firebaseSignOut(auth);
+        throw Object.assign(new Error(), { code: 'auth/user-not-found' });
+      }
       // onAuthStateChanged が user をセットするのでここでは何もしない
     },
 
