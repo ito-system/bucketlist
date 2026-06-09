@@ -5,6 +5,7 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged,
   GoogleAuthProvider,
+  OAuthProvider,
   signInWithCredential,
   updateProfile,
   updateEmail,
@@ -15,6 +16,8 @@ import {
 import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import type { User } from '@/types';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import * as Crypto from 'expo-crypto';
 
 type AuthState = {
   user: User | null;
@@ -36,6 +39,7 @@ type AuthState = {
     idToken: string | null,
     accessToken: string | null,
   ) => Promise<void>;
+  signInWithApple: () => Promise<void>;
   signOut: () => Promise<void>;
   /** 名前・メールアドレスを更新する */
   updateUserProfile: (updates: {
@@ -151,6 +155,50 @@ export const useAuthStore = create<AuthState>((set) => {
       }
     },
 
+    signInWithApple: async () => {
+      const rawNonce = generateNonce(32);
+      const hashedNonce = await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        rawNonce,
+      );
+
+      const appleCredential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+        nonce: hashedNonce,
+      });
+
+      const { identityToken, fullName, email } = appleCredential;
+      if (!identityToken) throw new Error('identityToken is null');
+
+      const provider = new OAuthProvider('apple.com');
+      const credential = provider.credential({ idToken: identityToken, rawNonce });
+      const { user: fbUser } = await signInWithCredential(auth, credential);
+
+      const userRef = doc(db, 'users', fbUser.uid);
+      let userSnap = await getDoc(userRef);
+      const isFirstSignIn = !userSnap.exists();
+      if (isFirstSignIn) {
+        const displayName =
+          [fullName?.givenName, fullName?.familyName].filter(Boolean).join(' ') ||
+          (fbUser.email ?? '').split('@')[0];
+        await setDoc(userRef, {
+          uid: fbUser.uid,
+          email: email ?? fbUser.email ?? '',
+          displayName,
+          planType: 'free',
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+        userSnap = await getDoc(userRef);
+      }
+      if (userSnap.exists()) {
+        set({ user: userSnap.data() as User, isNewUser: isFirstSignIn });
+      }
+    },
+
     signOut: async () => {
       await firebaseSignOut(auth);
     },
@@ -234,3 +282,11 @@ export const useAuthStore = create<AuthState>((set) => {
     },
   };
 });
+
+function generateNonce(length: number): string {
+  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const randomBytes = Crypto.getRandomBytes(length);
+  return Array.from(randomBytes)
+    .map((byte) => charset[byte % charset.length])
+    .join('');
+}
