@@ -51,8 +51,10 @@ export const usePurchaseStore = create<PurchaseState>((set) => ({
       const customerInfo = await purchaseService.purchasePackage(pkg);
       const isPremium = purchaseService.isPremium(customerInfo);
       set({ isPremium });
-      // Firestore の planType 更新は Cloud Functions 経由
-      await syncPlanViaCloudFunction();
+      // Cloud Functions 経由で Firestore の planType を更新（失敗しても購入は成功扱い）
+      syncPlanViaCloudFunction().catch(() => {
+        useAuthStore.getState().refreshUser().catch(() => {});
+      });
     } finally {
       set({ isLoading: false });
     }
@@ -64,7 +66,10 @@ export const usePurchaseStore = create<PurchaseState>((set) => ({
       const customerInfo = await purchaseService.restorePurchases();
       const isPremium = purchaseService.isPremium(customerInfo);
       set({ isPremium });
-      await syncPlanViaCloudFunction();
+      // Cloud Functions 経由で Firestore の planType を更新（失敗しても復元は成功扱い）
+      syncPlanViaCloudFunction().catch(() => {
+        useAuthStore.getState().refreshUser().catch(() => {});
+      });
     } finally {
       set({ isLoading: false });
     }

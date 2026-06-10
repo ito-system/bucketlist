@@ -61,7 +61,8 @@ export function UpgradeScreen({ navigation }: Props) {
         { text: 'OK', onPress: () => navigation.goBack() },
       ]);
     } catch (e: any) {
-      if (e?.userCancelled) return;
+      // ユーザーキャンセルは通知不要（userCancelled フラグまたはキャンセルコード）
+      if (e?.userCancelled || e?.code === 'PURCHASE_CANCELLED' || e?.code === 2) return;
       Alert.alert('購入エラー', e.message ?? '購入に失敗しました。');
     }
   };
