@@ -12,10 +12,7 @@
       "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true,
-      "ios": {
-        "googleServicesFile": "./GoogleService-Info.plist"
-      }
+      "autoIncrement": true
     }
   },
   "submit": {
