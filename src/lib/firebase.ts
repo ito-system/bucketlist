@@ -23,7 +23,7 @@ const firebaseConfig = {
   projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID ?? 'bucketlist-c6ecf',
   storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET ?? 'bucketlist-c6ecf.firebasestorage.app',
   messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID ?? '838187642905',
-  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID ?? '1:838187642905:ios:be8021321034ee14eb7a88',
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID ?? '1:838187642905:ios:c6c9bd6a381f88dceb7a88',
 };
 
 // getReactNativePersistence は @firebase/auth の React Native ビルドにのみ存在する。
