@@ -17,15 +17,24 @@ type PurchaseState = {
 };
 
 /**
- * Cloud Functions の syncPremiumStatus を呼び出して planType を更新する。
+ * Cloud Functions の syncPremiumStatus を呼び出して Firestore の planType を更新する。
  * Admin SDK で更新するため Firestore Rules の planType 制限を安全に迂回できる。
+ * ローカルの user 状態は呼び出し側で楽観的に更新済みのため、ここでは再取得しない。
+ * （RevenueCat REST API のキャッシュ遅延により Cloud Function が誤って 'free' を返す場合がある）
  */
 async function syncPlanViaCloudFunction(): Promise<void> {
   const functions = getFunctions();
   const syncPremiumStatus = httpsCallable(functions, 'syncPremiumStatus');
   await syncPremiumStatus({});
-  // Cloud Functions 側で Firestore を更新したので、ローカル状態を再取得する
-  await useAuthStore.getState().refreshUser();
+}
+
+/** RevenueCat SDK の購入確認結果を authStore.user.planType に即時反映する */
+function applyPremiumLocally(isPremium: boolean): void {
+  if (!isPremium) return;
+  const user = useAuthStore.getState().user;
+  if (user && user.planType !== 'premium') {
+    useAuthStore.setState({ user: { ...user, planType: 'premium' } });
+  }
 }
 
 export const usePurchaseStore = create<PurchaseState>((set) => ({
@@ -39,6 +48,8 @@ export const usePurchaseStore = create<PurchaseState>((set) => ({
       const customerInfo = await purchaseService.getCustomerInfo();
       const isPremium = purchaseService.isPremium(customerInfo);
       set({ isInitialized: true, isPremium });
+      // RevenueCat が premium を確認しているのに Firestore が free の場合は補正する
+      applyPremiumLocally(isPremium);
     } catch {
       // 開発環境など RevenueCat 未設定時は無視
       set({ isInitialized: true });
@@ -51,10 +62,10 @@ export const usePurchaseStore = create<PurchaseState>((set) => ({
       const customerInfo = await purchaseService.purchasePackage(pkg);
       const isPremium = purchaseService.isPremium(customerInfo);
       set({ isPremium });
-      // Cloud Functions 経由で Firestore の planType を更新（失敗しても購入は成功扱い）
-      syncPlanViaCloudFunction().catch(() => {
-        useAuthStore.getState().refreshUser().catch(() => {});
-      });
+      // SDK が確認した購入結果を UI に即時反映（Cloud Function の処理を待たない）
+      applyPremiumLocally(isPremium);
+      // Firestore を非同期で更新（失敗しても購入は成功扱い）
+      syncPlanViaCloudFunction().catch(() => {});
     } finally {
       set({ isLoading: false });
     }
@@ -66,10 +77,9 @@ export const usePurchaseStore = create<PurchaseState>((set) => ({
       const customerInfo = await purchaseService.restorePurchases();
       const isPremium = purchaseService.isPremium(customerInfo);
       set({ isPremium });
-      // Cloud Functions 経由で Firestore の planType を更新（失敗しても復元は成功扱い）
-      syncPlanViaCloudFunction().catch(() => {
-        useAuthStore.getState().refreshUser().catch(() => {});
-      });
+      applyPremiumLocally(isPremium);
+      // Firestore を非同期で更新（失敗しても復元は成功扱い）
+      syncPlanViaCloudFunction().catch(() => {});
     } finally {
       set({ isLoading: false });
     }
