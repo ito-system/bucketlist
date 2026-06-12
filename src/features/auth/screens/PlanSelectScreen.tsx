@@ -56,6 +56,14 @@ export function PlanSelectScreen({ navigation }: Props) {
       const { purchaseService } = await import(
         '@/features/upgrade/services/purchaseService'
       );
+      // 新規登録直後は RevenueCat が未初期化のため、必要なら先に初期化する
+      const { isInitialized, initialize } = usePurchaseStore.getState();
+      if (!isInitialized) {
+        const currentUser = useAuthStore.getState().user;
+        if (currentUser?.uid) {
+          await initialize(currentUser.uid);
+        }
+      }
       const offering = await purchaseService.getOfferings();
       if (offering) {
         setMonthlyPkg(offering.monthly ?? null);
