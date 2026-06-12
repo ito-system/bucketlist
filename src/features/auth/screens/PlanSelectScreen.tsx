@@ -50,24 +50,27 @@ export function PlanSelectScreen({ navigation }: Props) {
   const [foreverPkg, setForeverPkg] = useState<PurchasesPackage | null>(null);
   const [isLoadingOfferings, setIsLoadingOfferings] = useState(true);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const { purchaseService } = await import(
-          '@/features/upgrade/services/purchaseService'
-        );
-        const offering = await purchaseService.getOfferings();
-        if (offering) {
-          setMonthlyPkg(offering.monthly ?? null);
-          setAnnualPkg(offering.annual ?? null);
-          setForeverPkg(offering.availablePackages?.find(p => p.identifier === 'forever') ?? null);
-        }
-      } catch {
-        // RevenueCat 未設定時は無視
-      } finally {
-        setIsLoadingOfferings(false);
+  const loadOfferings = async () => {
+    setIsLoadingOfferings(true);
+    try {
+      const { purchaseService } = await import(
+        '@/features/upgrade/services/purchaseService'
+      );
+      const offering = await purchaseService.getOfferings();
+      if (offering) {
+        setMonthlyPkg(offering.monthly ?? null);
+        setAnnualPkg(offering.annual ?? null);
+        setForeverPkg(offering.availablePackages?.find(p => p.identifier === '$rc_lifetime') ?? null);
       }
-    })();
+    } catch {
+      // RevenueCat 未設定時は無視
+    } finally {
+      setIsLoadingOfferings(false);
+    }
+  };
+
+  useEffect(() => {
+    loadOfferings();
   }, []);
 
   const goToHome = () => {
@@ -141,46 +144,56 @@ export function PlanSelectScreen({ navigation }: Props) {
         <View className="gap-y-3 mb-4">
           {isLoadingOfferings ? (
             <ActivityIndicator color="#F59E0B" />
+          ) : !monthlyPkg && !annualPkg && !foreverPkg ? (
+            <View className="bg-white rounded-2xl p-5 items-center border border-amber-100">
+              <Text className="text-sm text-amber-700 text-center mb-3">
+                プランを読み込めませんでした。{'\n'}
+                ネットワーク接続を確認してもう一度お試しください。
+              </Text>
+              <TouchableOpacity onPress={loadOfferings} activeOpacity={0.7}>
+                <Text className="text-amber-600 font-semibold text-sm">再試行する</Text>
+              </TouchableOpacity>
+            </View>
           ) : (
             <>
               {/* 月額プラン */}
-              <TouchableOpacity
-                className="bg-primary rounded-2xl p-5 flex-row items-center justify-between"
-                onPress={() => monthlyPkg ? handlePurchase(monthlyPkg) : undefined}
-                disabled={isLoading || !monthlyPkg}
-                activeOpacity={monthlyPkg ? 0.8 : 1}
-              >
-                <View className="flex-row items-center gap-x-3">
-                  <View className="w-9 h-9 rounded-full bg-white/20 items-center justify-center">
-                    <Crown size={18} color="#fff" />
+              {monthlyPkg && (
+                <TouchableOpacity
+                  className="bg-primary rounded-2xl p-5 flex-row items-center justify-between"
+                  onPress={() => handlePurchase(monthlyPkg)}
+                  disabled={isLoading}
+                  activeOpacity={0.8}
+                >
+                  <View className="flex-row items-center gap-x-3">
+                    <View className="w-9 h-9 rounded-full bg-white/20 items-center justify-center">
+                      <Crown size={18} color="#fff" />
+                    </View>
+                    <View>
+                      <Text className="text-white font-bold text-base">月額プラン</Text>
+                      <Text className="text-amber-200 text-xs">いつでもキャンセル可</Text>
+                    </View>
                   </View>
-                  <View>
-                    <Text className="text-white font-bold text-base">月額プラン</Text>
-                    <Text className="text-amber-200 text-xs">いつでもキャンセル可</Text>
+                  <View className="items-end">
+                    <Text className="text-white font-bold text-lg">
+                      {monthlyPkg.product.priceString}
+                    </Text>
+                    <Text className="text-amber-200 text-xs">/ 月</Text>
                   </View>
-                </View>
-                <View className="items-end">
-                  <Text className="text-white font-bold text-lg">
-                    {monthlyPkg ? monthlyPkg.product.priceString : '¥300'}
-                  </Text>
-                  <Text className="text-amber-200 text-xs">/ 月</Text>
-                </View>
-              </TouchableOpacity>
+                </TouchableOpacity>
+              )}
 
               {/* 年間プラン */}
-              {(() => {
-                const annualPrice = annualPkg?.product.price ?? 2400;
-                const monthlyPrice = monthlyPkg?.product.price ?? 300;
-                const savings = Math.round(monthlyPrice * 12 - annualPrice);
-                const savingsText = savings > 0
-                  ? `¥${savings.toLocaleString()} お得！`
-                  : null;
+              {annualPkg && (() => {
+                const savings = monthlyPkg
+                  ? Math.round(monthlyPkg.product.price * 12 - annualPkg.product.price)
+                  : 0;
+                const savingsText = savings > 0 ? `¥${savings.toLocaleString()} お得！` : null;
                 return (
                   <TouchableOpacity
                     className="bg-white border border-amber-200 rounded-2xl p-5"
-                    onPress={() => annualPkg ? handlePurchase(annualPkg) : undefined}
-                    disabled={isLoading || !annualPkg}
-                    activeOpacity={annualPkg ? 0.8 : 1}
+                    onPress={() => handlePurchase(annualPkg)}
+                    disabled={isLoading}
+                    activeOpacity={0.8}
                   >
                     <View className="flex-row items-center justify-between">
                       <View className="flex-row items-center gap-x-3">
@@ -203,7 +216,7 @@ export function PlanSelectScreen({ navigation }: Props) {
                       </View>
                       <View className="items-end">
                         <Text className="text-amber-900 font-bold text-lg">
-                          {annualPkg ? annualPkg.product.priceString : '¥2,400'}
+                          {annualPkg.product.priceString}
                         </Text>
                         <Text className="text-amber-600 text-xs">/ 年</Text>
                       </View>
@@ -213,25 +226,27 @@ export function PlanSelectScreen({ navigation }: Props) {
               })()}
 
               {/* 買い切りプラン */}
-              <TouchableOpacity
-                className="bg-white border border-amber-200 rounded-2xl p-5 flex-row items-center justify-between"
-                onPress={() => foreverPkg ? handlePurchase(foreverPkg) : undefined}
-                disabled={isLoading || !foreverPkg}
-                activeOpacity={foreverPkg ? 0.8 : 1}
-              >
-                <View className="flex-row items-center gap-x-3">
-                  <View className="w-9 h-9 rounded-full bg-amber-100 items-center justify-center">
-                    <Zap size={18} color="#F59E0B" />
+              {foreverPkg && (
+                <TouchableOpacity
+                  className="bg-white border border-amber-200 rounded-2xl p-5 flex-row items-center justify-between"
+                  onPress={() => handlePurchase(foreverPkg)}
+                  disabled={isLoading}
+                  activeOpacity={0.8}
+                >
+                  <View className="flex-row items-center gap-x-3">
+                    <View className="w-9 h-9 rounded-full bg-amber-100 items-center justify-center">
+                      <Zap size={18} color="#F59E0B" />
+                    </View>
+                    <View>
+                      <Text className="text-amber-900 font-bold text-base">買い切りプラン</Text>
+                      <Text className="text-amber-600 text-xs">一度の購入で永久利用</Text>
+                    </View>
                   </View>
-                  <View>
-                    <Text className="text-amber-900 font-bold text-base">買い切りプラン</Text>
-                    <Text className="text-amber-600 text-xs">一度の購入で永久利用</Text>
-                  </View>
-                </View>
-                <Text className="text-amber-900 font-bold text-lg">
-                  {foreverPkg ? foreverPkg.product.priceString : '¥4,800'}
-                </Text>
-              </TouchableOpacity>
+                  <Text className="text-amber-900 font-bold text-lg">
+                    {foreverPkg.product.priceString}
+                  </Text>
+                </TouchableOpacity>
+              )}
               {isLoading && (
                 <View className="items-center py-2">
                   <ActivityIndicator color="#F59E0B" />

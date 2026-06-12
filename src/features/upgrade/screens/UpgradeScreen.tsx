@@ -32,26 +32,29 @@ export function UpgradeScreen({ navigation }: Props) {
   }>({ monthly: null, annual: null, forever: null });
   const [isLoadingOfferings, setIsLoadingOfferings] = useState(true);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const { purchaseService } = await import(
-          '@/features/upgrade/services/purchaseService'
-        );
-        const offering = await purchaseService.getOfferings();
-        if (offering) {
-          setOfferings({
-            monthly: offering.monthly ?? null,
-            annual: offering.annual ?? null,
-            forever: offering.availablePackages?.find(p => p.identifier === '$rc_lifetime') ?? null,
-          });
-        }
-      } catch {
-        // オファリング取得失敗は無視（ネイティブビルドが必要）
-      } finally {
-        setIsLoadingOfferings(false);
+  const loadOfferings = async () => {
+    setIsLoadingOfferings(true);
+    try {
+      const { purchaseService } = await import(
+        '@/features/upgrade/services/purchaseService'
+      );
+      const offering = await purchaseService.getOfferings();
+      if (offering) {
+        setOfferings({
+          monthly: offering.monthly ?? null,
+          annual: offering.annual ?? null,
+          forever: offering.availablePackages?.find(p => p.identifier === '$rc_lifetime') ?? null,
+        });
       }
-    })();
+    } catch {
+      // オファリング取得失敗は無視
+    } finally {
+      setIsLoadingOfferings(false);
+    }
+  };
+
+  useEffect(() => {
+    loadOfferings();
   }, []);
 
   const handlePurchase = async (pkg: PurchasesPackage) => {
@@ -161,11 +164,14 @@ export function UpgradeScreen({ navigation }: Props) {
               />
             )}
             {!offerings.monthly && !offerings.annual && !offerings.forever && (
-              <View className="bg-amber-50 rounded-xl p-4">
-                <Text className="text-sm text-amber-700 text-center">
-                  現在、購入プランを読み込めませんでした。{'\n'}
-                  ネイティブビルドが必要です（Expo Go 非対応）。
+              <View className="bg-white rounded-2xl p-5 items-center border border-amber-100">
+                <Text className="text-sm text-amber-700 text-center mb-3">
+                  プランを読み込めませんでした。{'\n'}
+                  ネットワーク接続を確認してもう一度お試しください。
                 </Text>
+                <TouchableOpacity onPress={loadOfferings} activeOpacity={0.7}>
+                  <Text className="text-amber-600 font-semibold text-sm">再試行する</Text>
+                </TouchableOpacity>
               </View>
             )}
           </View>
