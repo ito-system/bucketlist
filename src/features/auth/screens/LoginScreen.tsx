@@ -169,7 +169,7 @@ export function LoginScreen({ navigation }: Props) {
               buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
               buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE_OUTLINE}
               cornerRadius={12}
-              style={{ width: '100%', height: 50 }}
+              style={{ width: '100%', height: 44 }}
               onPress={handleAppleLogin}
             />
           )}
