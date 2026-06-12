@@ -23,12 +23,13 @@ export type MainStackParamList = {
 const Stack = createStackNavigator<MainStackParamList>();
 
 export function MainNavigator() {
-  const { isNewUser } = useAuthStore();
+  const { isNewUser, user } = useAuthStore();
+  const showPlanSelect = isNewUser && user?.planType !== 'premium';
 
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false }}
-      initialRouteName={isNewUser ? 'PlanSelect' : 'Tabs'}
+      initialRouteName={showPlanSelect ? 'PlanSelect' : 'Tabs'}
     >
       <Stack.Screen name="Tabs" component={TabNavigator} />
       <Stack.Screen name="PlanSelect" component={PlanSelectScreen} />
