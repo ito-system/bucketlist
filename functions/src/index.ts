@@ -17,7 +17,7 @@ const ENTITLEMENT_ID = 'premium';
  * デプロイ後に environment config を設定:
  *   firebase functions:config:set revenuecat.api_key="YOUR_REVENUECAT_SECRET_KEY"
  */
-export const syncPremiumStatus = functions.https.onCall(async (data, context) => {
+export const syncPremiumStatus = functions.https.onCall(async (_data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError('unauthenticated', 'ログインが必要です');
   }
@@ -40,7 +40,11 @@ export const syncPremiumStatus = functions.https.onCall(async (data, context) =>
       );
       const entitlements = res.data?.subscriber?.entitlements ?? {};
       const entitlement = entitlements[ENTITLEMENT_ID];
-      isPremium = !!entitlement && new Date(entitlement.expires_date ?? 0) > new Date();
+      // expires_date が null の場合は買い切り（永久）購入のため期限チェックを省略する
+      isPremium = !!entitlement && (
+        entitlement.expires_date === null ||
+        new Date(entitlement.expires_date) > new Date()
+      );
     } catch (e) {
       functions.logger.error('RevenueCat API error', e);
       throw new functions.https.HttpsError('internal', '購入状態の確認に失敗しました');
