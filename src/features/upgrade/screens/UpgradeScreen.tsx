@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, Crown, Check, RotateCcw } from 'lucide-react-native';
@@ -192,6 +193,16 @@ export function UpgradeScreen({ navigation }: Props) {
           サブスクリプションは現在の期間終了の24時間前までに{'\n'}
           キャンセルしない限り自動更新されます。
         </Text>
+
+        {/* 法的リンク */}
+        <View className="flex-row justify-center gap-x-4 mt-4">
+          <TouchableOpacity onPress={() => Linking.openURL('https://app-bucketlist.pages.dev/privacy/')}>
+            <Text className="text-xs text-amber-600 underline">プライバシーポリシー</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => Linking.openURL('https://app-bucketlist.pages.dev/terms/')}>
+            <Text className="text-xs text-amber-600 underline">利用規約</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

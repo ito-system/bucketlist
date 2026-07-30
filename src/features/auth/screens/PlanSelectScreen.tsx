@@ -6,6 +6,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Check, Crown, Zap } from 'lucide-react-native';
@@ -281,6 +282,16 @@ export function PlanSelectScreen({ navigation }: Props) {
             あとからアップグレードできます
           </Text>
         </TouchableOpacity>
+
+        {/* 法的リンク */}
+        <View className="flex-row justify-center gap-x-4 mt-6">
+          <TouchableOpacity onPress={() => Linking.openURL('https://app-bucketlist.pages.dev/privacy/')}>
+            <Text className="text-xs text-amber-600 underline">プライバシーポリシー</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => Linking.openURL('https://app-bucketlist.pages.dev/terms/')}>
+            <Text className="text-xs text-amber-600 underline">利用規約</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
