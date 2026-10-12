@@ -17,10 +17,15 @@ module.exports = {
     googleServicesFile: process.env.GOOGLE_SERVICES_PLIST ?? './GoogleService-Info.plist',
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
+      CFBundleDevelopmentRegion: 'ja',
     },
     entitlements: {
       'com.apple.developer.applesignin': ['Default'],
     },
+  },
+  // App Store の「言語」表示用に ja.lproj を同梱する（中身が空だと生成されないため 1 キー入れている）
+  locales: {
+    ja: { ios: { CFBundleDisplayName: '夢ノート' } },
   },
   scheme: 'bucketlist',
   android: {
