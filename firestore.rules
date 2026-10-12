@@ -86,7 +86,7 @@ service cloud.firestore {
         && request.resource.data.memberIds.size() >= 1
         && request.resource.data.memberIds.size() <= maxMembersFor(request.auth.uid);
 
-      // [H-2修正] リスト更新: オーナーによる通常更新 OR 招待コード経由の参加
+      // [H-2修正] リスト更新: オーナーによる通常更新 OR 招待コード経由の参加 OR メンバー本人の退出
       allow update: if isAuthenticated() && (
         // オーナーによる通常更新（タイトル変更・メンバー追加・削除など）
         (
@@ -105,6 +105,15 @@ service cloud.firestore {
           && request.resource.data.title == resource.data.title
           && request.resource.data.memberIds.size() == resource.data.memberIds.size() + 1
           && request.resource.data.memberIds.size() <= maxMembersFor(resource.data.ownerId)
+        )
+        ||
+        // メンバー本人の退出: 自分を memberIds から外すのみ許可（オーナーは退出不可）
+        (
+          resource.data.ownerId != request.auth.uid
+          && request.auth.uid in resource.data.memberIds
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds', 'updatedAt'])
+          && request.resource.data.memberIds.toSet()
+            == resource.data.memberIds.toSet().difference([request.auth.uid].toSet())
         )
       );
 

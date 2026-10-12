@@ -21,7 +21,7 @@ import { useTagStore } from '@/store/tagStore';
 import { inviteService } from '@/features/invite/services/inviteService';
 import { ItemCard } from '@/features/list/components/ItemCard';
 import { ItemFormModal } from '@/features/list/components/ItemFormModal';
-import type { Item } from '@/types';
+import type { Item, ItemStatus } from '@/types';
 import { PLAN_LIMITS } from '@/types';
 import { NativeAdBanner } from '@/components/NativeAdBanner';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
@@ -33,6 +33,8 @@ type SortMode = 'manual' | 'name' | 'status' | 'newest' | 'tag';
 
 const STATUS_ORDER = { todo: 0, doing: 1, done: 2 };
 const STATUS_LABELS = { todo: 'やりたい', doing: 'チャレンジ中', done: '達成！' };
+/** カードのステータスをタップしたときの遷移先 */
+const NEXT_STATUS: Record<ItemStatus, ItemStatus> = { todo: 'doing', doing: 'done', done: 'todo' };
 
 const SEARCH_FIELDS = [
   { key: 'all', label: 'すべて' },
@@ -137,6 +139,26 @@ export function ListDetailScreen({ route, navigation }: Props) {
   const handleEditItem = (item: Item) => {
     setEditingItem(item);
     setFormVisible(true);
+  };
+
+  const handleStatusPress = (item: Item) => {
+    const changeStatus = async () => {
+      try {
+        await updateItem(listId, item.itemId, { status: NEXT_STATUS[item.status] }, item.status);
+      } catch {
+        Alert.alert('エラー', 'ステータスの変更に失敗しました。再度お試しください');
+      }
+    };
+
+    // 達成から戻すと達成日が消えるため、誤タップ防止に確認する
+    if (item.status === 'done') {
+      Alert.alert('「やりたい」に戻しますか？', '達成日はリセットされます', [
+        { text: 'キャンセル', style: 'cancel' },
+        { text: '戻す', style: 'destructive', onPress: changeStatus },
+      ]);
+      return;
+    }
+    changeStatus();
   };
 
   const handleSubmit = async (data: {
@@ -390,6 +412,7 @@ export function ListDetailScreen({ route, navigation }: Props) {
                   <ItemCard
                     item={item}
                     onPress={() => handleEditItem(item)}
+                    onStatusPress={() => handleStatusPress(item)}
                     drag={sortMode === 'manual' && !searchQuery.trim() ? drag : undefined}
                     isActive={isActive}
                   />

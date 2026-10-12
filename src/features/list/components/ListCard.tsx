@@ -45,7 +45,7 @@ export function ListCard({ list, currentUserId, onPress, onMenuPress }: Props) {
         </View>
       </View>
 
-      {isOwner && onMenuPress ? (
+      {onMenuPress ? (
         <TouchableOpacity
           onPress={onMenuPress}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}

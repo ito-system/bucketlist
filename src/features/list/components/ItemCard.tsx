@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity } from 'react-native';
-import { Link, CheckCircle2, Circle, Clock, GripVertical } from 'lucide-react-native';
+import { Link, CheckCircle2, Circle, Clock, GripVertical, CalendarCheck } from 'lucide-react-native';
 import type { Item, ItemStatus } from '@/types';
 import { useTagStore } from '@/store/tagStore';
 import { openSafeUrl } from '@/lib/url';
@@ -7,6 +7,8 @@ import { openSafeUrl } from '@/lib/url';
 type Props = {
   item: Item;
   onPress: () => void;
+  /** ステータス表示をタップしたとき */
+  onStatusPress: () => void;
   drag?: () => void;
   isActive?: boolean;
 };
@@ -15,12 +17,17 @@ const STATUS_CONFIG: Record<
   ItemStatus,
   { label: string; color: string; Icon: typeof Circle }
 > = {
-  todo: { label: 'やりたい', color: '#F59E0B', Icon: Circle },
+  todo: { label: 'やりたい', color: '#6B7280', Icon: Circle },
   doing: { label: 'チャレンジ中', color: '#F59E0B', Icon: Clock },
   done: { label: '達成！', color: '#10B981', Icon: CheckCircle2 },
 };
 
-export function ItemCard({ item, onPress, drag, isActive }: Props) {
+/** 例: 2026/10/13 */
+function formatDate(date: Date): string {
+  return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+}
+
+export function ItemCard({ item, onPress, onStatusPress, drag, isActive }: Props) {
   const { label, color, Icon } = STATUS_CONFIG[item.status];
   const { tags } = useTagStore();
 
@@ -88,16 +95,32 @@ export function ItemCard({ item, onPress, drag, isActive }: Props) {
               ))}
             </View>
           ) : null}
+
+          {item.status === 'done' && item.completedAt ? (
+            <View className="flex-row items-center mt-2 gap-x-1">
+              <CalendarCheck size={12} color={STATUS_CONFIG.done.color} />
+              <Text className="text-xs" style={{ color: STATUS_CONFIG.done.color }}>
+                {formatDate(item.completedAt.toDate())} 達成
+              </Text>
+            </View>
+          ) : null}
         </View>
 
         {/* 右: ステータスバッジ + ドラッグハンドル（横並び・垂直中央） */}
         <View className="flex-row items-center gap-x-2">
-          <View className="flex-row items-center gap-x-1">
+          {/* タップでステータスを切り替え。右側はドラッグハンドルと重ならないよう hitSlop を広げない */}
+          <TouchableOpacity
+            className="flex-row items-center gap-x-1 px-2 py-1 rounded-full"
+            style={{ backgroundColor: color + '22' }}
+            onPress={onStatusPress}
+            hitSlop={{ top: 8, bottom: 8, left: 8 }}
+            activeOpacity={0.7}
+          >
             <Icon size={14} color={color} />
             <Text className="text-xs font-medium" style={{ color }}>
               {label}
             </Text>
-          </View>
+          </TouchableOpacity>
 
           {drag ? (
             <TouchableOpacity

@@ -30,7 +30,7 @@ type HomeNavProp = StackNavigationProp<MainStackParamList, 'Tabs'>;
 export function HomeScreen() {
   const navigation = useNavigation<HomeNavProp>();
   const { user } = useAuthStore();
-  const { lists, isLoading, subscribe, unsubscribe, createList, updateList, deleteList } =
+  const { lists, isLoading, subscribe, unsubscribe, createList, updateList, deleteList, leaveList } =
     useListStore();
 
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -81,6 +81,36 @@ export function HomeScreen() {
               },
             },
           ]),
+      },
+    ]);
+  };
+
+  const handleMemberMenuPress = (list: (typeof lists)[0]) => {
+    if (!user) return;
+    Alert.alert(list.title, undefined, [
+      { text: 'キャンセル', style: 'cancel' },
+      {
+        text: '退出',
+        style: 'destructive',
+        onPress: () =>
+          Alert.alert(
+            `「${list.title}」から退出`,
+            '再び参加するには招待コードが必要です。あなたが追加したアイテムはリストに残ります。退出しますか？',
+            [
+              { text: 'キャンセル', style: 'cancel' },
+              {
+                text: '退出',
+                style: 'destructive',
+                onPress: async () => {
+                  try {
+                    await leaveList(list.listId, user.uid);
+                  } catch {
+                    Alert.alert('エラー', 'リストからの退出に失敗しました。再度お試しください');
+                  }
+                },
+              },
+            ],
+          ),
       },
     ]);
   };
@@ -168,10 +198,10 @@ export function HomeScreen() {
                   title: item.title,
                 })
               }
-              onMenuPress={
+              onMenuPress={() =>
                 item.ownerId === user.uid
-                  ? () => handleLongPress(item)
-                  : undefined
+                  ? handleLongPress(item)
+                  : handleMemberMenuPress(item)
               }
             />
           )}

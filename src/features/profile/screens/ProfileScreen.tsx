@@ -34,13 +34,14 @@ const CONTACT_URL = 'https://forms.gle/dvYL3tQo3igv63bG9';
 import { useAuthStore } from '@/store/authStore';
 import { useListStore } from '@/store/listStore';
 import { useTagStore } from '@/store/tagStore';
+import { itemService } from '@/features/list/services/itemService';
 import { PLAN_LIMITS } from '@/types';
 import type { MainStackParamList } from '@/navigation/MainNavigator';
 
 type ProfileNavProp = StackNavigationProp<MainStackParamList>;
 
 const DELETE_CHECKS = [
-  'リスト・アイテム・タグのデータがすべて削除されます',
+  'リスト・アイテム・タグのデータがすべて削除されます。参加中の共有リストからは退出し、そこに追加したアイテムも削除されます',
   '削除したデータは復元できません',
   'プレミアムプランに加入中の場合、各ストア（App Store / Google Play）のサブスクリプション設定から別途キャンセルが必要です。支払済みの料金は返金されません',
   '削除後、同じメールアドレスは24時間経過後に再度ご利用いただけます',
@@ -50,7 +51,7 @@ const DELETE_CHECKS = [
 export function ProfileScreen() {
   const navigation = useNavigation<ProfileNavProp>();
   const { user, signOut, deleteAccount } = useAuthStore();
-  const { lists, deleteList } = useListStore();
+  const { lists, deleteList, leaveList } = useListStore();
   const { tags, subscribe: subscribeTags } = useTagStore();
 
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -93,9 +94,18 @@ export function ProfileScreen() {
   const executeDeleteAccount = async () => {
     setIsDeleting(true);
     try {
-      // 自分が所有するリストを削除
+      // 自分が所有するリストを削除（アイテムも含む）
       const ownedLists = lists.filter((l) => l.ownerId === user!.uid);
       await Promise.all(ownedLists.map((l) => deleteList(l.listId)));
+
+      // 参加中の共有リストは、自分が追加したアイテムを削除してから退出する
+      const joinedLists = lists.filter((l) => l.ownerId !== user!.uid);
+      await Promise.all(
+        joinedLists.map(async (l) => {
+          await itemService.deleteItemsCreatedBy(l.listId, user!.uid);
+          await leaveList(l.listId, user!.uid);
+        }),
+      );
 
       // タグ・ユーザードキュメント・Firebase Auth を削除
       await deleteAccount();

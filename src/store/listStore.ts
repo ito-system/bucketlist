@@ -11,6 +11,7 @@ type ListState = {
   createList: (title: string, ownerId: string, emoji?: string) => Promise<string>;
   updateList: (listId: string, title: string, emoji: string | null) => Promise<void>;
   deleteList: (listId: string) => Promise<void>;
+  leaveList: (listId: string, userId: string) => Promise<void>;
 };
 
 export const useListStore = create<ListState>((set, get) => ({
@@ -44,5 +45,9 @@ export const useListStore = create<ListState>((set, get) => ({
 
   deleteList: async (listId) => {
     await listService.deleteList(listId);
+  },
+
+  leaveList: async (listId, userId) => {
+    await listService.leaveList(listId, userId);
   },
 }));

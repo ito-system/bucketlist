@@ -5,6 +5,8 @@ import {
   updateDoc,
   deleteDoc,
   deleteField,
+  arrayRemove,
+  getDocs,
   serverTimestamp,
   onSnapshot,
   query,
@@ -65,7 +67,25 @@ export const listService = {
     });
   },
 
+  /**
+   * リストを削除する。
+   * サブコレクションのアイテムは親を消しても残るため先に削除する。
+   * アイテム削除の権限チェックにリスト本体を参照するので、リスト本体は最後に消す。
+   */
   async deleteList(listId: string): Promise<void> {
+    const itemsSnap = await getDocs(collection(db, 'lists', listId, 'items'));
+    await Promise.all(itemsSnap.docs.map((d) => deleteDoc(d.ref)));
     await deleteDoc(doc(db, 'lists', listId));
+  },
+
+  /**
+   * メンバー本人がリストから退出する（オーナーは不可）。
+   * 退出したメンバーが追加したアイテムはリストに残る。
+   */
+  async leaveList(listId: string, userId: string): Promise<void> {
+    await updateDoc(doc(db, 'lists', listId), {
+      memberIds: arrayRemove(userId),
+      updatedAt: serverTimestamp(),
+    });
   },
 };

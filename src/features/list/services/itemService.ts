@@ -4,10 +4,12 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
+  getDocs,
   serverTimestamp,
   onSnapshot,
   orderBy,
   query,
+  where,
   writeBatch,
   Timestamp,
 } from 'firebase/firestore';
@@ -73,7 +75,8 @@ export const itemService = {
       status: (input.status ?? 'todo') satisfies ItemStatus,
       location: null,
       createdBy: input.createdBy,
-      completedAt: null,
+      // 最初から「達成！」で作成した場合も達成日を記録する
+      completedAt: input.status === 'done' ? Timestamp.now() : null,
       tagIds: input.tagIds ?? [],
       order: currentItemCount,
       createdAt: serverTimestamp(),
@@ -122,5 +125,13 @@ export const itemService = {
 
   async deleteItem(listId: string, itemId: string): Promise<void> {
     await deleteDoc(doc(db, 'lists', listId, 'items', itemId));
+  },
+
+  /** 指定ユーザーが追加したアイテムをすべて削除する（退会時の後始末用） */
+  async deleteItemsCreatedBy(listId: string, userId: string): Promise<void> {
+    const snap = await getDocs(
+      query(collection(db, 'lists', listId, 'items'), where('createdBy', '==', userId)),
+    );
+    await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));
   },
 };
