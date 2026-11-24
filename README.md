@@ -5,7 +5,7 @@
 
 ## 公式LP・App Store素材
 
-公式LPは `web/public/` にある静的HTML/CSSです。Simulatorで撮影した実画面をLPヒーローに使っています。Simulator撮影記録と未撮影画面は [`docs/simulator-capture.md`](docs/simulator-capture.md)、App Store素材の現状は [`docs/app-store-assets.md`](docs/app-store-assets.md)、公開手順は [`docs/website.md`](docs/website.md) を参照してください。
+公式LPは `web/public/` にある静的HTML/CSSです。Simulatorで撮影した実データ入り画面をLPヒーローに使っています。iPhone向けApp Store販促PNGは `assets/app-store/iphone/`、編集元SVGと再生成スクリプトは `assets/app-store/source/` にあります。Simulator撮影記録と未撮影画面は [`docs/simulator-capture.md`](docs/simulator-capture.md)、App Store素材の現状は [`docs/app-store-assets.md`](docs/app-store-assets.md)、公開手順は [`docs/website.md`](docs/website.md) を参照してください。
 
 ---
 

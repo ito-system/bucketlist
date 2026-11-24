@@ -4,34 +4,31 @@
 
 - iOSアプリ: Expo SDK 55 / React Native 0.83 / TypeScript
 - Bundle Identifier: `com.ito-dev.bucketlist`
-- iPad対応: `supportsTablet: true`
-- Xcode: 27.2、Simulator runtime: iOS 26.3 / 27.2
-- XcodeアプリバンドルにGUI版Simulator.appがありません。`xcrun simctl`で起動・撮影しました。
-- iPhone 6.5インチ相当は既定端末にありませんでしたが、iOS 26.3上にiPhone 11 Pro Maxの一時Simulatorを追加して撮影。
+- Xcode workspace: `ios/app.xcworkspace`、iPad対応設定あり
+- Xcode 27.2、Simulator runtime: iOS 26.3 / 27.2
+- GUI版Simulator.appはXcode bundle内にありません。`xcrun simctl`とXCUITestでビルド・操作・撮影しました。
 
-## 撮影環境・画像
+## 撮影端末・ファイル
 
-ReleaseビルドをXcode CLIで作成し、3端末にインストールしました。ステータスバーは時刻9:41、Wi-Fi/電波表示、バッテリー100%です。
+| 端末 | 解像度 | 撮影画面 |
+| --- | --- | --- |
+| iPhone 17 Pro Max / iOS 26.3 | 1320×2868 | 空のマイリスト、実データ入りマイリスト、空/実データ入りリスト詳細 |
+| iPhone 11 Pro Max / iOS 26.3 | 1242×2688 | 空のマイリスト |
+| iPad Pro 13-inch (M5) / iOS 26.3 | 2064×2752 | 空のマイリスト |
 
-| ファイル | 端末 | 解像度 | 撮影画面 |
-| --- | --- | --- | --- |
-| `assets/screenshots/raw/iphone_69_home_empty.png` | iPhone 17 Pro Max / iOS 26.3 | 1320×2868 | 空のマイリスト |
-| `assets/screenshots/raw/iphone_65_home_empty.png` | iPhone 11 Pro Max / iOS 26.3 | 1242×2688 | 空のマイリスト |
-| `assets/screenshots/raw/ipad_home_empty.png` | iPad Pro 13-inch (M5) / iOS 26.3 | 2064×2752 | 空のマイリスト |
+全画像は `assets/screenshots/raw/` に保存。ステータスバーは9:41、Wi-Fi/電波表示、充電中、100%に統一しました。実データ入り画面には「ふたりで叶えたいこと」リストと5件の項目を登録。画面内容は `assets/screenshots/raw/iphone_69_home_filled.png` と `iphone_69_list_detail_filled.png` で確認できます。
 
-各端末にはSimulator用のテスト広告が表示されます。LP向けの画像では、広告が始まる手前までアプリ画面の範囲を切り出しています。オリジナルの撮影画像は加工せず `raw/` に保管。
+撮影したXCUITestはローカルのignored `ios/appTests/CaptureUITests.swift` にあります。リストと項目の作成、実画面の添付出力を確認しています。本番アプリコードには変更を加えていません。
 
-## 未撮影の候補
+## 撮影できなかった画面
 
-リスト詳細、作成画面、アイテム一覧/作成、タグ、達成、共有、プロフィール、プレミアム。これらはログインとデータが必要です。撮影用アカウントがないため、登録や規約同意を伴う新規作成は行っていません。GUI版Simulatorもこの環境にはないため、simctlではタップ操作ができません。
+タグ管理、プロフィール、プレミアム、共有画面は撮影できていません。詳細画面の後にタブナビゲーションを自動操作するUIテストがTabBar要素を見つけられず失敗しました。アプリ画面にAdMobのテスト広告と検証ポップアップが表示され、検証ポップアップの操作時にWebKitプロセスがクラッシュしたため、広告表示には触れずに中断しています。これらを撮影済みとは扱っていません。
 
-## ビルド修正
-
-Xcode 27で低いCocoaPods deployment targetと旧RevenueCat iOS SDKのSwiftコンパイルエラーが発生しました。RevenueCat React Native SDKをiOS SDK 5.103.1同梱の11.0.4に更新し、ローカルExpo config pluginで低いPod deployment targetをアプリ設定に合わせました。iOS Releaseビルドは成功しています。生成された`ios/`は既存のignore設定のためGit対象外です。
-
-## 撮影コマンドの基本
+## 使用したSimulator操作例
 
 ```sh
+xcrun simctl list devices
+xcrun simctl list runtimes
 xcrun simctl status_bar <UDID> override --time '9:41' --dataNetwork wifi --wifiMode active --wifiBars 3 --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100
 xcrun simctl io <UDID> screenshot assets/screenshots/raw/<filename>.png
 ```

@@ -1,30 +1,24 @@
 # App Store素材
 
-## 撮影済み
+## 完成したiPhone素材
 
-`assets/screenshots/raw/` に、実アプリの空のマイリスト画面を3端末で撮影。9:41、Wi-Fi/電波表示、バッテリー100%に統一しています。
+- 6.9インチ相当: `assets/app-store/iphone/iphone_69_01_home.png` 〜 `iphone_69_06_premium.png`（1320×2868）
+- 6.5インチ相当: `assets/app-store/iphone/iphone_65_01_home.png` 〜 `iphone_65_06_premium.png`（1242×2688）
+- 編集元SVGと再生成スクリプト: `assets/app-store/source/`。`node assets/app-store/source/generate.js` でPNGを書き出します。
 
-- `iphone_69_home_empty.png`: iPhone 17 Pro Max、1320×2868 px（6.9インチ相当）
-- `iphone_65_home_empty.png`: iPhone 11 Pro Max、1242×2688 px（6.5インチ相当）
-- `ipad_home_empty.png`: iPad Pro 13-inch (M5)、2064×2752 px
+全画像はアイボリー/オレンジ系の統一レイアウトで、Simulatorで撮影した実画面を使用しています。端末内のUIは縮尺を保っています。画面下部のSimulator用広告と検証ポップアップはレイアウト上で表示範囲から外し、元画像はそのまま `assets/screenshots/raw/` に保管しています。
 
-App Storeで受け付けられる画面サイズとiPadの必須サイズは[Apple公式仕様](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/)を参照。
+## 撮影した実画面と撮影環境
 
-## 未完成
+- `iphone_69_home_filled.png`: iPhone 17 Pro Max / iOS 26.3、マイリストに「ふたりで叶えたいこと」
+- `iphone_69_list_detail_filled.png`: 同じ端末、5件の実データを表示。未着手3件、チャレンジ中1件、達成1件
+- `iphone_69_list_detail_empty.png`: 同じ端末、リスト詳細の空状態
+- `iphone_69_home_empty.png`: iPhone 17 Pro Maxの空のマイリスト
+- `iphone_65_home_empty.png`: iPhone 11 Pro Max / iOS 26.3の空のマイリスト
+- `ipad_home_empty.png`: iPad Pro 13-inch (M5) / iOS 26.3の空のマイリスト
 
-App Store掲載用の販促レイアウト一式は未完成です。現在撮影できたのは空のマイリストのみで、広告が出るアプリ構成のため、App Store用としては訴求力の弱い状態です。画面を合成したり、実装にない夢・達成データを描き足して完成素材と扱うことはしていません。
+App Storeの受付サイズは[Apple公式仕様](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/)を参照。
 
-リスト詳細、作成、アイテム、タグ、達成、共有、プロフィール、プレミアムの撮影には、撮影用データが入ったログインアカウントが必要です。登録フローは利用規約の確認を含むため、自動で新規アカウントを作って進める作業は保留しています。広告を含まない撮影用ビルドも必要です。
+## 未完了
 
-## 構成案
-
-ログイン済みの撮影データを用意できたら、実画面を使って以下の5〜7枚を作成してください。
-
-1. マイリスト「やりたいことを、ひとつずつ叶えよう。」
-2. リスト詳細「あなたの夢を、自由にリスト化。」
-3. 共有「大切な人と、夢を共有しよう。」
-4. 達成「叶えた瞬間も、思い出に。」
-5. タグ「やりたいことを、もっと自由に。」
-6. プレミアム「もっとたくさんの夢を叶えよう。」
-
-編集可能な制作元データはSVG等で保存し、同じ構図のiPhone/iPadサイズへ書き出します。
+iPad向け販促レイアウトは未作成です。iPadの実画面で実データを表示した撮影はできていません。6枚のiPhone販促素材は実データ画面を使っていますが、タグ管理・共有・プロフィール・プレミアム画面の撮影は行えておらず、機能別の見出しと画面内容が一致しない画像があります。最終的なApp Store掲載前に、これらの実画面を撮影して該当画像を差し替えてください。
