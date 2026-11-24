@@ -3,6 +3,10 @@
 やりたいことをリストにまとめて管理できる、共有対応のバケットリストアプリ。
 リストを複数メンバーと共有し、アイテムごとにステータス・タグ・画像・URLを管理できます。
 
+## 公式LP・App Store素材
+
+公式LPは `web/public/` にある静的HTML/CSSです。Simulatorで撮影した実画面をLPヒーローに使っています。Simulator撮影記録と未撮影画面は [`docs/simulator-capture.md`](docs/simulator-capture.md)、App Store素材の現状は [`docs/app-store-assets.md`](docs/app-store-assets.md)、公開手順は [`docs/website.md`](docs/website.md) を参照してください。
+
 ---
 
 ## 機能一覧

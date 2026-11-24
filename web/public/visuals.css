@@ -1,0 +1,8 @@
+.hero-art{position:relative;min-height:720px;display:flex;align-items:center;justify-content:center;transform:none}
+.hero-sun{position:absolute;width:390px;height:390px;border-radius:50%;background:#f6ead6;right:8%;top:7%}
+.hero-device{position:relative;z-index:1;width:min(290px,70%);margin:0;padding:9px 9px 12px;border-radius:42px;background:#332b26;box-shadow:0 26px 65px #6d4a2933;transform:rotate(2deg)}
+.hero-screen{aspect-ratio:1320/2868;overflow:hidden;border-radius:34px;background:#fffaf0}
+.hero-device img{display:block;width:100%;height:auto;border-radius:34px;background:#fffaf0}
+.hero-device figcaption{position:absolute;left:50%;bottom:-36px;transform:translateX(-50%);width:max-content;color:#8b7a68;font-size:10px;letter-spacing:.04em}
+.hero-spark{position:absolute;z-index:2;right:9%;top:15%;color:#e59b54;font-size:26px}
+@media(max-width:600px){.hero-art{min-height:610px;transform:none;margin:24px -14px 0}.hero-sun{width:310px;height:310px;right:8%;top:0}.hero-device{width:min(270px,72%);border-radius:35px;padding:8px 8px 10px}.hero-screen{border-radius:28px}.hero-device img{border-radius:28px}.hero-device figcaption{font-size:9px;bottom:-31px}}

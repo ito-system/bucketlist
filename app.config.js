@@ -43,6 +43,7 @@ module.exports = {
   plugins: [
     'expo-web-browser',
     'expo-apple-authentication',
+    './plugins/withIosPodMinimumDeploymentTarget',
     [
       'react-native-google-mobile-ads',
       {
